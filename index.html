@@ -967,14 +967,28 @@ body{
       setTimeout(function(){
         document.querySelectorAll('.reveal').forEach(function(el){
           el.classList.remove('visible');
-          // Force reflow then re-observe
           void el.offsetHeight;
-          revealObserver.observe(el);
+          // If element is already in viewport, show immediately
+          var rect = el.getBoundingClientRect();
+          if(rect.top < window.innerHeight && rect.bottom > 0){
+            el.classList.add('visible');
+          } else {
+            revealObserver.observe(el);
+          }
         });
         document.querySelectorAll('.player-card').forEach(function(card){
           card.style.opacity = '0';
           card.style.transform = 'translateY(30px)';
-          cardObserver.observe(card);
+          var rect = card.getBoundingClientRect();
+          if(rect.top < window.innerHeight && rect.bottom > 0){
+            var idx = Array.prototype.indexOf.call(card.parentElement.children, card);
+            setTimeout(function(){
+              card.style.opacity = '1';
+              card.style.transform = 'translateY(0)';
+            }, idx * 100);
+          } else {
+            cardObserver.observe(card);
+          }
         });
         // Re-trigger hex animation if on metrics tab
         if(tab === 'metrics'){
