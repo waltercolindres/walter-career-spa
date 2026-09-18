@@ -8,8 +8,9 @@
 <style>
 /* ============================================================
    WALTER COLINDRES — CAREER ANALYTICS DASHBOARD
-   Mobile-first SPA · Basketball analytics aesthetic
+   Mobile-first SPA · Basketball analytics aesthetic · Tabbed
    ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root{
   --orange:#FF6B35;
@@ -20,7 +21,7 @@
   --bg:#0a0a0f;
   --bg-card:#15151f;
   --bg-card-2:#1c1c2a;
-  --court:#1a3a2e;
+  --court:#0f2218;
   --court-line:#2d5a4a;
   --court-line-bright:#3e7a5e;
   --text:#f0f0f5;
@@ -34,11 +35,8 @@
   --header-font:'Oswald','Bebas Neue','Arial Narrow Bold',sans-serif;
   --body-font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
-
 *{margin:0;padding:0;box-sizing:border-box;}
-
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
-
 body{
   font-family:var(--body-font);
   background:var(--bg);
@@ -48,174 +46,162 @@ body{
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
 }
-
-/* Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
-/* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar{width:8px;height:8px;}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--orange-dark);border-radius:4px;}
 
-/* ===== UTILITY ===== */
-.container{max-width:1200px;margin:0 auto;padding:20px;}
-@media(min-width:768px){.container{padding:40px;}}
-.tag{display:inline-block;font-size:0.7rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border-radius:6px;background:rgba(255,107,53,0.15);color:var(--orange);border:1px solid rgba(255,107,53,0.3);}
-
-/* ===== HEADER / NAV ===== */
+/* ===== NAV ===== */
 .nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  background:rgba(10,10,15,0.85);
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,10,15,0.95);
   backdrop-filter:blur(12px);
   -webkit-backdrop-filter:blur(12px);
   border-bottom:1px solid var(--border);
-  padding:12px 20px;
+  padding:10px 16px;
   display:flex;align-items:center;justify-content:space-between;
-  transition:all .3s;
+  gap:8px;
 }
-.nav.scrolled{padding:8px 20px;background:rgba(10,10,15,0.95);}
-.nav-logo{font-family:var(--header-font);font-size:1.2rem;font-weight:700;letter-spacing:0.05em;color:var(--text);text-decoration:none;}
+.nav-logo{font-family:var(--header-font);font-size:1.1rem;font-weight:700;letter-spacing:0.05em;color:var(--text);text-decoration:none;white-space:nowrap;}
 .nav-logo span{color:var(--orange);}
-.nav-links{display:none;gap:24px;align-items:center;}
-@media(min-width:768px){
-  .nav-links{display:flex;}
-}
-.nav-link{color:var(--text-dim);text-decoration:none;font-size:0.8rem;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;transition:color .2s;min-height:44px;display:flex;align-items:center;}
-.nav-link:hover{color:var(--orange);}
 
-/* ===== HERO ===== */
-.hero{
-  min-height:100vh;
-  display:flex;flex-direction:column;justify-content:center;
+/* ===== TABS ===== */
+.tabs{
+  display:flex;
+  gap:0;
+  background:var(--bg);
+  border-bottom:2px solid var(--border);
+  padding:0 12px;
+  position:sticky;top:0;z-index:50;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none;}
+.tab-btn{
+  flex:1;
+  min-width:max-content;
+  padding:14px 20px;
+  background:none;
+  border:none;
+  border-bottom:3px solid transparent;
+  color:var(--text-dim);
+  font-family:var(--header-font);
+  font-size:0.85rem;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  cursor:pointer;
+  transition:all .2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  white-space:nowrap;
+  min-height:48px;
+}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{
+  color:var(--orange);
+  border-bottom-color:var(--orange);
+}
+.tab-pane{display:none;animation:fadeIn .3s ease;}
+.tab-pane.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ===== HERO / PLAYER PROFILE ===== */
+.profile-hero{
   position:relative;
-  padding:80px 20px 40px;
+  padding:40px 20px 30px;
   overflow:hidden;
 }
-/* Court background lines */
-.hero-court{
-  position:absolute;inset:0;
-  opacity:0.15;
-  pointer-events:none;
-  z-index:0;
-}
-.hero-content{position:relative;z-index:1;max-width:900px;margin:0 auto;width:100%;}
-.hero-jersey{
+.court-bg-svg{position:absolute;inset:0;width:100%;height:100%;opacity:0.08;z-index:0;pointer-events:none;}
+.profile-content{position:relative;z-index:1;max-width:900px;margin:0 auto;width:100%;}
+.profile-jersey{
   font-family:var(--header-font);
-  display:inline-block;
+  display:inline-flex;align-items:center;gap:8px;
   background:var(--orange);
   color:#0a0a0f;
-  padding:6px 20px;
+  padding:6px 18px;
   border-radius:8px;
-  font-size:1rem;
+  font-size:0.9rem;
   font-weight:700;
   letter-spacing:0.1em;
-  margin-bottom:20px;
+  margin-bottom:18px;
 }
-.hero-jersey::before{content:"🏀 ";font-size:1rem;}
-.hero-name{
+.profile-name{
   font-family:var(--header-font);
-  font-size:clamp(2.8rem,12vw,5.5rem);
+  font-size:clamp(2.5rem,11vw,5rem);
   font-weight:700;
   line-height:0.9;
   letter-spacing:-0.01em;
   text-transform:uppercase;
   margin-bottom:8px;
-  background:linear-gradient(135deg,#fff 0%,var(--text-dim) 100%);
-  -webkit-background-clip:text;
-  background-clip:text;
-  -webkit-text-fill-color:transparent;
 }
-.hero-name .first{display:block;}
-.hero-name .last{color:var(--orange);-webkit-text-fill-color:var(--orange);background:none;}
-.hero-title{
-  font-size:clamp(0.9rem,3.5vw,1.3rem);
+.profile-name .last{color:var(--orange);}
+.profile-title{
+  font-size:clamp(0.85rem,3.5vw,1.2rem);
   color:var(--text-dim);
   font-weight:500;
-  margin-bottom:24px;
-  letter-spacing:0.02em;
+  margin-bottom:18px;
 }
-.hero-title span{color:var(--text);font-weight:600;}
-.hero-tagline{
-  font-size:clamp(1rem,4vw,1.4rem);
+.profile-title span{color:var(--text);font-weight:600;}
+.profile-bio{
+  font-size:clamp(0.9rem,3.5vw,1.15rem);
   color:var(--text);
-  font-weight:600;
-  margin-bottom:40px;
-  max-width:700px;
-  line-height:1.4;
+  font-weight:500;
+  max-width:650px;
+  line-height:1.5;
+  margin-bottom:28px;
 }
-.hero-tagline em{color:var(--orange);font-style:normal;font-weight:700;}
-.hero-stats{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:16px;
-  margin-top:32px;
-}
-@media(min-width:480px){
-  .hero-stats{grid-template-columns:1fr 1fr;}
-}
-@media(min-width:768px){
-  .hero-stats{grid-template-columns:repeat(3,1fr);gap:20px;}
-}
-.hero-stat{
+.profile-bio em{color:var(--orange);font-style:normal;font-weight:700;}
+
+/* Profile header card */
+.profile-head-card{
+  display:flex;
+  align-items:center;
+  gap:20px;
   background:linear-gradient(135deg,var(--bg-card) 0%,var(--bg-card-2) 100%);
   border:1px solid var(--border);
   border-radius:var(--radius);
   padding:20px;
-  text-align:center;
-  position:relative;
-  overflow:hidden;
+  margin-bottom:24px;
 }
-.hero-stat::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--orange) 0%,var(--orange-light) 100%);
-}
-.hero-stat-num{
+.profile-avatar{
+  width:80px;height:80px;flex-shrink:0;
+  border-radius:16px;
+  background:linear-gradient(135deg,var(--orange) 0%,var(--orange-dark) 100%);
+  display:flex;align-items:center;justify-content:center;
   font-family:var(--header-font);
-  font-size:2.2rem;
-  font-weight:700;
-  color:var(--orange);
-  line-height:1;
-  margin-bottom:6px;
+  font-size:2rem;font-weight:700;
+  color:#0a0a0f;
 }
-@media(min-width:768px){
-  .hero-stat-num{font-size:2.8rem;}
-}
-.hero-stat-label{
-  font-size:0.7rem;
-  color:var(--text-dim);
+.profile-head-info{flex:1;min-width:0;}
+.profile-head-name{font-family:var(--header-font);font-size:1.4rem;font-weight:700;text-transform:uppercase;line-height:1;}
+.profile-head-role{font-size:0.8rem;color:var(--text-dim);margin-top:4px;}
+.profile-head-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.profile-head-tag{
+  font-size:0.65rem;font-weight:600;letter-spacing:0.05em;
   text-transform:uppercase;
-  letter-spacing:0.08em;
-  font-weight:500;
+  padding:4px 10px;border-radius:6px;
+  background:rgba(255,107,53,0.12);color:var(--orange);
+  border:1px solid rgba(255,107,53,0.25);
 }
-.hero-scroll{
-  text-align:center;
-  margin-top:40px;
-  color:var(--text-dim);
-  font-size:0.75rem;
-  letter-spacing:0.15em;
-  text-transform:uppercase;
-  font-weight:500;
-  animation:bounce 2s ease-in-out infinite;
-}
-.hero-scroll::after{content:" ↓";}
 
-@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(8px);}}
-
-/* ===== CAREER TOTALS BAR ===== */
+/* ===== CAREER TOTALS ===== */
 .totals{
   background:linear-gradient(135deg,var(--bg-card) 0%,#111119 100%);
   border-top:1px solid var(--border);
   border-bottom:1px solid var(--border);
-  padding:40px 20px;
+  padding:30px 16px;
 }
 .totals-label{
   text-align:center;
   font-family:var(--header-font);
-  font-size:0.85rem;
+  font-size:0.8rem;
   color:var(--text-dim);
   text-transform:uppercase;
-  letter-spacing:0.3em;
-  margin-bottom:24px;
+  letter-spacing:0.25em;
+  margin-bottom:20px;
   font-weight:500;
 }
 .totals-bar{
@@ -225,443 +211,231 @@ body{
   background:var(--border);
   border-radius:var(--radius);
   overflow:hidden;
-  margin:0 auto;
-  max-width:1100px;
+  max-width:1100px;margin:0 auto;
 }
 @media(min-width:600px){.totals-bar{grid-template-columns:repeat(3,1fr);}}
 @media(min-width:1024px){.totals-bar{grid-template-columns:repeat(6,1fr);}}
 .totals-cell{
   background:var(--bg-card);
-  padding:20px 12px;
+  padding:18px 10px;
   text-align:center;
 }
 .totals-num{
   font-family:var(--header-font);
-  font-size:1.8rem;
-  font-weight:700;
+  font-size:1.6rem;font-weight:700;
   color:var(--orange);
-  line-height:1;
-  margin-bottom:8px;
+  line-height:1;margin-bottom:6px;
 }
-@media(min-width:768px){.totals-num{font-size:2.2rem;}}
+@media(min-width:768px){.totals-num{font-size:2rem;}}
 .totals-name{
-  font-size:0.6rem;
-  color:var(--text-dim);
-  text-transform:uppercase;
-  letter-spacing:0.06em;
-  font-weight:500;
-  line-height:1.3;
+  font-size:0.6rem;color:var(--text-dim);
+  text-transform:uppercase;letter-spacing:0.06em;
+  font-weight:500;line-height:1.3;
 }
 
 /* ===== SECTIONS ===== */
-.section{padding:60px 20px;position:relative;}
-@media(min-width:768px){.section{padding:80px 20px;}}
-.section-header{text-align:center;margin-bottom:48px;}
+.section{padding:40px 16px;position:relative;}
+@media(min-width:768px){.section{padding:60px 20px;}}
+.section-header{text-align:center;margin-bottom:32px;}
 .section-eyebrow{
-  font-family:var(--header-font);
-  font-size:0.8rem;
-  color:var(--orange);
-  text-transform:uppercase;
-  letter-spacing:0.3em;
-  margin-bottom:12px;
-  font-weight:600;
+  font-family:var(--header-font);font-size:0.8rem;
+  color:var(--orange);text-transform:uppercase;
+  letter-spacing:0.25em;margin-bottom:10px;font-weight:600;
 }
 .section-title{
   font-family:var(--header-font);
-  font-size:clamp(1.8rem,7vw,3.5rem);
-  font-weight:700;
-  text-transform:uppercase;
-  line-height:1;
-  letter-spacing:-0.01em;
+  font-size:clamp(1.6rem,7vw,3rem);font-weight:700;
+  text-transform:uppercase;line-height:1;letter-spacing:-0.01em;
 }
 .section-title span{color:var(--orange);}
 .section-sub{
-  color:var(--text-dim);
-  font-size:clamp(0.85rem,3vw,1rem);
-  margin-top:16px;
-  max-width:600px;
-  margin-left:auto;margin-right:auto;
+  color:var(--text-dim);font-size:0.9rem;
+  margin-top:12px;max-width:550px;margin-left:auto;margin-right:auto;
 }
 
-/* ===== SHOT CHART / COURT MAP ===== */
-.court-map{
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-  max-width:800px;
-  margin:0 auto;
+/* ===== SHOT CHART (Goldsberry hex heatmap) ===== */
+.shot-chart-section{padding:30px 16px;}
+.shot-chart-wrap{
+  max-width:500px;margin:0 auto;position:relative;
 }
-.court-map-court{
-  background:var(--court);
-  border:2px solid var(--court-line-bright);
-  border-radius:12px;
-  padding:24px;
-  position:relative;
-  aspect-ratio:2/1.4;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.court-map-half-court{
-  width:100%;height:100%;
+.shot-chart-container{
+  background:radial-gradient(ellipse at center, #142918 0%, #0a1a0f 100%);
   border:2px solid var(--court-line);
-  border-radius:50;
+  border-radius:20px;
+  padding:20px 16px;
   position:relative;
+  overflow:hidden;
 }
-.court-dot{
-  position:absolute;
-  width:48px;height:48px;
-  border-radius:50%;
-  background:var(--orange);
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--header-font);
-  font-size:0.7rem;
-  font-weight:700;
-  color:#0a0a0f;
+.shot-chart-svg{width:100%;height:auto;display:block;}
+.shot-chart-hex{
+  transition:opacity .2s;
   cursor:pointer;
-  transition:all .3s;
-  box-shadow:0 0 20px rgba(255,107,53,0.5);
 }
-.court-dot:hover{transform:scale(1.2);z-index:10;}
-.court-dot-label{
-  position:absolute;
-  font-size:0.6rem;
-  color:var(--text-dim);
-  white-space:nowrap;
-  pointer-events:none;
-  font-weight:500;
+.shot-chart-hex:hover{opacity:0.7;}
+.shot-chart-tooltip{
+  position:fixed;
+  background:#0d0d12;border:1px solid var(--orange);
+  border-radius:8px;padding:10px 14px;
+  font-size:0.75rem;color:var(--text);
+  pointer-events:none;z-index:9999;max-width:240px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.6);
+  opacity:0;transition:opacity .15s;
 }
-.court-dot[data-pos="PG"]{top:45%;left:50%;transform:translate(-50%,-50%);}
-.court-dot[data-pos="SG"]{top:30%;left:72%;}
-.court-dot[data-pos="SF"]{top:30%;left:28%;}
-.court-dot[data-pos="PF"]{top:60%;left:72%;}
-.court-dot[data-pos="C"]{top:65%;left:50%;transform:translate(-50%,-50%);}
+.shot-chart-tooltip.show{opacity:1;}
+.shot-chart-tooltip-title{
+  font-family:var(--header-font);font-weight:700;
+  color:var(--orange);margin-bottom:4px;font-size:0.85rem;
+}
+.shot-chart-tooltip-meta{color:var(--text-dim);font-size:0.7rem;line-height:1.4;}
+.shot-chart-tooltip-val{
+  font-family:var(--header-font);font-size:1.1rem;
+  color:var(--text);font-weight:700;margin-top:4px;
+}
+.shot-chart-legend{
+  display:flex;align-items:center;justify-content:center;
+  gap:6px;margin:16px auto 0;flex-wrap:wrap;
+}
+.shot-chart-legend-bar{
+  display:flex;height:10px;border-radius:4px;overflow:hidden;width:220px;
+}
+.shot-chart-legend-label{
+  font-size:0.65rem;color:var(--text-dim);
+  text-transform:uppercase;letter-spacing:0.05em;font-weight:500;
+}
+@media(max-width:400px){.shot-chart-legend-bar{width:160px;}}
 
-.court-legend{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-  gap:8px;
-  margin-top:16px;
-}
-.court-legend-item{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:0.7rem;
-  color:var(--text-dim);
-  padding:8px;
-  background:var(--bg-card);
-  border-radius:8px;
-  border:1px solid var(--border);
-}
-.court-legend-dot{
-  width:12px;height:12px;border-radius:50%;flex-shrink:0;
-  background:var(--orange);
-}
-.court-legend-item .pos{
-  font-family:var(--header-font);
-  font-weight:700;
-  color:var(--text);
-  font-size:0.8rem;
-}
-
-/* ===== TEAM / PLAYER CARDS ===== */
+/* ===== TEAM CARDS ===== */
 .teams-grid{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:24px;
-  max-width:1100px;
-  margin:0 auto;
+  display:grid;grid-template-columns:1fr;gap:20px;
+  max-width:1100px;margin:0 auto;
 }
 @media(min-width:640px){.teams-grid{grid-template-columns:repeat(2,1fr);}}
 @media(min-width:1024px){.teams-grid{grid-template-columns:1fr;}}
-
 .player-card{
   background:linear-gradient(135deg,var(--bg-card) 0%,var(--bg-card-2) 100%);
-  border:1px solid var(--border);
-  border-radius:20px;
-  overflow:hidden;
-  position:relative;
-  transition:all .35s cubic-bezier(.25,.8,.25,1);
-  cursor:pointer;
+  border:1px solid var(--border);border-radius:20px;
+  overflow:hidden;transition:all .35s cubic-bezier(.25,.8,.25,1);cursor:pointer;
 }
 .player-card:hover{
   border-color:var(--orange);
-  transform:translateY(-4px);
-  box-shadow:0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px var(--orange);
+  transform:translateY(-3px);
+  box-shadow:0 16px 36px rgba(0,0,0,0.4),0 0 0 1px var(--orange);
 }
 .player-card-head{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  padding:24px;
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:20px;gap:14px;
   background:linear-gradient(135deg,rgba(255,107,53,0.08) 0%,rgba(255,107,53,0.02) 100%);
   border-bottom:1px solid var(--border);
-  gap:16px;
 }
 .player-card-head-left{flex:1;min-width:0;}
 .player-card-team{
-  font-family:var(--header-font);
-  font-size:0.7rem;
-  color:var(--text-dim);
-  text-transform:uppercase;
-  letter-spacing:0.15em;
-  margin-bottom:4px;
-  font-weight:500;
+  font-family:var(--header-font);font-size:0.65rem;color:var(--text-dim);
+  text-transform:uppercase;letter-spacing:0.12em;margin-bottom:4px;font-weight:500;
 }
 .player-card-name{
-  font-family:var(--header-font);
-  font-size:clamp(1.3rem,5vw,1.8rem);
-  font-weight:700;
-  text-transform:uppercase;
-  line-height:1;
-  letter-spacing:-0.01em;
-  margin-bottom:8px;
+  font-family:var(--header-font);font-size:clamp(1.2rem,5vw,1.6rem);
+  font-weight:700;text-transform:uppercase;line-height:1;letter-spacing:-0.01em;margin-bottom:6px;
 }
-.player-card-role{
-  font-size:0.8rem;
-  color:var(--text-mid);
-  font-weight:500;
-}
+.player-card-role{font-size:0.75rem;color:var(--text-mid);font-weight:500;}
 .player-card-years{
-  font-family:var(--header-font);
-  font-size:0.8rem;
-  color:var(--orange);
-  font-weight:600;
-  white-space:nowrap;
-  text-align:right;
+  font-family:var(--header-font);font-size:0.75rem;
+  color:var(--orange);font-weight:600;white-space:nowrap;text-align:right;
 }
 .player-card-jersey{
-  width:56px;height:56px;
-  border-radius:12px;
+  width:52px;height:52px;border-radius:10px;
   background:var(--orange);
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  flex-shrink:0;
-  font-family:var(--header-font);
-  font-weight:700;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  flex-shrink:0;font-family:var(--header-font);font-weight:700;
 }
-.player-card-jersey .pos{font-size:0.6rem;color:#0a0a0f6e;letter-spacing:0.05em;}
-.player-card-jersey .num{font-size:1.1rem;color:#0a0a0f;line-height:1;}
-
-.player-card-body{padding:20px 24px 24px;}
-.player-card-stats{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-}
+.player-card-jersey .pos{font-size:0.55rem;color:rgba(10,10,15,0.6);letter-spacing:0.05em;}
+.player-card-jersey .num{font-size:1rem;color:#0a0a0f;line-height:1;}
+.player-card-body{padding:16px 20px 20px;}
+.player-card-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
 .stat-cell{
-  background:rgba(255,255,255,0.02);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:14px;
-  position:relative;
+  background:rgba(255,255,255,0.02);border:1px solid var(--border);
+  border-radius:10px;padding:12px;position:relative;
 }
 .stat-cell-value{
-  font-family:var(--header-font);
-  font-size:1.6rem;
-  font-weight:700;
-  color:var(--orange);
-  line-height:1;
-  margin-bottom:4px;
+  font-family:var(--header-font);font-size:1.4rem;font-weight:700;
+  color:var(--orange);line-height:1;margin-bottom:4px;
 }
-.stat-cell-meta{
-  font-size:0.7rem;
-  color:var(--text-dim);
-  font-weight:500;
-  line-height:1.3;
-}
+.stat-cell-meta{font-size:0.65rem;color:var(--text-dim);font-weight:500;line-height:1.3;}
 .stat-cell-meta strong{color:var(--text);font-weight:600;}
 .stat-cell-bball{
-  font-size:0.6rem;
-  color:var(--blue);
-  text-transform:uppercase;
-  letter-spacing:0.05em;
-  margin-top:4px;
-  font-weight:600;
+  font-size:0.55rem;color:var(--blue);text-transform:uppercase;
+  letter-spacing:0.05em;margin-top:4px;font-weight:600;
 }
-
-/* Change indicator */
 .stat-change{
-  display:inline-flex;
-  align-items:center;
-  gap:3px;
-  font-size:0.7rem;
-  font-weight:700;
-  padding:2px 6px;
-  border-radius:4px;
-  margin-top:6px;
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:0.65rem;font-weight:700;padding:2px 6px;border-radius:4px;margin-top:5px;
 }
 .stat-change.up{color:var(--green);background:rgba(0,230,118,0.1);}
 .stat-change.down{color:var(--orange);background:rgba(255,107,53,0.1);}
 
-/* ===== SKILLS / ATTRIBUTES ===== */
-.skills-grid{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:12px;
-  max-width:900px;
-  margin:0 auto;
-}
+/* ===== SKILLS ===== */
+.skills-grid{display:grid;grid-template-columns:1fr;gap:10px;max-width:900px;margin:0 auto;}
 @media(min-width:600px){.skills-grid{grid-template-columns:1fr 1fr;}}
 .skill-bar{
-  background:var(--bg-card);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:14px 16px;
-  display:flex;
-  align-items:center;
-  gap:12px;
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;
+  display:flex;align-items:center;gap:10px;
 }
 .skill-info{flex:1;min-width:0;}
-.skill-name{
-  font-size:0.8rem;
-  font-weight:600;
-  color:var(--text);
-  margin-bottom:6px;
-}
+.skill-name{font-size:0.75rem;font-weight:600;color:var(--text);margin-bottom:5px;}
 .skill-attr{
-  font-family:var(--header-font);
-  font-size:1.4rem;
-  font-weight:700;
-  color:var(--orange);
-  line-height:1;
-  min-width:48px;
-  text-align:right;
+  font-family:var(--header-font);font-size:1.2rem;font-weight:700;
+  color:var(--orange);line-height:1;min-width:42px;text-align:right;
 }
-.skill-track{
-  height:8px;
-  background:var(--border);
-  border-radius:4px;
-  overflow:hidden;
-}
+.skill-track{height:6px;background:var(--border);border-radius:4px;overflow:hidden;}
 .skill-fill{
-  height:100%;
-  border-radius:4px;
+  height:100%;border-radius:4px;
   background:linear-gradient(90deg,var(--orange) 0%,var(--orange-light) 100%);
-  width:0;
-  transition:width 1.5s cubic-bezier(.25,.8,.25,1);
+  width:0;transition:width 1.2s cubic-bezier(.25,.8,.25,1);
 }
-.skill-fill.animate{width:100%;}
 
-/* ===== CONTACT / FOOTER ===== */
+/* ===== CONTACT ===== */
 .contact{
-  text-align:center;
-  padding:60px 20px 40px;
+  text-align:center;padding:50px 16px 30px;
   background:linear-gradient(180deg,transparent 0%,var(--bg-card) 100%);
   border-top:1px solid var(--border);
 }
 .contact-title{
-  font-family:var(--header-font);
-  font-size:clamp(1.8rem,8vw,3rem);
-  font-weight:700;
-  text-transform:uppercase;
-  line-height:1;
-  margin-bottom:16px;
+  font-family:var(--header-font);font-size:clamp(1.6rem,8vw,2.6rem);
+  font-weight:700;text-transform:uppercase;line-height:1;margin-bottom:14px;
 }
 .contact-title span{color:var(--orange);}
-.contact-sub{
-  color:var(--text-dim);
-  font-size:1rem;
-  margin-bottom:32px;
-  max-width:500px;
-  margin-left:auto;margin-right:auto;
-}
-.contact-links{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  align-items:center;
-  max-width:400px;
-  margin:0 auto;
-}
-@media(min-width:600px){
-  .contact-links{flex-direction:row;flex-wrap:wrap;justify-content:center;}
-}
+.contact-sub{color:var(--text-dim);font-size:0.9rem;margin-bottom:28px;max-width:450px;margin-left:auto;margin-right:auto;}
+.contact-links{display:flex;flex-direction:column;gap:10px;align-items:center;max-width:380px;margin:0 auto;}
+@media(min-width:600px){.contact-links{flex-direction:row;flex-wrap:wrap;justify-content:center;}}
 .contact-link{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:var(--bg-card-2);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:14px 24px;
-  color:var(--text);
-  text-decoration:none;
-  font-weight:600;
-  font-size:0.85rem;
-  min-height:44px;
-  transition:all .2s;
-  width:100%;
+  display:flex;align-items:center;gap:10px;
+  background:var(--bg-card-2);border:1px solid var(--border);
+  border-radius:10px;padding:12px 20px;color:var(--text);
+  text-decoration:none;font-weight:600;font-size:0.8rem;
+  min-height:44px;transition:all .2s;width:100%;
 }
 @media(min-width:600px){.contact-link{width:auto;}}
-.contact-link:hover{
-  border-color:var(--orange);
-  background:rgba(255,107,53,0.08);
-  transform:translateY(-2px);
-}
+.contact-link:hover{border-color:var(--orange);background:rgba(255,107,53,0.08);transform:translateY(-2px);}
 .contact-link-icon{
-  width:28px;height:28px;
-  border-radius:6px;
-  background:var(--orange);
+  width:26px;height:26px;border-radius:6px;background:var(--orange);
   display:flex;align-items:center;justify-content:center;
-  font-size:0.7rem;
-  font-weight:700;
-  color:#0a0a0f;
-  flex-shrink:0;
+  font-size:0.65rem;font-weight:700;color:#0a0a0f;flex-shrink:0;
   font-family:var(--header-font);
 }
 .footer{
-  text-align:center;
-  padding:24px 20px;
-  border-top:1px solid var(--border);
-  font-size:0.7rem;
-  color:var(--text-dim);
-  letter-spacing:0.05em;
+  text-align:center;padding:20px 16px;border-top:1px solid var(--border);
+  font-size:0.65rem;color:var(--text-dim);letter-spacing:0.05em;
 }
 .footer span{color:var(--orange);}
-
-/* ===== COURT BG DECOR ===== */
-.court-lines-deco{
-  position:absolute;
-  bottom:0;left:50%;transform:translateX(-50%);
-  width:300px;height:150px;
-  border:2px solid var(--court-line);
-  border-bottom:none;
-  border-radius:150px 150px 0 0;
-  opacity:0.15;
-  pointer-events:none;
-  z-index:0;
-}
-.court-lines-deco::before{
-  content:'';position:absolute;
-  bottom:0;left:50%;transform:translateX(-50%);
-  width:60px;height:60px;
-  border:2px solid var(--court-line);
-  border-radius:50%;
-  border-bottom:none;
-}
 
 /* ===== COUNT UP ===== */
 .count-up{display:inline-block;}
 
-/* ===== MOBILE FIXES ===== */
+/* ===== MOBILE ===== */
 @media(max-width:480px){
   .player-card-stats{grid-template-columns:1fr;}
-  .stat-cell{padding:12px;}
-  .stat-cell-value{font-size:1.4rem;}
-}
-
-/* SVG court bg */
-.court-bg-svg{position:absolute;inset:0;width:100%;height:100%;opacity:0.08;z-index:0;pointer-events:none;}
-
-/* highlight pulse for new */
-.pulse{
-  animation:pulse 2s ease-in-out infinite;
-}
-@keyframes pulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(255,107,53,0.5);}
-  50%{box-shadow:0 0 0 8px rgba(255,107,53,0);}
+  .stat-cell{padding:10px;}
+  .stat-cell-value{font-size:1.2rem;}
 }
 
 /* reduced motion */
@@ -673,410 +447,404 @@ body{
 <body>
 
 <!-- ===== NAV ===== -->
-<nav class="nav" id="nav">
-  <a href="#hero" class="nav-logo">WC<span>.</span></a>
-  <div class="nav-links">
-    <a href="#totals" class="nav-link">Totals</a>
-    <a href="#teams" class="nav-link">Teams</a>
-    <a href="#skills" class="nav-link">Toolkit</a>
-    <a href="#contact" class="nav-link">Contact</a>
-  </div>
+<nav class="nav">
+  <a href="#" class="nav-logo">WC<span>.</span></a>
+  <div style="font-family:var(--header-font);font-size:0.8rem;color:var(--text-dim);letter-spacing:0.1em;">CAREER ANALYTICS</div>
 </nav>
 
-<!-- ===== HERO ===== -->
-<section class="hero" id="hero">
-  <!-- Court SVG background -->
-  <svg class="court-bg-svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice">
-    <rect x="0" y="0" width="400" height="200" fill="none"/>
-    <line x1="200" y1="0" x2="200" y2="200" stroke="#3e7a5e" stroke-width="1"/>
-    <circle cx="200" cy="100" r="30" fill="none" stroke="#3e7a5e" stroke-width="1"/>
-    <rect x="80" y="0" width="240" height="50" fill="none" stroke="#3e7a5e" stroke-width="1"/>
-    <rect x="80" y="150" width="240" height="50" fill="none" stroke="#3e7a5e" stroke-width="1"/>
-    <path d="M 80 50 L 120 100 L 80 150" fill="none" stroke="#3e7a5e" stroke-width="1"/>
-    <path d="M 320 50 L 280 100 L 320 150" fill="none" stroke="#3e7a5e" stroke-width="1"/>
-    <path d="M 80 150 L 120 100 L 80 50" fill="none" stroke="#3e7a5e" stroke-width="1"/>
-    <path d="M 320 150 L 280 100 L 320 50" fill="none" stroke="#3e7a5e" stroke-width="1"/>
-  </svg>
+<!-- ===== TABS ===== -->
+<div class="tabs">
+  <button class="tab-btn active" data-tab="profile">🏀 Player Profile</button>
+  <button class="tab-btn" data-tab="metrics">📊 Metrics</button>
+</div>
 
-  <div class="hero-content">
-    <div class="hero-jersey">#23 · SR. DIRECTOR</div>
-    <h1 class="hero-name">
-      <span class="first">Walter</span>
-      <span class="last">Colindres</span>
-    </h1>
-    <p class="hero-title">Sr. Director of Product Management · <span>Consumer Digital Commerce</span></p>
-    <p class="hero-tagline">I build <em>$1B+ digital commerce engines</em> the way a coach builds a championship roster — talent, metrics, and relentless execution across <em>18+ platforms</em> in <em>4 countries</em>.</p>
+<!-- ===== TAB: PLAYER PROFILE ===== -->
+<div class="tab-pane active" id="tab-profile">
 
-    <div class="hero-stats">
-      <div class="hero-stat">
-        <div class="hero-stat-num"><span class="count-up" data-target="1000000000" data-prefix="$" data-suffix="+" data-abbrev="true">$1B+</span></div>
-        <div class="hero-stat-label">Career Points · Digital Sales</div>
+  <!-- Hero -->
+  <div class="profile-hero">
+    <svg class="court-bg-svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice">
+      <rect x="0" y="0" width="400" height="200" fill="none"/>
+      <line x1="200" y1="0" x2="200" y2="200" stroke="#3e7a5e" stroke-width="1"/>
+      <circle cx="200" cy="100" r="30" fill="none" stroke="#3e7a5e" stroke-width="1"/>
+      <rect x="80" y="0" width="240" height="50" fill="none" stroke="#3e7a5e" stroke-width="1"/>
+      <rect x="80" y="150" width="240" height="50" fill="none" stroke="#3e7a5e" stroke-width="1"/>
+      <path d="M 80 50 L 120 100 L 80 150" fill="none" stroke="#3e7a5e" stroke-width="1"/>
+      <path d="M 320 50 L 280 100 L 320 150" fill="none" stroke="#3e7a5e" stroke-width="1"/>
+    </svg>
+    <div class="profile-content">
+      <div class="profile-jersey">🏀 #23 · SR. DIRECTOR</div>
+      <h1 class="profile-name">
+        <span class="first">Walter</span>
+        <span class="last">Colindres</span>
+      </h1>
+      <p class="profile-title">Sr. Director of Product Management · <span>Consumer Digital Commerce</span></p>
+      <p class="profile-bio">I build <em>$1B+ digital commerce engines</em> the way a coach builds a championship roster — talent, metrics, and relentless execution across <em>18+ platforms</em> in <em>4 countries</em>. Now ready to bring that same data-driven approach to <em>basketball analytics</em>.</p>
+
+      <div class="profile-head-card">
+        <div class="profile-avatar">WC</div>
+        <div class="profile-head-info">
+          <div class="profile-head-name">Walter Colindres</div>
+          <div class="profile-head-role">Sr. Director PM · 10+ years · Seattle, WA</div>
+          <div class="profile-head-meta">
+            <span class="profile-head-tag">$1B+ Sales</span>
+            <span class="profile-head-tag">18+ Platforms</span>
+            <span class="profile-head-tag">130% YoY</span>
+            <span class="profile-head-tag">4 Countries</span>
+          </div>
+        </div>
       </div>
-      <div class="hero-stat">
-        <div class="hero-stat-num"><span class="count-up" data-target="18" data-suffix="+">18+</span></div>
-        <div class="hero-stat-label">Games Played · Platforms Launched</div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-num"><span class="count-up" data-target="130" data-suffix="%">130%</span></div>
-        <div class="hero-stat-label">Usage Rate · Avg YoY Growth</div>
-      </div>
-    </div>
-
-    <div class="hero-scroll">Scroll · The Box Score</div>
-  </div>
-</section>
-
-<!-- ===== CAREER TOTALS BAR ===== -->
-<section class="totals" id="totals">
-  <div class="totals-label">▸ Career Totals · Regular Season + Playoffs</div>
-  <div class="totals-bar">
-    <div class="totals-cell">
-      <div class="totals-num"><span class="count-up" data-target="1000000000" data-prefix="$" data-abbrev="true">$1B+</span></div>
-      <div class="totals-name">Total Digital Sales</div>
-    </div>
-    <div class="totals-cell">
-      <div class="totals-num"><span class="count-up" data-target="18" data-suffix="+">18+</span></div>
-      <div class="totals-name">Platforms Launched</div>
-    </div>
-    <div class="totals-cell">
-      <div class="totals-num"><span class="count-up" data-target="130" data-suffix="%">130%</span></div>
-      <div class="totals-name">Avg YoY Growth</div>
-    </div>
-    <div class="totals-cell">
-      <div class="totals-num"><span class="count-up" data-target="4">4</span></div>
-      <div class="totals-name">Countries Operated</div>
-    </div>
-    <div class="totals-cell">
-      <div class="totals-num"><span class="count-up" data-target="100" data-suffix="+">100+</span></div>
-      <div class="totals-name">Teammates Led</div>
-    </div>
-    <div class="totals-cell">
-      <div class="totals-num"><span class="count-up" data-target="94000000" data-prefix="$" data-abbrev="true">$94M</span></div>
-      <div class="totals-name">Apple/Google Pay Revenue</div>
     </div>
   </div>
-</section>
 
-<!-- ===== SHOT CHART / COURT MAP ===== -->
-<section class="section" id="shotchart">
-  <div class="section-header">
-    <div class="section-eyebrow">▸ Depth Chart</div>
-    <h2 class="section-title">The <span>Roster</span></h2>
-    <p class="section-sub">5 teams. 5 positions. Every role Walter played on the court of digital commerce.</p>
+  <!-- Career Totals -->
+  <div class="totals">
+    <div class="totals-label">▸ Career Totals · Regular Season + Playoffs</div>
+    <div class="totals-bar">
+      <div class="totals-cell">
+        <div class="totals-num"><span class="count-up" data-target="1000000000" data-prefix="$" data-suffix="+" data-abbrev="true">$1B+</span></div>
+        <div class="totals-name">Total Digital Sales</div>
+      </div>
+      <div class="totals-cell">
+        <div class="totals-num"><span class="count-up" data-target="18" data-suffix="+">18+</span></div>
+        <div class="totals-name">Platforms Launched</div>
+      </div>
+      <div class="totals-cell">
+        <div class="totals-num"><span class="count-up" data-target="130" data-suffix="%">130%</span></div>
+        <div class="totals-name">Avg YoY Growth</div>
+      </div>
+      <div class="totals-cell">
+        <div class="totals-num"><span class="count-up" data-target="4">4</span></div>
+        <div class="totals-name">Countries Operated</div>
+      </div>
+      <div class="totals-cell">
+        <div class="totals-num"><span class="count-up" data-target="100" data-suffix="+">100+</span></div>
+        <div class="totals-name">Teammates Led</div>
+      </div>
+      <div class="totals-cell">
+        <div class="totals-num"><span class="count-up" data-target="94000000" data-prefix="$" data-suffix="M" data-abbrev="true">$94M</span></div>
+        <div class="totals-name">Apple/Google Pay</div>
+      </div>
+    </div>
   </div>
 
-  <div class="court-map">
-    <div class="court-map-court">
-      <div class="court-map-half-court">
-        <!-- Center court -->
-        <div class="court-dot" data-pos="PG" style="top:50%;left:50%;transform:translate(-50%,-50%);">PG</div>
-        <div class="court-dot" data-pos="SG" style="top:25%;left:75%;">SG</div>
-        <div class="court-dot" data-pos="SF" style="top:25%;left:25%;">SF</div>
-        <div class="court-dot" data-pos="PF" style="top:70%;left:75%;">PF</div>
-        <div class="court-dot" data-pos="C" style="top:70%;left:25%;">C</div>
-        <!-- Court lines -->
-        <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <line x1="50" y1="0" x2="50" y2="100" stroke="#3e7a5e" stroke-width="0.3"/>
-          <circle cx="50" cy="50" r="15" fill="none" stroke="#3e7a5e" stroke-width="0.3"/>
-          <path d="M 50 35 L 70 50 L 50 65" fill="none" stroke="#3e7a5e" stroke-width="0.3"/>
-          <path d="M 50 35 L 30 50 L 50 65" fill="none" stroke="#3e7a5e" stroke-width="0.3"/>
+  <!-- Contact -->
+  <div class="contact">
+    <h2 class="contact-title">Bring <span>Walter</span> Onto Your Roster</h2>
+    <p class="contact-sub">Open to the right team. Let's talk product, growth, and championship culture.</p>
+    <div class="contact-links">
+      <a href="https://linkedin.com/in/waltercolindres" target="_blank" rel="noopener" class="contact-link">
+        <span class="contact-link-icon">in</span><span>LinkedIn / waltercolindres</span>
+      </a>
+      <a href="https://consulting.waltercolindres.com" target="_blank" rel="noopener" class="contact-link">
+        <span class="contact-link-icon">WC</span><span>Consulting Site</span>
+      </a>
+      <a href="https://experimenting.waltercolindres.com" target="_blank" rel="noopener" class="contact-link">
+        <span class="contact-link-icon">AI</span><span>AI Prototypes · pw: PROMPT2026</span>
+      </a>
+      <a href="mailto:halo13design@gmail.com" class="contact-link">
+        <span class="contact-link-icon">@</span><span>halo13design@gmail.com</span>
+      </a>
+    </div>
+  </div>
+
+</div><!-- /tab-profile -->
+
+<!-- ===== TAB: METRICS ===== -->
+<div class="tab-pane" id="tab-metrics">
+
+  <!-- Shot Chart -->
+  <div class="shot-chart-section">
+    <div class="section-header">
+      <div class="section-eyebrow">▸ Shot Chart · Career Heat Map</div>
+      <h2 class="section-title">Career <span>Shot Chart</span></h2>
+      <p class="section-sub">Every KPI mapped to a zone on the court. Dark red = elite performance. Tap any hex for the full stat.</p>
+    </div>
+
+    <div class="shot-chart-wrap">
+      <div class="shot-chart-container">
+        <svg class="shot-chart-svg" id="shotChartSvg" viewBox="0 0 400 370" preserveAspectRatio="xMidYMid meet">
+          <!-- Court lines -->
+          <rect x="40" y="20" width="320" height="340" fill="none" stroke="#2d5a4a" stroke-width="1.5"/>
+          <rect x="120" y="20" width="160" height="100" fill="none" stroke="#2d5a4a" stroke-width="1.5"/>
+          <circle cx="200" cy="120" r="40" fill="none" stroke="#2d5a4a" stroke-width="1.5"/>
+          <circle cx="200" cy="120" r="12" fill="none" stroke="#2d5a4a" stroke-width="1"/>
+          <path d="M 40 120 A 180 180 0 0 1 360 120" fill="none" stroke="#2d5a4a" stroke-width="1.5"/>
+          <line x1="200" y1="20" x2="200" y2="360" stroke="#2d5a4a" stroke-width="0.8" opacity="0.5"/>
+          <!-- Hexes injected by JS -->
         </svg>
       </div>
+      <div class="shot-chart-legend">
+        <span class="shot-chart-legend-label">30%</span>
+        <div class="shot-chart-legend-bar">
+          <div style="flex:1;background:#1a4a2e;"></div>
+          <div style="flex:1;background:#2d7a3e;"></div>
+          <div style="flex:1;background:#5ba83e;"></div>
+          <div style="flex:1;background:#a8c83e;"></div>
+          <div style="flex:1;background:#e8a020;"></div>
+          <div style="flex:1;background:#d84020;"></div>
+          <div style="flex:1;background:#a02020;"></div>
+        </div>
+        <span class="shot-chart-legend-label">60%+</span>
+      </div>
     </div>
-
-    <div class="court-legend">
-      <div class="court-legend-item"><span class="court-legend-dot"></span><span class="pos">PG</span> Jack in the Box</div>
-      <div class="court-legend-item"><span class="court-legend-dot"></span><span class="pos">SG</span> Disney</div>
-      <div class="court-legend-item"><span class="court-legend-dot"></span><span class="pos">SF</span> VistaPrint</div>
-      <div class="court-legend-item"><span class="court-legend-dot"></span><span class="pos">PF</span> RBI / Tim Hortons</div>
-      <div class="court-legend-item"><span class="court-legend-dot"></span><span class="pos">C</span> Sonic / Popeyes</div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== TEAM / PLAYER CARDS ===== -->
-<section class="section" id="teams" style="padding-top:20px;">
-  <div class="section-header">
-    <div class="section-eyebrow">▸ Box Score · Season by Season</div>
-    <h2 class="section-title">Team <span>By</span> Team</h2>
-    <p class="section-sub">Each company = a team. Each role = a position. Each stat line = a real business outcome mapped to the basketball metric it most resembles.</p>
+    <div class="shot-chart-tooltip" id="shotChartTooltip"></div>
   </div>
 
-  <div class="teams-grid">
-
-    <!-- TEAM 1: JACK IN THE BOX — PG -->
-    <div class="player-card">
-      <div class="player-card-head">
-        <div class="player-card-head-left">
-          <div class="player-card-team">Team 1 · Current Team</div>
-          <div class="player-card-name">Jack in the Box</div>
-          <div class="player-card-role">Sr. Director of Product Management</div>
-        </div>
-        <div class="player-card-jersey">
-          <span class="pos">POS</span>
-          <span class="num">PG</span>
-        </div>
-        <div class="player-card-years">2024<br>Present</div>
-      </div>
-      <div class="player-card-body">
-        <div class="player-card-stats">
-          <div class="stat-cell">
-            <div class="stat-cell-value">2.6→4.8</div>
-            <div class="stat-cell-meta"><strong>PER · App Store Rating</strong> — Rebuild in 8 months</div>
-            <div class="stat-change up">▲ +84% rating</div>
-            <div class="stat-cell-bball">Player Efficiency Rating</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-cell-value">+130%</div>
-            <div class="stat-cell-meta"><strong>USG% · Digital Revenue YoY</strong></div>
-            <div class="stat-change up">▲ Avg across portfolio</div>
-            <div class="stat-cell-bball">Usage Rate</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-cell-value">$1B+</div>
-            <div class="stat-cell-meta"><strong>PTS · Total Digital Sales</strong></div>
-            <div class="stat-change up">▲ Across consumer brands</div>
-            <div class="stat-cell-bball">Career Points</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-cell-value">18+</div>
-            <div class="stat-cell-meta"><strong>GP · Platforms Launched</strong></div>
-            <div class="stat-change up">▲ Across 4 countries</div>
-            <div class="stat-cell-bball">Games Played</div>
-          </div>
-        </div>
-      </div>
+  <!-- Team Cards -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-eyebrow">▸ Box Score · Season by Season</div>
+      <h2 class="section-title">Team <span>By</span> Team</h2>
+      <p class="section-sub">Each company = a team. Each role = a position. Each stat line = a real business outcome mapped to the basketball metric it most resembles.</p>
     </div>
+    <div class="teams-grid">
 
-    <!-- TEAM 2: DISNEY — SG -->
-    <div class="player-card">
-      <div class="player-card-head">
-        <div class="player-card-head-left">
-          <div class="player-card-team">Team 2</div>
-          <div class="player-card-name">Disney</div>
-          <div class="player-card-role">Sr. Product Manager</div>
+      <!-- TEAM 1: JACK IN THE BOX — PG -->
+      <div class="player-card">
+        <div class="player-card-head">
+          <div class="player-card-head-left">
+            <div class="player-card-team">Team 1 · Current Team</div>
+            <div class="player-card-name">Jack in the Box</div>
+            <div class="player-card-role">Sr. Director of Product Management</div>
+          </div>
+          <div class="player-card-jersey"><span class="pos">POS</span><span class="num">PG</span></div>
+          <div class="player-card-years">2024<br>Present</div>
         </div>
-        <div class="player-card-jersey">
-          <span class="pos">POS</span>
-          <span class="num">SG</span>
-        </div>
-        <div class="player-card-years">2022<br>2023</div>
-      </div>
-      <div class="player-card-body">
-        <div class="player-card-stats">
-          <div class="stat-cell">
-            <div class="stat-cell-value">90%</div>
-            <div class="stat-cell-meta"><strong>TS% · Checkout Conversion</strong></div>
-            <div class="stat-change up">▲ Post-launch</div>
-            <div class="stat-cell-bball">True Shooting %</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-cell-value">−50%</div>
-            <div class="stat-cell-meta"><strong>SCT · Time to Order</strong></div>
-            <div class="stat-change up">▼ Friction reduction</div>
-            <div class="stat-cell-bball">Shot Clock Efficiency</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-cell-value">95%+</div>
-            <div class="stat-cell-meta"><strong>FT% · Auth Success Rate</strong></div>
-            <div class="stat-change up">▲ Login & sign-up</div>
-            <div class="stat-cell-bball">Free Throw %</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-cell-value">$1B+</div>
-            <div class="stat-cell-meta"><strong>PTS · Digital Sales</strong></div>
-            <div class="stat-change up">▲ Consumer-facing</div>
-            <div class="stat-cell-bball">Points Scored</div>
+        <div class="player-card-body">
+          <div class="player-card-stats">
+            <div class="stat-cell">
+              <div class="stat-cell-value">2.6→4.8</div>
+              <div class="stat-cell-meta"><strong>PER · App Store Rating</strong> — Rebuild in 8 months</div>
+              <div class="stat-change up">▲ +84% rating</div>
+              <div class="stat-cell-bball">Player Efficiency Rating</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">+130%</div>
+              <div class="stat-cell-meta"><strong>USG% · Digital Revenue YoY</strong></div>
+              <div class="stat-change up">▲ Avg across portfolio</div>
+              <div class="stat-cell-bball">Usage Rate</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">$1B+</div>
+              <div class="stat-cell-meta"><strong>PTS · Total Digital Sales</strong></div>
+              <div class="stat-change up">▲ Across consumer brands</div>
+              <div class="stat-cell-bball">Career Points</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">18+</div>
+              <div class="stat-cell-meta"><strong>GP · Platforms Launched</strong></div>
+              <div class="stat-change up">▲ Across 4 countries</div>
+              <div class="stat-cell-bball">Games Played</div>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- TEAM 2: DISNEY — SG -->
+      <div class="player-card">
+        <div class="player-card-head">
+          <div class="player-card-head-left">
+            <div class="player-card-team">Team 2</div>
+            <div class="player-card-name">Disney</div>
+            <div class="player-card-role">Sr. Product Manager</div>
+          </div>
+          <div class="player-card-jersey"><span class="pos">POS</span><span class="num">SG</span></div>
+          <div class="player-card-years">2022<br>2023</div>
+        </div>
+        <div class="player-card-body">
+          <div class="player-card-stats">
+            <div class="stat-cell">
+              <div class="stat-cell-value">90%</div>
+              <div class="stat-cell-meta"><strong>TS% · Checkout Conversion</strong></div>
+              <div class="stat-change up">▲ Post-launch</div>
+              <div class="stat-cell-bball">True Shooting %</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">−50%</div>
+              <div class="stat-cell-meta"><strong>SCT · Time to Order</strong></div>
+              <div class="stat-change up">▼ Friction reduction</div>
+              <div class="stat-cell-bball">Shot Clock Efficiency</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">95%+</div>
+              <div class="stat-cell-meta"><strong>FT% · Auth Success Rate</strong></div>
+              <div class="stat-change up">▲ Login & sign-up</div>
+              <div class="stat-cell-bball">Free Throw %</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">$1B+</div>
+              <div class="stat-cell-meta"><strong>PTS · Digital Sales</strong></div>
+              <div class="stat-change up">▲ Consumer-facing</div>
+              <div class="stat-cell-bball">Points Scored</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEAM 3: VISTAPRINT — SF -->
+      <div class="player-card">
+        <div class="player-card-head">
+          <div class="player-card-head-left">
+            <div class="player-card-team">Team 3</div>
+            <div class="player-card-name">VistaPrint</div>
+            <div class="player-card-role">Director of Growth &amp; Retention</div>
+          </div>
+          <div class="player-card-jersey"><span class="pos">POS</span><span class="num">SF</span></div>
+          <div class="player-card-years">2021<br>2022</div>
+        </div>
+        <div class="player-card-body">
+          <div class="player-card-stats">
+            <div class="stat-cell">
+              <div class="stat-cell-value">DIR</div>
+              <div class="stat-cell-meta"><strong>REB · Growth &amp; Retention</strong></div>
+              <div class="stat-change up">▲ Led retention strategy</div>
+              <div class="stat-cell-bball">Rebounding Lead</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">↑</div>
+              <div class="stat-cell-meta"><strong>LTV · Customer Lifetime Value</strong></div>
+              <div class="stat-change up">▲ Retention-focused</div>
+              <div class="stat-cell-bball">Box Out Rebounds</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">↓</div>
+              <div class="stat-cell-meta"><strong>CAC · Acquisition Cost</strong></div>
+              <div class="stat-change down">▼ Optimization</div>
+              <div class="stat-cell-bball">Defensive Stops</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">↑</div>
+              <div class="stat-cell-meta"><strong>ACT · Activation Rate</strong></div>
+              <div class="stat-change up">▲ Onboarding redesign</div>
+              <div class="stat-cell-bball">Fast Break Points</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEAM 4: RBI / TIM HORTONS — PF -->
+      <div class="player-card">
+        <div class="player-card-head">
+          <div class="player-card-head-left">
+            <div class="player-card-team">Team 4</div>
+            <div class="player-card-name">RBI / Tim Hortons</div>
+            <div class="player-card-role">Sr. Product Manager</div>
+          </div>
+          <div class="player-card-jersey"><span class="pos">POS</span><span class="num">PF</span></div>
+          <div class="player-card-years">2019<br>2021</div>
+        </div>
+        <div class="player-card-body">
+          <div class="player-card-stats">
+            <div class="stat-cell">
+              <div class="stat-cell-value">$94MM</div>
+              <div class="stat-cell-meta"><strong>3PM · Apple/Google Pay Rev</strong> — $81MM + $13MM</div>
+              <div class="stat-change up">▲ Net new revenue</div>
+              <div class="stat-cell-bball">3-Points Made</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">1.7M</div>
+              <div class="stat-cell-meta"><strong>AST · New Users (Goal: 1M)</strong></div>
+              <div class="stat-change up">▲ 170% of target</div>
+              <div class="stat-cell-bball">Assists</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">41%</div>
+              <div class="stat-cell-meta"><strong>FG% · Digital Sales Share</strong> (Goal 30-35%)</div>
+              <div class="stat-change up">▲ Beat target by 6pt</div>
+              <div class="stat-cell-bball">Field Goal %</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">2M+</div>
+              <div class="stat-cell-meta"><strong>GP · App Downloads</strong> — #1 in Canada</div>
+              <div class="stat-change up">▲ Built in 7 weeks</div>
+              <div class="stat-cell-bball">All-Star Votes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEAM 5: SONIC / POPEYES — C -->
+      <div class="player-card">
+        <div class="player-card-head">
+          <div class="player-card-head-left">
+            <div class="player-card-team">Team 5</div>
+            <div class="player-card-name">Sonic / Popeyes</div>
+            <div class="player-card-role">PM / Developer</div>
+          </div>
+          <div class="player-card-jersey"><span class="pos">POS</span><span class="num">C</span></div>
+          <div class="player-card-years">2014<br>2018</div>
+        </div>
+        <div class="player-card-body">
+          <div class="player-card-stats">
+            <div class="stat-cell">
+              <div class="stat-cell-value">3.36→9.82</div>
+              <div class="stat-cell-meta"><strong>FG% · Popeyes Conversion</strong></div>
+              <div class="stat-change up">▲ +193% increase</div>
+              <div class="stat-cell-bball">Field Goal %</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">42K→139K</div>
+              <div class="stat-cell-meta"><strong>3PM · Offers Redeemed</strong></div>
+              <div class="stat-change up">▲ +231% increase</div>
+              <div class="stat-cell-bball">3-Points Made</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">8→6</div>
+              <div class="stat-cell-meta"><strong>TOV · Steps to Order</strong></div>
+              <div class="stat-change up">▼ 25% reduction</div>
+              <div class="stat-cell-bball">Turnovers Reduced</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">−40%</div>
+              <div class="stat-cell-meta"><strong>PF · Support Contacts</strong></div>
+              <div class="stat-change up">▼ Friction reduction</div>
+              <div class="stat-cell-bball">Personal Fouls</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
-
-    <!-- TEAM 3: VISTAPRINT — SF -->
-    <div class="player-card">
-      <div class="player-card-head">
-        <div class="player-card-head-left">
-          <div class="player-card-team">Team 3</div>
-          <div class="player-card-name">VistaPrint</div>
-          <div class="player-card-role">Director of Growth &amp; Retention</div>
-        </div>
-        <div class="player-card-jersey">
-          <span class="pos">POS</span>
-          <span class="num">SF</span>
-        </div>
-        <div class="player-card-years">2021<br>2022</div>
-      </div>
-      <div class="player-card-body">
-        <div class="player-card-stats">
-          <div class="stat-cell">
-            <div class="stat-cell-value">DIR</div>
-            <div class="stat-cell-meta"><strong>REB · Growth &amp; Retention</strong></div>
-            <div class="stat-change up">▲ Led retention strategy</div>
-            <div class="stat-cell-bball">Rebounding Lead</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-cell-value">↑</div>
-            <div class="stat-cell-meta"><strong>LTV · Customer Lifetime Value</strong></div>
-            <div class="stat-change up">▲ Retention-focused</div>
-            <div class="stat-cell-bball">Box Out Rebounds</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-cell-value">↓</div>
-            <div class="stat-cell-meta"><strong>CAC · Acquisition Cost</strong></div>
-            <div class="stat-change down">▼ Optimization</div>
-            <div class="stat-cell-bball">Defensive Stops</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-cell-value">↑</div>
-            <div class="stat-cell-meta"><strong>ACT · Activation Rate</strong></div>
-            <div class="stat-change up">▲ Onboarding redesign</div>
-            <div class="stat-cell-bball">Fast Break Points</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TEAM 4: RBI / TIM HORTONS — PF -->
-    <div class="player-card">
-      <div class="player-card-head">
-        <div class="player-card-head-left">
-          <div class="player-card-team">Team 4</div>
-          <div class="player-card-name">RBI / Tim Hortons</div>
-          <div class="player-card-role">Sr. Product Manager</div>
-        </div>
-        <div class="player-card-jersey">
-          <span class="pos">POS</span>
-          <span class="num">PF</span>
-        </div>
-        <div class="player-card-years">2019<br>2021</div>
-      </div>
-      <div class="player-card-body">
-        <div class="player-card-stats">
-          <div class="stat-cell">
-            <div class="stat-cell-value">$94MM</div>
-            <div class="stat-cell-meta"><strong>3PM · Apple/Google Pay Rev</strong> — $81MM + $13MM</div>
-            <div class="stat-change up">▲ Net new revenue</div>
-            <div class="stat-cell-bball">3-Points Made</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-cell-value">1.7M</div>
-            <div class="stat-cell-meta"><strong>AST · New Users (Goal: 1M)</strong></div>
-            <div class="stat-change up">▲ 170% of target</div>
-            <div class="stat-cell-bball">Assists</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-cell-value">41%</div>
-            <div class="stat-cell-meta"><strong>FG% · Digital Sales Share</strong> (Goal 30-35%)</div>
-            <div class="stat-change up">▲ Beat target by 6pt</div>
-            <div class="stat-cell-bball">Field Goal %</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-cell-value">2M+</div>
-            <div class="stat-cell-meta"><strong>GP · App Downloads</strong> — #1 in Canada</div>
-            <div class="stat-change up">▲ Built in 7 weeks</div>
-            <div class="stat-cell-bball">All-Star Votes</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TEAM 5: SONIC / POPEYES — C -->
-    <div class="player-card">
-      <div class="player-card-head">
-        <div class="player-card-head-left">
-          <div class="player-card-team">Team 5</div>
-          <div class="player-card-name">Sonic / Popeyes</div>
-          <div class="player-card-role">PM / Developer</div>
-        </div>
-        <div class="player-card-jersey">
-          <span class="pos">POS</span>
-          <span class="num">C</span>
-        </div>
-        <div class="player-card-years">2014<br>2018</div>
-      </div>
-      <div class="player-card-body">
-        <div class="player-card-stats">
-          <div class="stat-cell">
-            <div class="stat-cell-value">3.36→9.82</div>
-            <div class="stat-cell-meta"><strong>FG% · Popeyes Conversion</strong></div>
-            <div class="stat-change up">▲ +193% increase</div>
-            <div class="stat-cell-bball">Field Goal %</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-cell-value">42K→139K</div>
-            <div class="stat-cell-meta"><strong>3PM · Offers Redeemed</strong></div>
-            <div class="stat-change up">▲ +231% increase</div>
-            <div class="stat-cell-bball">3-Points Made</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-cell-value">8→6</div>
-            <div class="stat-cell-meta"><strong>TOV · Steps to Order</strong></div>
-            <div class="stat-change up">▼ 25% reduction</div>
-            <div class="stat-cell-bball">Turnovers Reduced</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-cell-value">−40%</div>
-            <div class="stat-cell-meta"><strong>PF · Support Contacts</strong></div>
-            <div class="stat-change up">▼ Friction reduction</div>
-            <div class="stat-cell-bball">Personal Fouls</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ===== SKILLS / ATTRIBUTES ===== -->
-<section class="section" id="skills">
-  <div class="section-header">
-    <div class="section-eyebrow">▸ Player Attributes</div>
-    <h2 class="section-title">The <span>Toolkit</span></h2>
-    <p class="section-sub">Every skill Walter brings to the floor — rated like NBA 2K attribute bars. All maxed.</p>
   </div>
 
-  <div class="skills-grid" id="skillsGrid"></div>
-</section>
-
-<!-- ===== CONTACT ===== -->
-<section class="section contact" id="contact">
-  <h2 class="contact-title">Bring <span>Walter</span> Onto Your Roster</h2>
-  <p class="contact-sub">Open to the right team. Let's talk product, growth, and championship culture.</p>
-
-  <div class="contact-links">
-    <a href="https://linkedin.com/in/waltercolindres" target="_blank" rel="noopener" class="contact-link">
-      <span class="contact-link-icon">in</span>
-      <span>LinkedIn / waltercolindres</span>
-    </a>
-    <a href="https://consulting.waltercolindres.com" target="_blank" rel="noopener" class="contact-link">
-      <span class="contact-link-icon">WC</span>
-      <span>Consulting Site</span>
-    </a>
-    <a href="https://experimenting.waltercolindres.com" target="_blank" rel="noopener" class="contact-link">
-      <span class="contact-link-icon">AI</span>
-      <span>AI Prototypes · pw: PROMPT2026</span>
-    </a>
-    <a href="mailto:halo13design@gmail.com" class="contact-link">
-      <span class="contact-link-icon">@</span>
-      <span>halo13design@gmail.com</span>
-    </a>
+  <!-- Skills -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-eyebrow">▸ Player Attributes</div>
+      <h2 class="section-title">The <span>Toolkit</span></h2>
+      <p class="section-sub">Every skill Walter brings to the floor — rated like NBA 2K attribute bars.</p>
+    </div>
+    <div class="skills-grid" id="skillsGrid"></div>
   </div>
-</section>
+
+</div><!-- /tab-metrics -->
 
 <div class="footer">
   Walter Colindres · Career Analytics <span>·</span> Built for <span>Genius Sports</span> · #23
 </div>
 
+<div class="shot-chart-tooltip" id="shotChartTooltip"></div>
+
 <script>
 (function(){
   'use strict';
 
-  /* ===== NAV SCROLL ===== */
-  var nav = document.getElementById('nav');
-  window.addEventListener('scroll', function(){
-    if(window.scrollY > 40){nav.classList.add('scrolled');}
-    else{nav.classList.remove('scrolled');}
-  }, {passive:true});
+  /* ===== TAB SWITCHING ===== */
+  var tabBtns = document.querySelectorAll('.tab-btn');
+  var tabPanes = document.querySelectorAll('.tab-pane');
+  tabBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var tab = btn.getAttribute('data-tab');
+      tabBtns.forEach(function(b){b.classList.remove('active');});
+      tabPanes.forEach(function(p){p.classList.remove('active');});
+      btn.classList.add('active');
+      document.getElementById('tab-' + tab).classList.add('active');
+      window.scrollTo(0, 0);
+      // Trigger count-up and animations on the newly visible tab
+      setTimeout(function(){ triggerAnimations(); }, 50);
+    });
+  });
 
   /* ===== COUNT UP ===== */
   function abbreviate(n){
@@ -1085,16 +853,12 @@ body{
     if(n >= 1e3){return (n/1e3).toFixed(0).replace(/\.0$/,'') + 'K';}
     return n.toString();
   }
-
   function countUp(el){
     var target = parseInt(el.getAttribute('data-target'), 10);
     var prefix = el.getAttribute('data-prefix') || '';
     var suffix = el.getAttribute('data-suffix') || '';
     var abbrev = el.getAttribute('data-abbrev') === 'true';
-    var start = 0;
-    var duration = 2000;
-    var startTime = null;
-
+    var start = 0, duration = 1800, startTime = null;
     function frame(ts){
       if(!startTime){startTime = ts;}
       var progress = Math.min((ts - startTime) / duration, 1);
@@ -1103,30 +867,21 @@ body{
       var display = abbrev ? abbreviate(current) : current.toLocaleString();
       el.textContent = prefix + display + suffix;
       if(progress < 1){requestAnimationFrame(frame);}
-      else{
-        if(abbrev){
-          el.textContent = prefix + abbreviate(target) + suffix;
-        }
-      }
+      else{ if(abbrev){el.textContent = prefix + abbreviate(target) + suffix;} }
     }
     requestAnimationFrame(frame);
   }
-
-  var countEls = document.querySelectorAll('.count-up');
   var counted = new WeakSet();
-
-  var countObserver = new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if(e.isIntersecting && !counted.has(e.target)){
-        counted.add(e.target);
-        countUp(e.target);
+  function triggerCountUp(){
+    document.querySelectorAll('.count-up').forEach(function(el){
+      if(!counted.has(el)){
+        counted.add(el);
+        countUp(el);
       }
     });
-  }, {threshold: 0.3});
+  }
 
-  countEls.forEach(function(el){countObserver.observe(el);});
-
-  /* ===== SKILLS / ATTRIBUTES ===== */
+  /* ===== SKILLS ===== */
   var skills = [
     {name:'Product Strategy', attr:99},
     {name:'Roadmap & OKRs', attr:98},
@@ -1150,10 +905,9 @@ body{
     {name:'Product Discovery', attr:94},
     {name:'User Research', attr:93}
   ];
-
   var grid = document.getElementById('skillsGrid');
   var skillsHTML = '';
-  skills.forEach(function(s, i){
+  skills.forEach(function(s){
     skillsHTML += '<div class="skill-bar">' +
       '<div class="skill-info"><div class="skill-name">' + s.name + '</div>' +
       '<div class="skill-track"><div class="skill-fill" data-width="' + s.attr + '"></div></div></div>' +
@@ -1161,47 +915,167 @@ body{
   });
   grid.innerHTML = skillsHTML;
 
-  var fillObserver = new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if(e.isIntersecting){
-        var fills = e.target.querySelectorAll('.skill-fill');
-        fills.forEach(function(f, i){
-          setTimeout(function(){
-            f.classList.add('animate');
-            f.style.width = f.getAttribute('data-width') + '%';
-          }, i * 50);
-        });
-        fillObserver.unobserve(e.target);
+  var skillsAnimated = false;
+  function animateSkills(){
+    if(skillsAnimated) return;
+    skillsAnimated = true;
+    var fills = grid.querySelectorAll('.skill-fill');
+    fills.forEach(function(f, i){
+      setTimeout(function(){
+        f.style.width = f.getAttribute('data-width') + '%';
+      }, i * 40);
+    });
+  }
+
+  function triggerAnimations(){
+    triggerCountUp();
+    if(document.getElementById('tab-metrics').classList.contains('active')){
+      animateSkills();
+    }
+  }
+
+  /* ===== SHOT CHART (Goldsberry hex heatmap) ===== */
+  // Career KPIs mapped to court zones with performance levels (0-1 scale for color)
+  var hexData = [
+    // Restricted area (at rim) — highest impact
+    {x:200, y:340, label:'$1B+ Digital Sales', meta:'Total career digital sales across all brands', val:1.0, r:18},
+    {x:200, y:310, label:'130% YoY Growth', meta:'Average year-over-year digital revenue growth', val:0.95, r:16},
+    {x:175, y:330, label:'18+ Platforms', meta:'Platforms launched across 4 countries', val:0.92, r:15},
+    {x:225, y:330, label:'$94MM Apple/Google Pay', meta:'Net new revenue from contactless payments', val:0.90, r:15},
+
+    // In the paint — high performance
+    {x:200, y:280, label:'90% Checkout Conversion', meta:'Disney — post-launch checkout rate', val:0.88, r:15},
+    {x:160, y:300, label:'4.8 App Store Rating', meta:'JitB — rebuilt from 2.6 in 8 months', val:0.85, r:14},
+    {x:240, y:300, label:'95%+ Auth Success', meta:'Disney — login and sign-up success rate', val:0.84, r:14},
+    {x:200, y:250, label:'1.7M New Users', meta:'Tim Hortons — 170% of 1M target', val:0.82, r:14},
+    {x:170, y:270, label:'41% Digital Sales Share', meta:'Tim Hortons — beat 30-35% goal', val:0.80, r:13},
+    {x:230, y:270, label:'−50% Time to Order', meta:'Disney — friction reduction in ordering flow', val:0.78, r:13},
+
+    // Mid-range — strong
+    {x:140, y:240, label:'9.82% Conversion', meta:'Popeyes — up from 3.36% (+193%)', val:0.72, r:13},
+    {x:260, y:240, label:'139K Offers Redeemed', meta:'Popeyes — up from 42K (+231%)', val:0.70, r:13},
+    {x:200, y:210, label:'2M+ App Downloads', meta:'Tim Hortons — #1 app in Canada, built in 7 weeks', val:0.68, r:13},
+    {x:150, y:200, label:'100+ Teammates Led', meta:'Cross-functional teams across brands', val:0.65, r:12},
+    {x:250, y:200, label:'−40% Support Contacts', meta:'Popeyes — friction reduction in support', val:0.62, r:12},
+
+    // Three-point range — solid supporting metrics
+    {x:110, y:180, label:'Growth & Retention', meta:'VistaPrint — led retention strategy', val:0.55, r:12},
+    {x:290, y:180, label:'LTV Optimization', meta:'VistaPrint — customer lifetime value up', val:0.52, r:12},
+    {x:200, y:160, label:'8→6 Steps to Order', meta:'Popeyes — 25% reduction in order flow', val:0.50, r:12},
+    {x:90, y:140, label:'CAC Reduction', meta:'VistaPrint — acquisition cost optimization', val:0.45, r:11},
+    {x:310, y:140, label:'Activation Rate', meta:'VistaPrint — onboarding redesign', val:0.45, r:11},
+    {x:200, y:120, label:'AI Prototyping', meta:'LLM integration + autonomous agents', val:0.48, r:11},
+    {x:120, y:100, label:'4 Countries', meta:'International platform launches', val:0.42, r:10},
+    {x:280, y:100, label:'7-Week Build', meta:'Tim Hortons Roll Up to Win — 7 weeks to #1', val:0.40, r:10},
+  ];
+
+  // Color interpolation: green → yellow → orange → red
+  function heatColor(val){
+    // val: 0 = green (low), 1 = red (high)
+    var stops = [
+      {t:0.0, r:26,  g:74,  b:46},   // dark green
+      {t:0.3, r:45,  g:122, b:62},   // green
+      {t:0.5, r:91,  g:168, b:62},   // yellow-green
+      {t:0.65,r:168, b:200, g:62},   // yellow
+      {t:0.8, r:232, g:160, b:32},   // orange
+      {t:0.9, r:216, g:64,  b:32},   // red-orange
+      {t:1.0, r:160, g:32,  b:32},   // dark red
+    ];
+    for(var i=0; i<stops.length-1; i++){
+      if(val >= stops[i].t && val <= stops[i+1].t){
+        var pct = (val - stops[i].t) / (stops[i+1].t - stops[i].t);
+        var r = Math.round(stops[i].r + (stops[i+1].r - stops[i].r) * pct);
+        var g = Math.round(stops[i].g + (stops[i+1].g - stops[i].g) * pct);
+        var b = Math.round(stops[i].b + (stops[i+1].b - stops[i].b) * pct);
+        return 'rgb(' + r + ',' + g + ',' + b + ')';
       }
+    }
+    return 'rgb(160,32,32)';
+  }
+
+  // Build hexagons in SVG
+  function hexPath(cx, cy, r){
+    var points = [];
+    for(var i=0; i<6; i++){
+      var angle = (Math.PI / 3) * i - Math.PI/2;
+      points.push((cx + r * Math.cos(angle)).toFixed(1) + ',' + (cy + r * Math.sin(angle)).toFixed(1));
+    }
+    return points.join(' ');
+  }
+
+  var svg = document.getElementById('shotChartSvg');
+  var tooltip = document.getElementById('shotChartTooltip');
+  var hexGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  hexData.forEach(function(h){
+    var poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    poly.setAttribute('points', hexPath(h.x, h.y, h.r));
+    poly.setAttribute('fill', heatColor(h.val));
+    poly.setAttribute('stroke', '#0a1a0f');
+    poly.setAttribute('stroke-width', '1.5');
+    poly.setAttribute('opacity', '0.85');
+    poly.classList.add('shot-chart-hex');
+    poly.style.opacity = '0';
+
+    poly.addEventListener('mouseenter', function(e){
+      poly.setAttribute('opacity', '1');
+      tooltip.classList.add('show');
+      tooltip.innerHTML = '<div class="shot-chart-tooltip-title">' + h.label + '</div>' +
+        '<div class="shot-chart-tooltip-meta">' + h.meta + '</div>';
+    });
+    poly.addEventListener('mousemove', function(e){
+      tooltip.style.left = (e.clientX + 14) + 'px';
+      tooltip.style.top = (e.clientY + 14) + 'px';
+    });
+    poly.addEventListener('mouseleave', function(){
+      poly.setAttribute('opacity', '0.85');
+      tooltip.classList.remove('show');
+    });
+    // Mobile tap
+    poly.addEventListener('touchstart', function(e){
+      e.preventDefault();
+      tooltip.classList.add('show');
+      tooltip.innerHTML = '<div class="shot-chart-tooltip-title">' + h.label + '</div>' +
+        '<div class="shot-chart-tooltip-meta">' + h.meta + '</div>';
+      tooltip.style.left = (e.touches[0].clientX + 14) + 'px';
+      tooltip.style.top = (e.touches[0].clientY + 14) + 'px';
+      setTimeout(function(){ tooltip.classList.remove('show'); }, 3000);
+    });
+
+    hexGroup.appendChild(poly);
+  });
+  svg.appendChild(hexGroup);
+
+  // Animate hexes in when shot chart is visible
+  var hexesAnimated = false;
+  function animateHexes(){
+    if(hexesAnimated) return;
+    hexesAnimated = true;
+    var hexes = hexGroup.querySelectorAll('.shot-chart-hex');
+    hexes.forEach(function(hex, i){
+      setTimeout(function(){
+        hex.style.transition = 'opacity 0.4s ease';
+        hex.style.opacity = '0.85';
+      }, i * 30);
+    });
+  }
+
+  // Intersection observer for hex animation
+  var hexObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ animateHexes(); }
     });
   }, {threshold: 0.15});
+  hexObserver.observe(svg);
 
-  fillObserver.observe(grid);
+  // Trigger initial animations
+  triggerCountUp();
 
-  /* ===== PLAYER CARD EXPAND ON CLICK (mobile) ===== */
-  var cards = document.querySelectorAll('.player-card');
-  cards.forEach(function(card){
+  /* ===== PLAYER CARD INTERACTION ===== */
+  document.querySelectorAll('.player-card').forEach(function(card){
     card.addEventListener('click', function(){
       var active = card.classList.contains('active');
-      cards.forEach(function(c){c.classList.remove('active');});
+      document.querySelectorAll('.player-card').forEach(function(c){c.classList.remove('active');});
       if(!active){card.classList.add('active');}
-    });
-  });
-
-  /* ===== COURT DOT INTERACTION ===== */
-  var dots = document.querySelectorAll('.court-dot');
-  dots.forEach(function(dot){
-    dot.addEventListener('click', function(){
-      var pos = dot.getAttribute('data-pos');
-      var teamMap = {
-        'PG': 'teams',
-        'SG': 'teams',
-        'SF': 'teams',
-        'PF': 'teams',
-        'C': 'teams'
-      };
-      var target = document.getElementById(teamMap[pos]);
-      if(target){target.scrollIntoView({behavior:'smooth', block:'start'});}
     });
   });
 
