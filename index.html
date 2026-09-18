@@ -949,6 +949,9 @@ body{
 (function(){
   'use strict';
 
+  // Pre-declare variables used across sections (hoisting doesn't help with assignment)
+  var revealObserver, cardObserver, hexesAnimated = false, animateHexes;
+
   /* ===== TAB SWITCHING ===== */
   var tabBtns = document.querySelectorAll('.tab-btn');
   var tabPanes = document.querySelectorAll('.tab-pane');
@@ -960,8 +963,28 @@ body{
       btn.classList.add('active');
       document.getElementById('tab-' + tab).classList.add('active');
       window.scrollTo(0, 0);
-      // Trigger count-up and animations on the newly visible tab
-      setTimeout(function(){ triggerAnimations(); }, 50);
+      // Reset reveals and re-trigger animations on the visible tab
+      setTimeout(function(){
+        document.querySelectorAll('.reveal').forEach(function(el){
+          el.classList.remove('visible');
+          // Force reflow then re-observe
+          void el.offsetHeight;
+          revealObserver.observe(el);
+        });
+        document.querySelectorAll('.player-card').forEach(function(card){
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(30px)';
+          cardObserver.observe(card);
+        });
+        // Re-trigger hex animation if on metrics tab
+        if(tab === 'metrics'){
+          hexesAnimated = false;
+          var hexes = document.querySelectorAll('.shot-chart-hex');
+          hexes.forEach(function(h){ h.style.opacity = '0'; });
+          animateHexes();
+        }
+        triggerAnimations();
+      }, 80);
     });
   });
 
@@ -1121,19 +1144,17 @@ body{
   var rowH = hexSize * 1.5;
   var courtLeft = 50, courtRight = 350, courtTop = 25, courtBottom = 360;
 
-  // Generate grid positions — fill the half-court area
-  // Basket at bottom (y~350), court extends upward
+  // Generate grid positions — fill the ENTIRE half-court area
+  // Basket at bottom (y~350), court extends upward to y~25
   var gridPositions = [];
   var row = 0;
-  for(var cy = 40; cy < 365; cy += rowH){
+  for(var cy = 35; cy < 365; cy += rowH){
     var offset = (row % 2) ? hexW / 2 : 0;
-    for(var cx = 50 + hexSize + offset; cx < 355; cx += hexW){
-      // Keep hexes inside the 3-point arc + key area
-      var ndx = (cx - 200) / 155;
-      var ndy = (350 - cy) / 160;  // distance from basket upward
-      var inKey = (cx >= 145 && cx <= 255 && cy >= 200 && cy <= 365);
-      var dist3pt = Math.sqrt(ndx * ndx + ndy * ndy);
-      if(inKey || dist3pt <= 1.05){
+    for(var cx = 48 + hexSize + offset; cx < 358; cx += hexW){
+      // Fill everything inside the outer boundary (40-360 x, 20-370 y)
+      // Plus the key area which is narrower
+      var inBounds = cx > 42 && cx < 358 && cy > 25 && cy < 368;
+      if(inBounds){
         gridPositions.push({x: cx, y: cy});
       }
     }
@@ -1277,8 +1298,7 @@ body{
   svg.appendChild(courtLines);
 
   // Animate hexes in when shot chart is visible
-  var hexesAnimated = false;
-  function animateHexes(){
+  animateHexes = function(){
     if(hexesAnimated) return;
     hexesAnimated = true;
     var hexes = hexGroup.querySelectorAll('.shot-chart-hex');
@@ -1299,7 +1319,7 @@ body{
   hexObserver.observe(svg);
 
   /* ===== SCROLL REVEAL ===== */
-  var revealObserver = new IntersectionObserver(function(entries){
+  revealObserver = new IntersectionObserver(function(entries){
     entries.forEach(function(e){
       if(e.isIntersecting){
         e.target.classList.add('visible');
@@ -1309,7 +1329,7 @@ body{
   document.querySelectorAll('.reveal').forEach(function(el){ revealObserver.observe(el); });
 
   /* ===== PLAYER CARD STAGGER REVEAL ===== */
-  var cardObserver = new IntersectionObserver(function(entries){
+  cardObserver = new IntersectionObserver(function(entries){
     entries.forEach(function(e){
       if(e.isIntersecting){
         var idx = Array.prototype.indexOf.call(e.target.parentElement.children, e.target);
