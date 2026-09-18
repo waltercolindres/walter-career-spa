@@ -579,14 +579,8 @@ body{
     <div class="shot-chart-wrap">
       <div class="shot-chart-container">
         <svg class="shot-chart-svg" id="shotChartSvg" viewBox="0 0 400 370" preserveAspectRatio="xMidYMid meet">
-          <!-- Court lines -->
-          <rect x="40" y="20" width="320" height="340" fill="none" stroke="#2d5a4a" stroke-width="1.5"/>
-          <rect x="120" y="20" width="160" height="100" fill="none" stroke="#2d5a4a" stroke-width="1.5"/>
-          <circle cx="200" cy="120" r="40" fill="none" stroke="#2d5a4a" stroke-width="1.5"/>
-          <circle cx="200" cy="120" r="12" fill="none" stroke="#2d5a4a" stroke-width="1"/>
-          <path d="M 40 120 A 180 180 0 0 1 360 120" fill="none" stroke="#2d5a4a" stroke-width="1.5"/>
-          <line x1="200" y1="20" x2="200" y2="360" stroke="#2d5a4a" stroke-width="0.8" opacity="0.5"/>
-          <!-- Hexes injected by JS -->
+          <!-- Court lines rendered after hexes by JS (appended at end) -->
+          <!-- Hexes injected by JS first, then court lines on top -->
         </svg>
       </div>
       <div class="shot-chart-legend">
@@ -681,9 +675,9 @@ body{
               <div class="stat-change up">▲ 95%+ success rate</div>
             </div>
             <div class="stat-cell">
-              <div class="stat-cell-value">$1B+</div>
-              <div class="stat-cell-meta"><strong>Digital Sales</strong> — Consumer-facing</div>
-              <div class="stat-change up">▲ $1B+ in sales</div>
+              <div class="stat-cell-value">5 PMs</div>
+              <div class="stat-cell-meta"><strong>PM Team Managed</strong> — Backlog grooming &amp; sprint planning</div>
+              <div class="stat-change up">▲ Managed 5 PMs</div>
             </div>
           </div>
         </div>
@@ -1045,7 +1039,7 @@ body{
     var poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
     poly.setAttribute('points', hexPath(pos.x, pos.y, hexSize));
     poly.setAttribute('stroke', '#0a1a0f');
-    poly.setAttribute('stroke-width', '1.5');
+    poly.setAttribute('stroke-width', '1');
     poly.classList.add('shot-chart-hex');
     poly.style.opacity = '0';
 
@@ -1086,6 +1080,75 @@ body{
     hexGroup.appendChild(poly);
   });
   svg.appendChild(hexGroup);
+
+  // Draw accurate half-court lines ON TOP of hexes
+  var courtLines = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  courtLines.setAttribute('pointer-events', 'none');
+  var courtColor = '#3e7a5e';
+  var sw = 2;
+
+  // Outer boundary (baseline + sidelines)
+  var boundary = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  boundary.setAttribute('d', 'M 40 370 L 40 20 L 360 20 L 360 370');
+  boundary.setAttribute('fill', 'none');
+  boundary.setAttribute('stroke', courtColor);
+  boundary.setAttribute('stroke-width', sw);
+  courtLines.appendChild(boundary);
+
+  // Free-throw line (horizontal line across the key)
+  var ftLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  ftLine.setAttribute('x1', '120'); ftLine.setAttribute('y1', '120');
+  ftLine.setAttribute('x2', '280'); ftLine.setAttribute('y2', '120');
+  ftLine.setAttribute('stroke', courtColor); ftLine.setAttribute('stroke-width', sw);
+  courtLines.appendChild(ftLine);
+
+  // The key (paint — rectangular lane)
+  var key = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  key.setAttribute('x', '120'); key.setAttribute('y', '20');
+  key.setAttribute('width', '160'); key.setAttribute('height', '100');
+  key.setAttribute('fill', 'none'); key.setAttribute('stroke', courtColor);
+  key.setAttribute('stroke-width', sw);
+  courtLines.appendChild(key);
+
+  // Free-throw circle
+  var ftCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  ftCircle.setAttribute('cx', '200'); ftCircle.setAttribute('cy', '120');
+  ftCircle.setAttribute('r', '40');
+  ftCircle.setAttribute('fill', 'none'); ftCircle.setAttribute('stroke', courtColor);
+  ftCircle.setAttribute('stroke-width', sw);
+  courtLines.appendChild(ftCircle);
+
+  // Restricted area (small arc near basket)
+  var restricted = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  restricted.setAttribute('d', 'M 180 370 A 20 20 0 0 1 220 370');
+  restricted.setAttribute('fill', 'none'); restricted.setAttribute('stroke', courtColor);
+  restricted.setAttribute('stroke-width', sw);
+  courtLines.appendChild(restricted);
+
+  // 3-point line (arc from baseline to baseline)
+  var threePt = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  // Corner sections are straight, then arc
+  threePt.setAttribute('d', 'M 40 250 L 40 230 A 170 170 0 0 1 360 230 L 360 250');
+  threePt.setAttribute('fill', 'none'); threePt.setAttribute('stroke', courtColor);
+  threePt.setAttribute('stroke-width', sw);
+  courtLines.appendChild(threePt);
+
+  // Backboard
+  var backboard = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  backboard.setAttribute('x1', '180'); backboard.setAttribute('y1', '360');
+  backboard.setAttribute('x2', '220'); backboard.setAttribute('y2', '360');
+  backboard.setAttribute('stroke', courtColor); backboard.setAttribute('stroke-width', '3');
+  courtLines.appendChild(backboard);
+
+  // Rim
+  var rim = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  rim.setAttribute('cx', '200'); rim.setAttribute('cy', '355');
+  rim.setAttribute('r', '8');
+  rim.setAttribute('fill', 'none'); rim.setAttribute('stroke', courtColor);
+  rim.setAttribute('stroke-width', '1.5');
+  courtLines.appendChild(rim);
+
+  svg.appendChild(courtLines);
 
   // Animate hexes in when shot chart is visible
   var hexesAnimated = false;
