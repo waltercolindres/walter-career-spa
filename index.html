@@ -628,19 +628,19 @@ body{
               <div class="stat-change up">▲ +84% rating</div>
             </div>
             <div class="stat-cell">
-              <div class="stat-cell-value">+130%</div>
-              <div class="stat-cell-meta"><strong>Digital Revenue YoY</strong> — Avg across portfolio</div>
-              <div class="stat-change up">▲ 130% average growth</div>
+              <div class="stat-cell-value">90%</div>
+              <div class="stat-cell-meta"><strong>Checkout Conversion</strong> — Post-launch</div>
+              <div class="stat-change up">▲ 90% checkout rate</div>
             </div>
             <div class="stat-cell">
-              <div class="stat-cell-value">$1B+</div>
-              <div class="stat-cell-meta"><strong>Total Digital Sales</strong> — Across consumer brands</div>
-              <div class="stat-change up">▲ $1B+ in sales</div>
+              <div class="stat-cell-value">−50%</div>
+              <div class="stat-cell-meta"><strong>Time to Order</strong> — 10min → 4min</div>
+              <div class="stat-change up">▼ Friction reduction</div>
             </div>
             <div class="stat-cell">
-              <div class="stat-cell-value">48</div>
-              <div class="stat-cell-meta"><strong>Team Led</strong> — 40 devs, 4 PMs, 4 designers</div>
-              <div class="stat-change up">▲ Full rebuild team</div>
+              <div class="stat-cell-value">95%+</div>
+              <div class="stat-cell-meta"><strong>Login &amp; Sign-up Success</strong> — Auth flows</div>
+              <div class="stat-change up">▲ 95%+ success rate</div>
             </div>
           </div>
         </div>
@@ -660,24 +660,24 @@ body{
         <div class="player-card-body">
           <div class="player-card-stats">
             <div class="stat-cell">
-              <div class="stat-cell-value">90%</div>
-              <div class="stat-cell-meta"><strong>Checkout Conversion</strong> — Post-launch</div>
-              <div class="stat-change up">▲ 90% checkout rate</div>
-            </div>
-            <div class="stat-cell">
-              <div class="stat-cell-value">−50%</div>
-              <div class="stat-cell-meta"><strong>Time to Order</strong> — Friction reduction</div>
-              <div class="stat-change up">▼ 10min → 4min</div>
-            </div>
-            <div class="stat-cell">
-              <div class="stat-cell-value">95%+</div>
-              <div class="stat-cell-meta"><strong>Login & Sign-up Success</strong> — Auth flows</div>
-              <div class="stat-change up">▲ 95%+ success rate</div>
+              <div class="stat-cell-value">Millions</div>
+              <div class="stat-cell-meta"><strong>Users Served</strong> — High-traffic digital properties</div>
+              <div class="stat-change up">▲ Entertainment ecosystem</div>
             </div>
             <div class="stat-cell">
               <div class="stat-cell-value">5 PMs</div>
               <div class="stat-cell-meta"><strong>PM Team Managed</strong> — Backlog grooming &amp; sprint planning</div>
-              <div class="stat-change up">▲ Managed 5 PMs</div>
+              <div class="stat-change up">▲ 5 PMs across portfolio</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">Rewards</div>
+              <div class="stat-cell-meta"><strong>Quests Programs</strong> — Engaging millions of users</div>
+              <div class="stat-change up">▲ Engagement strategy</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-cell-value">↑</div>
+              <div class="stat-cell-meta"><strong>Engagement &amp; Retention</strong> — Web &amp; mobile platforms</div>
+              <div class="stat-change up">▲ Retention improved</div>
             </div>
           </div>
         </div>
@@ -1001,25 +1001,26 @@ body{
   var rowH = hexSize * 1.5;
   var courtLeft = 50, courtRight = 350, courtTop = 25, courtBottom = 360;
 
-  // Generate grid positions (pointy-top, offset rows)
+  // Generate grid positions — fill the half-court area
+  // Basket at bottom (y~350), court extends upward
   var gridPositions = [];
   var row = 0;
-  for(var cy = courtTop + hexSize; cy < courtBottom; cy += rowH){
+  for(var cy = 40; cy < 365; cy += rowH){
     var offset = (row % 2) ? hexW / 2 : 0;
-    for(var cx = courtLeft + hexSize + offset; cx < courtRight; cx += hexW){
-      // Keep hexes within court boundary
+    for(var cx = 50 + hexSize + offset; cx < 355; cx += hexW){
+      // Keep hexes inside the 3-point arc + key area
       var ndx = (cx - 200) / 155;
-      var ndy = (cy - 130) / 180;
-      var inPaint = (cy >= courtTop && cy <= 145 && cx >= 125 && cx <= 275);
-      var dist = Math.sqrt(ndx * ndx + ndy * ndy);
-      if(inPaint || dist <= 1.08){
+      var ndy = (350 - cy) / 160;  // distance from basket upward
+      var inKey = (cx >= 145 && cx <= 255 && cy >= 200 && cy <= 365);
+      var dist3pt = Math.sqrt(ndx * ndx + ndy * ndy);
+      if(inKey || dist3pt <= 1.05){
         gridPositions.push({x: cx, y: cy});
       }
     }
     row++;
   }
 
-  // Sort by distance from basket (bottom center) — closest first gets highest-valued metrics
+  // Sort by distance from basket (bottom center) — closest first gets highest metrics
   var basketX = 200, basketY = 350;
   gridPositions.sort(function(a,b){
     var da = Math.sqrt((a.x-basketX)*(a.x-basketX) + (a.y-basketY)*(a.y-basketY));
@@ -1082,71 +1083,76 @@ body{
   svg.appendChild(hexGroup);
 
   // Draw accurate half-court lines ON TOP of hexes
+  // Orientation: basket at BOTTOM (y~350), half-court line at TOP (y~20)
+  // Key/paint extends UP from the baseline
   var courtLines = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   courtLines.setAttribute('pointer-events', 'none');
-  var courtColor = '#3e7a5e';
-  var sw = 2;
+  var cc = '#3e7a5e';  // court line color
+  var sw = 2;           // stroke width
 
-  // Outer boundary (baseline + sidelines)
-  var boundary = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  boundary.setAttribute('d', 'M 40 370 L 40 20 L 360 20 L 360 370');
-  boundary.setAttribute('fill', 'none');
-  boundary.setAttribute('stroke', courtColor);
-  boundary.setAttribute('stroke-width', sw);
-  courtLines.appendChild(boundary);
+  // Half-court boundary: sidelines + half-court line at top + baseline at bottom
+  // Sidelines run vertically (x=40 and x=360), top is half-court line, bottom is baseline
+  var sideline = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  sideline.setAttribute('d', 'M 40 20 L 360 20 L 360 370 L 40 370 Z');
+  sideline.setAttribute('fill', 'none');
+  sideline.setAttribute('stroke', cc);
+  sideline.setAttribute('stroke-width', sw);
+  courtLines.appendChild(sideline);
 
-  // Free-throw line (horizontal line across the key)
-  var ftLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  ftLine.setAttribute('x1', '120'); ftLine.setAttribute('y1', '120');
-  ftLine.setAttribute('x2', '280'); ftLine.setAttribute('y2', '120');
-  ftLine.setAttribute('stroke', courtColor); ftLine.setAttribute('stroke-width', sw);
-  courtLines.appendChild(ftLine);
+  // Backboard (horizontal line near the bottom, above the rim)
+  var backboard = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  backboard.setAttribute('x1', '185'); backboard.setAttribute('y1', '335');
+  backboard.setAttribute('x2', '215'); backboard.setAttribute('y2', '335');
+  backboard.setAttribute('stroke', cc); backboard.setAttribute('stroke-width', '3');
+  courtLines.appendChild(backboard);
 
-  // The key (paint — rectangular lane)
-  var key = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-  key.setAttribute('x', '120'); key.setAttribute('y', '20');
-  key.setAttribute('width', '160'); key.setAttribute('height', '100');
-  key.setAttribute('fill', 'none'); key.setAttribute('stroke', courtColor);
-  key.setAttribute('stroke-width', sw);
-  courtLines.appendChild(key);
+  // Rim (circle below the backboard)
+  var rim = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  rim.setAttribute('cx', '200'); rim.setAttribute('cy', '350');
+  rim.setAttribute('r', '7');
+  rim.setAttribute('fill', 'none'); rim.setAttribute('stroke', cc);
+  rim.setAttribute('stroke-width', '1.5');
+  courtLines.appendChild(rim);
 
-  // Free-throw circle
-  var ftCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-  ftCircle.setAttribute('cx', '200'); ftCircle.setAttribute('cy', '120');
-  ftCircle.setAttribute('r', '40');
-  ftCircle.setAttribute('fill', 'none'); ftCircle.setAttribute('stroke', courtColor);
-  ftCircle.setAttribute('stroke-width', sw);
-  courtLines.appendChild(ftCircle);
-
-  // Restricted area (small arc near basket)
+  // Restricted area (small arc around the rim, below the backboard)
   var restricted = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  restricted.setAttribute('d', 'M 180 370 A 20 20 0 0 1 220 370');
-  restricted.setAttribute('fill', 'none'); restricted.setAttribute('stroke', courtColor);
+  restricted.setAttribute('d', 'M 182 335 A 18 18 0 0 0 218 335');
+  restricted.setAttribute('fill', 'none'); restricted.setAttribute('stroke', cc);
   restricted.setAttribute('stroke-width', sw);
   courtLines.appendChild(restricted);
 
-  // 3-point line (arc from baseline to baseline)
+  // The key/paint — rectangle extending UP from the baseline
+  var key = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  key.setAttribute('x', '140'); key.setAttribute('y', '200');
+  key.setAttribute('width', '120'); key.setAttribute('height', '170');
+  key.setAttribute('fill', 'none'); key.setAttribute('stroke', cc);
+  key.setAttribute('stroke-width', sw);
+  courtLines.appendChild(key);
+
+  // Free-throw line (top edge of the key)
+  var ftLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  ftLine.setAttribute('x1', '140'); ftLine.setAttribute('y1', '200');
+  ftLine.setAttribute('x2', '260'); ftLine.setAttribute('y2', '200');
+  ftLine.setAttribute('stroke', cc); ftLine.setAttribute('stroke-width', sw);
+  courtLines.appendChild(ftLine);
+
+  // Free-throw circle (centered on the free-throw line, radius = half key width)
+  var ftCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  ftCircle.setAttribute('cx', '200'); ftCircle.setAttribute('cy', '200');
+  ftCircle.setAttribute('r', '60');
+  ftCircle.setAttribute('fill', 'none'); ftCircle.setAttribute('stroke', cc);
+  ftCircle.setAttribute('stroke-width', sw);
+  courtLines.appendChild(ftCircle);
+
+  // 3-point line: straight corner sections then arc
+  // Corner sections go up from baseline, then arc curves to the top
   var threePt = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  // Corner sections are straight, then arc
-  threePt.setAttribute('d', 'M 40 250 L 40 230 A 170 170 0 0 1 360 230 L 360 250');
-  threePt.setAttribute('fill', 'none'); threePt.setAttribute('stroke', courtColor);
+  // Left corner: straight up from baseline at x=50 to y=250, then arc to right corner
+  // Arc center at (200, 350), radius ~155, sweeping from left to right at the top
+  threePt.setAttribute('d', 'M 50 370 L 50 270 A 160 160 0 0 1 350 270 L 350 370');
+  threePt.setAttribute('fill', 'none'); threePt.setAttribute('stroke', cc);
   threePt.setAttribute('stroke-width', sw);
   courtLines.appendChild(threePt);
-
-  // Backboard
-  var backboard = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-  backboard.setAttribute('x1', '180'); backboard.setAttribute('y1', '360');
-  backboard.setAttribute('x2', '220'); backboard.setAttribute('y2', '360');
-  backboard.setAttribute('stroke', courtColor); backboard.setAttribute('stroke-width', '3');
-  courtLines.appendChild(backboard);
-
-  // Rim
-  var rim = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-  rim.setAttribute('cx', '200'); rim.setAttribute('cy', '355');
-  rim.setAttribute('r', '8');
-  rim.setAttribute('fill', 'none'); rim.setAttribute('stroke', courtColor);
-  rim.setAttribute('stroke-width', '1.5');
-  courtLines.appendChild(rim);
 
   svg.appendChild(courtLines);
 
