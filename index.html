@@ -450,9 +450,129 @@ body{
   .stat-cell-value{font-size:1.2rem;}
 }
 
+/* ===== ANIMATIONS ===== */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes pulseGlow {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(62,122,94,0.6)); }
+  50% { filter: drop-shadow(0 0 12px rgba(62,122,94,0.9)); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Animated hero gradient */
+.profile-hero {
+  background: radial-gradient(ellipse at 50% 100%, rgba(255,107,53,0.08) 0%, transparent 60%),
+              linear-gradient(180deg, var(--bg) 0%, var(--bg-card) 100%);
+}
+
+/* Pulsing rim glow */
+#shotChartSvg circle[cx="200"][cy="350"] {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* Card hover tilt + glow */
+.player-card {
+  perspective: 1000px;
+}
+.player-card:hover .jersey-svg {
+  transform: scale(1.08) rotate(-3deg);
+  transition: transform 0.4s cubic-bezier(.25,.8,.25,1);
+}
+.jersey-svg {
+  transition: transform 0.4s cubic-bezier(.25,.8,.25,1);
+}
+
+/* Stat cell hover */
+.stat-cell {
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.stat-cell:hover {
+  transform: translateY(-2px);
+  border-color: var(--orange);
+}
+
+/* Totals cell hover */
+.totals-cell {
+  transition: background 0.2s ease;
+}
+.totals-cell:hover {
+  background: rgba(255,107,53,0.08);
+}
+
+/* Skill bar hover */
+.skill-bar {
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.skill-bar:hover {
+  border-color: var(--orange);
+  transform: translateX(4px);
+}
+
+/* Tab button active glow */
+.tab-btn.active {
+  text-shadow: 0 0 12px rgba(255,107,53,0.5);
+}
+
+/* Floating avatar */
+.profile-avatar {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Court container glow */
+.shot-chart-container {
+  box-shadow: inset 0 0 60px rgba(62,122,94,0.15), 0 0 40px rgba(0,0,0,0.4);
+}
+
+/* Contact link hover slide */
+.contact-link:hover {
+  transform: translateY(-3px) translateX(2px);
+}
+
+/* Hero stat hover */
+.hero-stat:hover .hero-stat-num,
+.profile-head-card:hover .profile-avatar {
+  filter: brightness(1.15);
+}
+
+/* Section title gradient shimmer */
+.section-title span {
+  background: linear-gradient(90deg, var(--orange) 0%, var(--orange-light) 50%, var(--orange) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
 /* reduced motion */
 @media (prefers-reduced-motion: reduce){
   *{animation:none !important;transition:none !important;}
+  .reveal{opacity:1;transform:none;}
 }
 </style>
 </head>
@@ -569,7 +689,7 @@ body{
 <div class="tab-pane" id="tab-metrics">
 
   <!-- Shot Chart -->
-  <div class="shot-chart-section">
+  <div class="shot-chart-section reveal">
     <div class="section-header">
       <div class="section-eyebrow">▸ Shot Chart · Career Heat Map</div>
       <h2 class="section-title">Career <span>Shot Chart</span></h2>
@@ -601,7 +721,7 @@ body{
   </div>
 
   <!-- Team Cards -->
-  <div class="section">
+  <div class="section reveal">
     <div class="section-header">
       <div class="section-eyebrow">▸ Career Stats · Season by Season</div>
       <h2 class="section-title">Team <span>By</span> Team</h2>
@@ -808,7 +928,7 @@ body{
   </div>
 
   <!-- Skills -->
-  <div class="section">
+  <div class="section reveal">
     <div class="section-header">
       <div class="section-eyebrow">▸ Player Attributes</div>
       <h2 class="section-title">The <span>Toolkit</span></h2>
@@ -1178,8 +1298,56 @@ body{
   }, {threshold: 0.15});
   hexObserver.observe(svg);
 
-  // Trigger initial animations
+  /* ===== SCROLL REVEAL ===== */
+  var revealObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+      }
+    });
+  }, {threshold: 0.12});
+  document.querySelectorAll('.reveal').forEach(function(el){ revealObserver.observe(el); });
+
+  /* ===== PLAYER CARD STAGGER REVEAL ===== */
+  var cardObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        var idx = Array.prototype.indexOf.call(e.target.parentElement.children, e.target);
+        setTimeout(function(){
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+        }, idx * 100);
+        cardObserver.unobserve(e.target);
+      }
+    });
+  }, {threshold: 0.1});
+  document.querySelectorAll('.player-card').forEach(function(card){
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(30px)';
+    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    cardObserver.observe(card);
+  });
+
+  /* ===== TRIGGER INITIAL ANIMATIONS ===== */
   triggerCountUp();
+
+  /* ===== TAB REVEAL RESET ===== */
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      setTimeout(function(){
+        document.querySelectorAll('.reveal').forEach(function(el){
+          el.classList.remove('visible');
+          revealObserver.observe(el);
+        });
+        document.querySelectorAll('.player-card').forEach(function(card){
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(30px)';
+          cardObserver.observe(card);
+        });
+        triggerAnimations();
+      }, 50);
+    });
+  });
 
   /* ===== PLAYER CARD INTERACTION ===== */
   document.querySelectorAll('.player-card').forEach(function(card){
