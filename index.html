@@ -528,6 +528,101 @@ body::after{
   animation: pulseGlow 2s ease-in-out infinite;
 }
 
+/* ===== 3D ATHLETE MODEL ===== */
+.athlete-3d-section{
+  display:flex;flex-direction:column;align-items:center;
+  padding:20px 16px 30px;
+}
+.athlete-3d-wrap{
+  position:relative;
+  max-width:400px;width:100%;
+  display:flex;flex-direction:column;align-items:center;
+}
+#athleteCanvas{
+  display:block;
+  max-width:400px;width:100%;
+  height:380px;
+  border-radius:var(--radius);
+  background:radial-gradient(ellipse at center, rgba(10,10,14,0.9) 0%, rgba(10,10,14,0.95) 100%);
+  border:1px solid var(--border-bright);
+  box-shadow:inset 0 0 60px rgba(255,45,85,0.06), 0 0 40px rgba(0,0,0,0.4);
+  cursor:grab;
+}
+#athleteCanvas:active{cursor:grabbing;}
+.athlete-3d-label{
+  font-family:var(--header-font);
+  font-size:0.7rem;
+  color:var(--text-dim);
+  text-transform:uppercase;
+  letter-spacing:0.25em;
+  font-weight:500;
+  margin-top:12px;
+  text-align:center;
+}
+.floating-stat{
+  position:absolute;
+  pointer-events:none;
+  z-index:5;
+  font-family:var(--header-font);
+  font-size:0.7rem;font-weight:700;
+  color:var(--red);
+  background:rgba(10,10,14,0.7);
+  border:1px solid rgba(255,45,85,0.3);
+  border-radius:6px;
+  padding:3px 8px;
+  white-space:nowrap;
+  text-shadow:0 0 8px rgba(255,45,85,0.3);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  transition:opacity .3s;
+}
+
+/* ===== TWO-COLUMN TEAM CARDS ===== */
+.player-card-body.two-col{
+  display:flex;
+  gap:16px;
+  padding:16px 20px 20px;
+}
+.stats-col{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.chart-col{
+  flex:0 0 200px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.stats-col .stat-cell{
+  border-radius:8px;
+  padding:10px 12px;
+  transition:border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+.stats-col .stat-cell.stat-hover{
+  border-color:var(--red);
+  box-shadow:0 0 0 1px var(--red), 0 0 12px rgba(255,45,85,0.3);
+}
+.stats-col .stat-cell.stat-dim{ opacity:0.5; }
+.stats-col .stat-cell-value{font-size:1.2rem;}
+.mini-chart-svg{width:200px;height:180px;display:block;}
+.mini-court-hex{
+  transition:opacity 0.2s ease, transform 0.2s ease;
+  transform-origin:center;
+  transform-box:fill-box;
+}
+.mini-court-hex.hex-active{
+  opacity:1 !important;
+  stroke:var(--red);
+  stroke-width:2;
+}
+.mini-court-hex.hex-dim{ opacity:0.35; }
+@media(max-width:600px){
+  .player-card-body.two-col{flex-direction:column;}
+  .chart-col{flex:0 0 auto;width:100%;}
+}
+
 /* reduced motion */
 @media (prefers-reduced-motion: reduce){
   *{animation:none !important;transition:none !important;}
@@ -585,6 +680,21 @@ body::after{
           </div>
         </div>
       </div>
+
+      <!-- 3D Athlete Model -->
+      <div class="athlete-3d-section">
+        <div class="athlete-3d-wrap">
+          <canvas id="athleteCanvas"></canvas>
+          <div class="floating-stat" data-stat="sales" style="top:8%;left:8%;">$1B+</div>
+          <div class="floating-stat" data-stat="platforms" style="top:18%;right:6%;">18+</div>
+          <div class="floating-stat" data-stat="growth" style="top:42%;left:2%;">130%</div>
+          <div class="floating-stat" data-stat="countries" style="bottom:30%;right:4%;">4</div>
+          <div class="floating-stat" data-stat="teammates" style="bottom:14%;left:10%;">100+</div>
+          <div class="floating-stat" data-stat="pay" style="bottom:8%;right:12%;">$94M</div>
+        </div>
+        <div class="athlete-3d-label">ATHLETE MODEL · CAREER ANALYTICS</div>
+      </div>
+
     </div>
   </div>
 
@@ -697,28 +807,37 @@ body::after{
           <svg class="jersey-svg" viewBox="0 0 64 80"><path class="jersey-body" d="M 12 10 L 8 16 L 6 24 L 10 26 L 10 72 Q 10 78 16 78 L 48 78 Q 54 78 54 72 L 54 26 L 58 24 L 56 16 L 52 10 L 40 12 Q 38 16 32 16 Q 26 16 24 12 Z" fill="#FF2D55"/><text class="jersey-num" x="32" y="50" font-size="22">23</text><text class="jersey-pos" x="32" y="64">PG</text></svg>
           <div class="player-card-years">2024<br>Present</div>
         </div>
-        <div class="player-card-body">
-          <div class="player-card-stats">
-            <div class="stat-cell">
+        <div class="player-card-body two-col">
+          <div class="stats-col">
+            <div class="stat-cell" data-hex-id="hex-jitb-0">
               <div class="stat-cell-value">2.6→4.8</div>
               <div class="stat-cell-meta"><strong>App Store Rating</strong> — Rebuild in 8 months</div>
               <div class="stat-change up">▲ +84% rating</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-jitb-1">
               <div class="stat-cell-value">90%</div>
               <div class="stat-cell-meta"><strong>Checkout Conversion</strong> — Post-launch</div>
               <div class="stat-change up">▲ 90% checkout rate</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-jitb-2">
               <div class="stat-cell-value">−50%</div>
               <div class="stat-cell-meta"><strong>Time to Order</strong> — 10min → 4min</div>
               <div class="stat-change up">▼ Friction reduction</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-jitb-3">
               <div class="stat-cell-value">95%+</div>
               <div class="stat-cell-meta"><strong>Login &amp; Sign-up Success</strong> — Auth flows</div>
               <div class="stat-change up">▲ 95%+ success rate</div>
             </div>
+          </div>
+          <div class="chart-col">
+            <svg class="mini-chart-svg" viewBox="0 0 200 180">
+              <rect x="0" y="0" width="200" height="180" fill="none" stroke="rgba(255,45,85,0.15)" stroke-width="1"/>
+              <polygon id="hex-jitb-0" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-jitb-1" class="mini-court-hex" points="" fill="#fff5cc" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-jitb-2" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-jitb-3" class="mini-court-hex" points="" fill="#fff5cc" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+            </svg>
           </div>
         </div>
       </div>
@@ -734,28 +853,37 @@ body::after{
           <svg class="jersey-svg" viewBox="0 0 64 80"><path class="jersey-body" d="M 12 10 L 8 16 L 6 24 L 10 26 L 10 72 Q 10 78 16 78 L 48 78 Q 54 78 54 72 L 54 26 L 58 24 L 56 16 L 52 10 L 40 12 Q 38 16 32 16 Q 26 16 24 12 Z" fill="#0099ff"/><text class="jersey-num" x="32" y="50" font-size="22">10</text><text class="jersey-pos" x="32" y="64">SG</text></svg>
           <div class="player-card-years">2022<br>2023</div>
         </div>
-        <div class="player-card-body">
-          <div class="player-card-stats">
-            <div class="stat-cell">
+        <div class="player-card-body two-col">
+          <div class="stats-col">
+            <div class="stat-cell" data-hex-id="hex-disney-0">
               <div class="stat-cell-value">Millions</div>
               <div class="stat-cell-meta"><strong>Users Served</strong> — High-traffic digital properties</div>
               <div class="stat-change up">▲ Entertainment ecosystem</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-disney-1">
               <div class="stat-cell-value">5 PMs</div>
               <div class="stat-cell-meta"><strong>PM Team Managed</strong> — Backlog grooming &amp; sprint planning</div>
               <div class="stat-change up">▲ 5 PMs across portfolio</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-disney-2">
               <div class="stat-cell-value">Rewards</div>
               <div class="stat-cell-meta"><strong>Quests Programs</strong> — Engaging millions of users</div>
               <div class="stat-change up">▲ Engagement strategy</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-disney-3">
               <div class="stat-cell-value">↑</div>
               <div class="stat-cell-meta"><strong>Engagement &amp; Retention</strong> — Web &amp; mobile platforms</div>
               <div class="stat-change up">▲ Retention improved</div>
             </div>
+          </div>
+          <div class="chart-col">
+            <svg class="mini-chart-svg" viewBox="0 0 200 180">
+              <rect x="0" y="0" width="200" height="180" fill="none" stroke="rgba(255,45,85,0.15)" stroke-width="1"/>
+              <polygon id="hex-disney-0" class="mini-court-hex" points="" fill="#FF2D55" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-disney-1" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-disney-2" class="mini-court-hex" points="" fill="#FF2D55" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-disney-3" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+            </svg>
           </div>
         </div>
       </div>
@@ -771,28 +899,37 @@ body::after{
           <svg class="jersey-svg" viewBox="0 0 64 80"><path class="jersey-body" d="M 12 10 L 8 16 L 6 24 L 10 26 L 10 72 Q 10 78 16 78 L 48 78 Q 54 78 54 72 L 54 26 L 58 24 L 56 16 L 52 10 L 40 12 Q 38 16 32 16 Q 26 16 24 12 Z" fill="#00cc88"/><text class="jersey-num" x="32" y="50" font-size="22">11</text><text class="jersey-pos" x="32" y="64">SF</text></svg>
           <div class="player-card-years">2021<br>2022</div>
         </div>
-        <div class="player-card-body">
-          <div class="player-card-stats">
-            <div class="stat-cell">
+        <div class="player-card-body two-col">
+          <div class="stats-col">
+            <div class="stat-cell" data-hex-id="hex-vista-0">
               <div class="stat-cell-value">7 PMs</div>
               <div class="stat-cell-meta"><strong>Growth &amp; Retention Team</strong> — ~$1.6B revenue platform</div>
               <div class="stat-change up">▲ Led 7-person PM team</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-vista-1">
               <div class="stat-cell-value">−25%</div>
               <div class="stat-cell-meta"><strong>Planning Cycle Time</strong> — Streamlined prioritization</div>
               <div class="stat-change up">▼ 25% faster planning</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-vista-2">
               <div class="stat-cell-value">↑</div>
               <div class="stat-cell-meta"><strong>Customer LTV</strong> — ML-powered retention modeling</div>
               <div class="stat-change up">▲ LTV increased</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-vista-3">
               <div class="stat-cell-value">↓</div>
               <div class="stat-cell-meta"><strong>Acquisition Cost</strong> — CAC optimization</div>
               <div class="stat-change down">▼ CAC reduced</div>
             </div>
+          </div>
+          <div class="chart-col">
+            <svg class="mini-chart-svg" viewBox="0 0 200 180">
+              <rect x="0" y="0" width="200" height="180" fill="none" stroke="rgba(255,45,85,0.15)" stroke-width="1"/>
+              <polygon id="hex-vista-0" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-vista-1" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-vista-2" class="mini-court-hex" points="" fill="#FF2D55" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-vista-3" class="mini-court-hex" points="" fill="#FF2D55" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+            </svg>
           </div>
         </div>
       </div>
@@ -808,38 +945,49 @@ body::after{
           <svg class="jersey-svg" viewBox="0 0 64 80"><path class="jersey-body" d="M 12 10 L 8 16 L 6 24 L 10 26 L 10 72 Q 10 78 16 78 L 48 78 Q 54 78 54 72 L 54 26 L 58 24 L 56 16 L 52 10 L 40 12 Q 38 16 32 16 Q 26 16 24 12 Z" fill="#ff9500"/><text class="jersey-num" x="32" y="50" font-size="22">04</text><text class="jersey-pos" x="32" y="64">PF</text></svg>
           <div class="player-card-years">2019<br>2021</div>
         </div>
-        <div class="player-card-body">
-          <div class="player-card-stats">
-            <div class="stat-cell">
+        <div class="player-card-body two-col">
+          <div class="stats-col">
+            <div class="stat-cell" data-hex-id="hex-rbi-0">
               <div class="stat-cell-value">$94MM</div>
               <div class="stat-cell-meta"><strong>Apple/Google Pay Revenue</strong> — $81MM + $13MM net new</div>
               <div class="stat-change up">▲ $94MM new revenue</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-rbi-1">
               <div class="stat-cell-value">1.7M</div>
               <div class="stat-cell-meta"><strong>New Users (Goal: 1M)</strong> — Tim Hortons Roll Up to Win</div>
               <div class="stat-change up">▲ 170% of target</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-rbi-2">
               <div class="stat-cell-value">41%</div>
               <div class="stat-cell-meta"><strong>Digital Sales Share</strong> — Goal was 30-35%</div>
               <div class="stat-change up">▲ Beat target by 6pt</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-rbi-3">
               <div class="stat-cell-value">2M+</div>
               <div class="stat-cell-meta"><strong>App Downloads</strong> — #1 in Canada, built in 7 weeks</div>
               <div class="stat-change up">▲ #1 app in Canada</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-rbi-4">
               <div class="stat-cell-value">3.36→9.82</div>
               <div class="stat-cell-meta"><strong>Popeyes Conversion</strong> — +193% increase</div>
               <div class="stat-change up">▲ +193% conversion</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-rbi-5">
               <div class="stat-cell-value">42K→139K</div>
               <div class="stat-cell-meta"><strong>Popeyes Offers Redeemed</strong> — +231% increase</div>
               <div class="stat-change up">▲ +231% redemptions</div>
             </div>
+          </div>
+          <div class="chart-col">
+            <svg class="mini-chart-svg" viewBox="0 0 200 180">
+              <rect x="0" y="0" width="200" height="180" fill="none" stroke="rgba(255,45,85,0.15)" stroke-width="1"/>
+              <polygon id="hex-rbi-0" class="mini-court-hex" points="" fill="#fff5cc" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-rbi-1" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-rbi-2" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-rbi-3" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-rbi-4" class="mini-court-hex" points="" fill="#FF2D55" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-rbi-5" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+            </svg>
           </div>
         </div>
       </div>
@@ -855,28 +1003,37 @@ body::after{
           <svg class="jersey-svg" viewBox="0 0 64 80"><path class="jersey-body" d="M 12 10 L 8 16 L 6 24 L 10 26 L 10 72 Q 10 78 16 78 L 48 78 Q 54 78 54 72 L 54 26 L 58 24 L 56 16 L 52 10 L 40 12 Q 38 16 32 16 Q 26 16 24 12 Z" fill="#ffeb3b"/><text class="jersey-num" x="32" y="50" font-size="22" fill="#0a0a0c">05</text><text class="jersey-pos" x="32" y="64" fill="rgba(10,10,12,0.5)">C</text></svg>
           <div class="player-card-years">2014<br>2018</div>
         </div>
-        <div class="player-card-body">
-          <div class="player-card-stats">
-            <div class="stat-cell">
+        <div class="player-card-body two-col">
+          <div class="stats-col">
+            <div class="stat-cell" data-hex-id="hex-sonic-0">
               <div class="stat-cell-value">15%</div>
               <div class="stat-cell-meta"><strong>Digital Sales Share</strong> — Order Ahead app capture</div>
               <div class="stat-change up">▲ 15% of all digital sales</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-sonic-1">
               <div class="stat-cell-value">100K/day</div>
               <div class="stat-cell-meta"><strong>Transactions Processed</strong> — 99.9% uptime</div>
               <div class="stat-change up">▲ 100K+ daily transactions</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-sonic-2">
               <div class="stat-cell-value">380M+</div>
               <div class="stat-cell-meta"><strong>Views Across Properties</strong> — 43M+ users, 62M+ sessions</div>
               <div class="stat-change up">▲ 380M+ views</div>
             </div>
-            <div class="stat-cell">
+            <div class="stat-cell" data-hex-id="hex-sonic-3">
               <div class="stat-cell-value">Cannes</div>
               <div class="stat-cell-meta"><strong>Lion Shortlist</strong> — Digital innovation recognition</div>
               <div class="stat-change up">▲ Cannes Lion shortlist</div>
             </div>
+          </div>
+          <div class="chart-col">
+            <svg class="mini-chart-svg" viewBox="0 0 200 180">
+              <rect x="0" y="0" width="200" height="180" fill="none" stroke="rgba(255,45,85,0.15)" stroke-width="1"/>
+              <polygon id="hex-sonic-0" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-sonic-1" class="mini-court-hex" points="" fill="#7b2cf5" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-sonic-2" class="mini-court-hex" points="" fill="#FF2D55" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+              <polygon id="hex-sonic-3" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
+            </svg>
           </div>
         </div>
       </div>
@@ -902,6 +1059,7 @@ body::after{
 
 <div class="shot-chart-tooltip" id="shotChartTooltip"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function(){
   'use strict';
@@ -1347,6 +1505,291 @@ body::after{
       if(!active){card.classList.add('active');}
     });
   });
+
+  /* ===== MINI SHOT CHART HEXES ===== */
+  // Mini court layout: viewBox 0 0 200 180, basket at bottom center (100, 165)
+  function miniHexPoints(cx, cy, r){
+    var pts = [];
+    for(var i=0;i<6;i++){
+      var a = (Math.PI/3)*i - Math.PI/2;
+      pts.push((cx + r*Math.cos(a)).toFixed(1) + ',' + (cy + r*Math.sin(a)).toFixed(1));
+    }
+    return pts.join(' ');
+  }
+
+  // Team hex positions on the mini court — spread across the court
+  // Format: [teamPrefix, [{x, y, val}, ...]]
+  // val: 0-1 thermal scale (higher = hotter color)
+  var miniTeams = {
+    'jitb':   [{x:60,y:140,val:0.95},{x:100,y:150,val:0.90},{x:140,y:140,val:0.85},{x:100,y:110,val:0.88}],
+    'disney': [{x:60,y:140,val:0.82},{x:140,y:140,val:0.75},{x:100,y:150,val:0.78},{x:100,y:110,val:0.72}],
+    'vista':  [{x:60,y:140,val:0.70},{x:140,y:140,val:0.68},{x:100,y:150,val:0.65},{x:100,y:110,val:0.62}],
+    'rbi':    [{x:50,y:145,val:0.92},{x:100,y:155,val:0.88},{x:150,y:145,val:0.85},{x:70,y:115,val:0.80},{x:130,y:115,val:0.75},{x:100,y:85,val:0.78}],
+    'sonic':  [{x:60,y:140,val:0.60},{x:140,y:140,val:0.65},{x:100,y:150,val:0.55},{x:100,y:110,val:0.58}]
+  };
+
+  Object.keys(miniTeams).forEach(function(prefix){
+    var positions = miniTeams[prefix];
+    positions.forEach(function(pos, i){
+      var hex = document.getElementById('hex-' + prefix + '-' + i);
+      if(!hex) return;
+      hex.setAttribute('points', miniHexPoints(pos.x, pos.y, 16));
+      hex.setAttribute('fill', heatColor(pos.val));
+    });
+  });
+
+  /* ===== STAT CELL → HEX HOVER LINKING ===== */
+  document.querySelectorAll('.stats-col .stat-cell[data-hex-id]').forEach(function(cell){
+    var hexId = cell.getAttribute('data-hex-id');
+    cell.addEventListener('mouseenter', function(){
+      cell.classList.add('stat-hover');
+      // dim all siblings, highlight target hex
+      var parent = cell.closest('.stats-col');
+      if(parent){
+        parent.querySelectorAll('.stat-cell').forEach(function(s){
+          if(s !== cell) s.classList.add('stat-dim');
+        });
+      }
+      var svg = cell.closest('.player-card-body').querySelector('.mini-chart-svg');
+      if(svg){
+        svg.querySelectorAll('.mini-court-hex').forEach(function(h){
+          if(h.id === hexId){
+            h.classList.add('hex-active');
+            h.classList.remove('hex-dim');
+          } else {
+            h.classList.add('hex-dim');
+            h.classList.remove('hex-active');
+          }
+        });
+      }
+    });
+    cell.addEventListener('mouseleave', function(){
+      cell.classList.remove('stat-hover');
+      var parent = cell.closest('.stats-col');
+      if(parent){
+        parent.querySelectorAll('.stat-cell').forEach(function(s){
+          s.classList.remove('stat-dim');
+        });
+      }
+      var svg = cell.closest('.player-card-body').querySelector('.mini-chart-svg');
+      if(svg){
+        svg.querySelectorAll('.mini-court-hex').forEach(function(h){
+          h.classList.remove('hex-active');
+          h.classList.remove('hex-dim');
+        });
+      }
+    });
+  });
+
+  /* ===== 3D ATHLETE MODEL (Three.js) ===== */
+  (function init3DAthlete(){
+    var canvas = document.getElementById('athleteCanvas');
+    if(!canvas || typeof THREE === 'undefined') return;
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+    camera.position.set(0, 1, 7);
+
+    var renderer = new THREE.WebGLRenderer({canvas: canvas, alpha: true, antialias: true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    function resize(){
+      var w = canvas.clientWidth || 400;
+      var h = canvas.clientHeight || 380;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Lighting
+    var ambient = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambient);
+    var dirLight = new THREE.DirectionalLight(0xff2d55, 0.8);
+    dirLight.position.set(3, 5, 4);
+    scene.add(dirLight);
+    var fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    fillLight.position.set(-3, 2, -2);
+    scene.add(fillLight);
+
+    // Materials
+    var redMat = new THREE.MeshPhongMaterial({color: 0xFF2D55, shininess: 60});
+    var whiteMat = new THREE.MeshPhongMaterial({color: 0xf0f0f0, shininess: 40});
+    var ballMat = new THREE.MeshPhongMaterial({color: 0xFF6B35, shininess: 80});
+
+    // Build humanoid figure
+    var figure = new THREE.Group();
+    scene.add(figure);
+
+    // Head (sphere)
+    var head = new THREE.Mesh(new THREE.SphereGeometry(0.45, 24, 24), whiteMat);
+    head.position.y = 2.6;
+    figure.add(head);
+
+    // Neck (small cylinder)
+    var neck = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.18, 0.15, 12), whiteMat);
+    neck.position.y = 2.15;
+    figure.add(neck);
+
+    // Torso (box)
+    var torso = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.3, 0.5), redMat);
+    torso.position.y = 1.4;
+    figure.add(torso);
+
+    // Shoulders (cylinders for upper arms)
+    var armGeo = new THREE.CylinderGeometry(0.13, 0.11, 1.2, 12);
+    var leftArm = new THREE.Mesh(armGeo, whiteMat);
+    leftArm.position.set(-0.65, 1.5, 0);
+    leftArm.rotation.z = 0.3;
+    figure.add(leftArm);
+
+    var rightArm = new THREE.Mesh(armGeo, whiteMat);
+    rightArm.position.set(0.65, 1.5, 0);
+    rightArm.rotation.z = -0.3;
+    figure.add(rightArm);
+
+    // Hands (spheres at end of arms)
+    var leftHand = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 12), redMat);
+    leftHand.position.set(-0.85, 0.95, 0);
+    figure.add(leftHand);
+
+    var rightHand = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 12), redMat);
+    rightHand.position.set(0.85, 0.95, 0);
+    figure.add(rightHand);
+
+    // Basketball (sphere) in right hand
+    var ball = new THREE.Mesh(new THREE.SphereGeometry(0.28, 20, 20), ballMat);
+    ball.position.set(0.95, 0.7, 0.15);
+    figure.add(ball);
+
+    // Basketball seams (thin torus rings)
+    var seam1 = new THREE.Mesh(new THREE.TorusGeometry(0.285, 0.02, 8, 24), new THREE.MeshPhongMaterial({color: 0x0a0a0c}));
+    seam1.rotation.x = Math.PI / 2;
+    seam1.position.copy(ball.position);
+    figure.add(seam1);
+    var seam2 = new THREE.Mesh(new THREE.TorusGeometry(0.285, 0.02, 8, 24), new THREE.MeshPhongMaterial({color: 0x0a0a0c}));
+    seam2.rotation.y = Math.PI / 2;
+    seam2.position.copy(ball.position);
+    figure.add(seam2);
+
+    // Legs (cylinders)
+    var legGeo = new THREE.CylinderGeometry(0.18, 0.14, 1.4, 12);
+    var leftLeg = new THREE.Mesh(legGeo, redMat);
+    leftLeg.position.set(-0.25, 0.1, 0);
+    figure.add(leftLeg);
+
+    var rightLeg = new THREE.Mesh(legGeo, redMat);
+    rightLeg.position.set(0.25, 0.1, 0);
+    figure.add(rightLeg);
+
+    // Feet (boxes / cones)
+    var footGeo = new THREE.BoxGeometry(0.3, 0.12, 0.5);
+    var leftFoot = new THREE.Mesh(footGeo, whiteMat);
+    leftFoot.position.set(-0.25, -0.7, 0.1);
+    figure.add(leftFoot);
+
+    var rightFoot = new THREE.Mesh(footGeo, whiteMat);
+    rightFoot.position.set(0.25, -0.7, 0.1);
+    figure.add(rightFoot);
+
+    // Shorts (box overlay)
+    var shorts = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.5, 0.52), whiteMat);
+    shorts.position.y = 0.6;
+    figure.add(shorts);
+
+    // Ground platform (disc)
+    var platform = new THREE.Mesh(
+      new THREE.CylinderGeometry(2.2, 2.2, 0.08, 32),
+      new THREE.MeshPhongMaterial({color: 0x1a1a2e, shininess: 30, transparent: true, opacity: 0.6})
+    );
+    platform.position.y = -0.85;
+    scene.add(platform);
+
+    // Center the figure
+    figure.position.y = -0.2;
+
+    // === OrbitControls (minimal manual implementation) ===
+    var isDragging = false;
+    var prevX = 0, prevY = 0;
+    var rotY = 0, rotX = 0;
+    var camDist = 7;
+    var autoRotate = true;
+
+    canvas.addEventListener('pointerdown', function(e){
+      isDragging = true;
+      autoRotate = false;
+      prevX = e.clientX;
+      prevY = e.clientY;
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', function(e){
+      if(!isDragging) return;
+      var dx = e.clientX - prevX;
+      var dy = e.clientY - prevY;
+      rotY += dx * 0.01;
+      rotX += dy * 0.01;
+      rotX = Math.max(-1.0, Math.min(1.0, rotX));
+      prevX = e.clientX;
+      prevY = e.clientY;
+    });
+    canvas.addEventListener('pointerup', function(e){
+      isDragging = false;
+      canvas.releasePointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointercancel', function(){ isDragging = false; });
+
+    canvas.addEventListener('wheel', function(e){
+      e.preventDefault();
+      camDist += e.deltaY * 0.01;
+      camDist = Math.max(4, Math.min(12, camDist));
+    }, {passive: false});
+
+    // Touch pinch zoom
+    var touches = [];
+    var lastPinch = 0;
+    canvas.addEventListener('touchstart', function(e){
+      if(e.touches.length === 2){
+        var dx = e.touches[0].clientX - e.touches[1].clientX;
+        var dy = e.touches[0].clientY - e.touches[1].clientY;
+        lastPinch = Math.sqrt(dx*dx + dy*dy);
+      }
+    });
+    canvas.addEventListener('touchmove', function(e){
+      if(e.touches.length === 2){
+        e.preventDefault();
+        var dx = e.touches[0].clientX - e.touches[1].clientX;
+        var dy = e.touches[0].clientY - e.touches[1].clientY;
+        var pinch = Math.sqrt(dx*dx + dy*dy);
+        camDist += (lastPinch - pinch) * 0.02;
+        camDist = Math.max(4, Math.min(12, camDist));
+        lastPinch = pinch;
+      }
+    }, {passive: false});
+
+    var clock = new THREE.Clock();
+    function animate(){
+      requestAnimationFrame(animate);
+      if(autoRotate){ rotY += 0.005; }
+      // Apply rotation to camera position
+      var camX = Math.sin(rotY) * camDist;
+      var camZ = Math.cos(rotY) * camDist;
+      var camY = 1 + rotX * 2;
+      camera.position.set(camX, camY, camZ);
+      camera.lookAt(0, 0.8, 0);
+      // Gentle bob
+      figure.position.y = -0.2 + Math.sin(clock.getElapsedTime() * 1.5) * 0.05;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Re-resize when profile tab becomes active
+    document.querySelectorAll('.tab-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        setTimeout(resize, 200);
+      });
+    });
+  })();
 
 })();
 </script>
