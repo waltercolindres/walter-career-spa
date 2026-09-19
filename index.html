@@ -1581,17 +1581,18 @@ body::after{
     });
   });
 
-  /* ===== 3D ATHLETE MODEL (Three.js) ===== */
+  /* ===== 3D ATHLETE MODEL (Three.js — wireframe) ===== */
   (function init3DAthlete(){
     var canvas = document.getElementById('athleteCanvas');
     if(!canvas || typeof THREE === 'undefined') return;
 
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    camera.position.set(0, 1, 7);
+    camera.position.set(0, 1, 8);
 
     var renderer = new THREE.WebGLRenderer({canvas: canvas, alpha: true, antialias: true});
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
 
     function resize(){
       var w = canvas.clientWidth || 400;
@@ -1603,150 +1604,281 @@ body::after{
     resize();
     window.addEventListener('resize', resize);
 
-    // Lighting
-    var ambient = new THREE.AmbientLight(0xffffff, 0.4);
+    // ---- Lighting -----------------------------------------------------------
+    var ambient = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambient);
-    var dirLight = new THREE.DirectionalLight(0xff2d55, 0.8);
-    dirLight.position.set(3, 5, 4);
-    scene.add(dirLight);
-    var fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
-    fillLight.position.set(-3, 2, -2);
-    scene.add(fillLight);
 
-    // Materials
-    var redMat = new THREE.MeshPhongMaterial({color: 0xFF2D55, shininess: 60});
-    var whiteMat = new THREE.MeshPhongMaterial({color: 0xf0f0f0, shininess: 40});
-    var ballMat = new THREE.MeshPhongMaterial({color: 0xFF6B35, shininess: 80});
+    var underLight = new THREE.PointLight(0xff2d55, 1.8, 20, 1.4);
+    underLight.position.set(0, -1.5, 0.8);
+    scene.add(underLight);
 
-    // Build humanoid figure
+    var rimLight = new THREE.DirectionalLight(0xff5577, 0.7);
+    rimLight.position.set(-2, 2, -4);
+    scene.add(rimLight);
+
+    var keyLight = new THREE.DirectionalLight(0xffffff, 0.25);
+    keyLight.position.set(3, 4, 3);
+    scene.add(keyLight);
+
+    // ---- Wireframe materials ------------------------------------------------
+    var RED   = 0xFF2D55;
+    var WHITE = 0xf0f0f0;
+
+    function wireMat(color, opacity){
+      var op = opacity == null ? 0.85 : opacity;
+      return new THREE.MeshBasicMaterial({
+        color: color,
+        wireframe: true,
+        transparent: true,
+        opacity: op,
+        depthWrite: false
+      });
+    }
+
+    // A glowing wireframe mesh: two passes — faint ghost behind, sharp line in front.
+    function glowMesh(geo, color, opacity){
+      opacity = opacity == null ? 0.85 : opacity;
+      var g = new THREE.Group();
+      // Sharp core
+      var core = new THREE.Mesh(geo, wireMat(color, opacity));
+      g.add(core);
+      // Slightly scaled ghost
+      var ghostGeo = geo.clone();
+      ghostGeo.scale(1.04, 1.04, 1.04);
+      var ghost = new THREE.Mesh(ghostGeo, wireMat(color, 0.18));
+      g.add(ghost);
+      return g;
+    }
+
+    // ---- Figure group -------------------------------------------------------
     var figure = new THREE.Group();
     scene.add(figure);
 
-    // Head (sphere)
-    var head = new THREE.Mesh(new THREE.SphereGeometry(0.45, 24, 24), whiteMat);
-    head.position.y = 2.6;
+    // Base platform: ring + disc
+    var baseGroup = new THREE.Group();
+    baseGroup.position.y = -1.6;
+    scene.add(baseGroup);
+
+    var ringGeo = new THREE.TorusGeometry(1.85, 0.03, 10, 80);
+    var ring = new THREE.Mesh(ringGeo, wireMat(0xff2d55, 0.6));
+    ring.rotation.x = Math.PI / 2;
+    baseGroup.add(ring);
+
+    var ringGeo2 = new THREE.TorusGeometry(1.55, 0.02, 8, 64);
+    var ring2 = new THREE.Mesh(ringGeo2, wireMat(RED, 0.35));
+    ring2.rotation.x = Math.PI / 2;
+    baseGroup.add(ring2);
+
+    var discGeo = new THREE.CylinderGeometry(1.85, 1.85, 0.02, 48, 1, true);
+    var disc = new THREE.Mesh(discGeo, wireMat(WHITE, 0.12));
+    baseGroup.add(disc);
+
+    // Head: icosahedron, faceted
+    var headGeo = new THREE.IcosahedronGeometry(0.42, 0);
+    var head = glowMesh(headGeo, WHITE, 0.9);
+    head.position.set(0, 2.45, 0);
     figure.add(head);
 
-    // Neck (small cylinder)
-    var neck = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.18, 0.15, 12), whiteMat);
-    neck.position.y = 2.15;
+    // Neck (thin cylinder)
+    var neckGeo = new THREE.CylinderGeometry(0.12, 0.16, 0.22, 8);
+    var neck = glowMesh(neckGeo, RED, 0.7);
+    neck.position.set(0, 2.02, 0);
     figure.add(neck);
 
-    // Torso (box)
-    var torso = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.3, 0.5), redMat);
-    torso.position.y = 1.4;
+    // Torso: tapered cylinder (wider at shoulders, narrower at waist)
+    var torsoGeo = new THREE.CylinderGeometry(0.55, 0.38, 1.35, 14, 6, true);
+    var torso = glowMesh(torsoGeo, RED, 0.85);
+    torso.position.set(0, 1.25, 0);
     figure.add(torso);
 
-    // Shoulders (cylinders for upper arms)
-    var armGeo = new THREE.CylinderGeometry(0.13, 0.11, 1.2, 12);
-    var leftArm = new THREE.Mesh(armGeo, whiteMat);
-    leftArm.position.set(-0.65, 1.5, 0);
-    leftArm.rotation.z = 0.3;
-    figure.add(leftArm);
+    // Pelvis
+    var pelvisGeo = new THREE.CylinderGeometry(0.34, 0.3, 0.3, 10);
+    var pelvis = glowMesh(pelvisGeo, WHITE, 0.7);
+    pelvis.position.set(0, 0.4, 0);
+    figure.add(pelvis);
 
-    var rightArm = new THREE.Mesh(armGeo, whiteMat);
-    rightArm.position.set(0.65, 1.5, 0);
-    rightArm.rotation.z = -0.3;
-    figure.add(rightArm);
+    // ----- Right arm — extended up holding the basketball -----
+    var rUpperGeo = new THREE.CylinderGeometry(0.13, 0.11, 0.7, 8);
+    var rUpper = glowMesh(rUpperGeo, WHITE, 0.8);
+    rUpper.position.set(0.5, 1.85, 0);
+    rUpper.rotation.z = -0.6;
+    figure.add(rUpper);
 
-    // Hands (spheres at end of arms)
-    var leftHand = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 12), redMat);
-    leftHand.position.set(-0.85, 0.95, 0);
-    figure.add(leftHand);
+    var rForeGeo = new THREE.CylinderGeometry(0.1, 0.09, 0.7, 8);
+    var rFore = glowMesh(rForeGeo, RED, 0.8);
+    // position so it continues up from the upper arm
+    rFore.position.set(0.95, 2.35, 0);
+    rFore.rotation.z = -0.3;
+    figure.add(rFore);
 
-    var rightHand = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 12), redMat);
-    rightHand.position.set(0.85, 0.95, 0);
-    figure.add(rightHand);
+    // Right hand (icosahedron — geometric)
+    var rHandGeo = new THREE.IcosahedronGeometry(0.14, 0);
+    var rHand = glowMesh(rHandGeo, WHITE, 0.85);
+    rHand.position.set(1.2, 2.7, 0);
+    figure.add(rHand);
 
-    // Basketball (sphere) in right hand
-    var ball = new THREE.Mesh(new THREE.SphereGeometry(0.28, 20, 20), ballMat);
-    ball.position.set(0.95, 0.7, 0.15);
+    // ----- Left arm — relaxed, angled out -----
+    var lUpperGeo = new THREE.CylinderGeometry(0.13, 0.11, 0.7, 8);
+    var lUpper = glowMesh(lUpperGeo, RED, 0.8);
+    lUpper.position.set(-0.5, 1.7, 0);
+    lUpper.rotation.z = 0.5;
+    figure.add(lUpper);
+
+    var lForeGeo = new THREE.CylinderGeometry(0.1, 0.09, 0.6, 8);
+    var lFore = glowMesh(lForeGeo, WHITE, 0.8);
+    lFore.position.set(-0.78, 1.15, 0.1);
+    lFore.rotation.z = 0.15;
+    figure.add(lFore);
+
+    var lHandGeo = new THREE.IcosahedronGeometry(0.12, 0);
+    var lHand = glowMesh(lHandGeo, RED, 0.85);
+    lHand.position.set(-0.82, 0.8, 0.15);
+    figure.add(lHand);
+
+    // ----- Basketball in right hand (extended up) -----
+    var ballGeo = new THREE.SphereGeometry(0.3, 14, 12);
+    var ball = glowMesh(ballGeo, RED, 0.9);
+    ball.position.set(1.2, 3.0, 0.05);
     figure.add(ball);
 
-    // Basketball seams (thin torus rings)
-    var seam1 = new THREE.Mesh(new THREE.TorusGeometry(0.285, 0.02, 8, 24), new THREE.MeshPhongMaterial({color: 0x0a0a0c}));
-    seam1.rotation.x = Math.PI / 2;
-    seam1.position.copy(ball.position);
-    figure.add(seam1);
-    var seam2 = new THREE.Mesh(new THREE.TorusGeometry(0.285, 0.02, 8, 24), new THREE.MeshPhongMaterial({color: 0x0a0a0c}));
-    seam2.rotation.y = Math.PI / 2;
-    seam2.position.copy(ball.position);
-    figure.add(seam2);
+    // Basketball seam rings (wireframe)
+    var seamRing1 = new THREE.Mesh(new THREE.TorusGeometry(0.31, 0.008, 6, 28), wireMat(WHITE, 0.5));
+    seamRing1.rotation.x = Math.PI / 2;
+    seamRing1.position.copy(ball.position);
+    figure.add(seamRing1);
+    var seamRing2 = new THREE.Mesh(new THREE.TorusGeometry(0.31, 0.008, 6, 28), wireMat(WHITE, 0.5));
+    seamRing2.rotation.y = Math.PI / 2;
+    seamRing2.position.copy(ball.position);
+    figure.add(seamRing2);
 
-    // Legs (cylinders)
-    var legGeo = new THREE.CylinderGeometry(0.18, 0.14, 1.4, 12);
-    var leftLeg = new THREE.Mesh(legGeo, redMat);
-    leftLeg.position.set(-0.25, 0.1, 0);
-    figure.add(leftLeg);
+    // ----- Legs: slight lunge stance -----
+    // Left leg (forward / bent at hip)
+    var lThighGeo = new THREE.CylinderGeometry(0.16, 0.13, 0.8, 8);
+    var lThigh = glowMesh(lThighGeo, RED, 0.8);
+    lThigh.position.set(-0.2, -0.05, 0.05);
+    lThigh.rotation.z = 0.12;
+    figure.add(lThigh);
 
-    var rightLeg = new THREE.Mesh(legGeo, redMat);
-    rightLeg.position.set(0.25, 0.1, 0);
-    figure.add(rightLeg);
+    var lShinGeo = new THREE.CylinderGeometry(0.12, 0.1, 0.85, 8);
+    var lShin = glowMesh(lShinGeo, WHITE, 0.8);
+    lShin.position.set(-0.06, -0.85, 0.18);
+    lShin.rotation.z = -0.08;
+    figure.add(lShin);
 
-    // Feet (boxes / cones)
-    var footGeo = new THREE.BoxGeometry(0.3, 0.12, 0.5);
-    var leftFoot = new THREE.Mesh(footGeo, whiteMat);
-    leftFoot.position.set(-0.25, -0.7, 0.1);
-    figure.add(leftFoot);
+    // Right leg (back / extended)
+    var rThighGeo = new THREE.CylinderGeometry(0.16, 0.13, 0.8, 8);
+    var rThigh = glowMesh(rThighGeo, WHITE, 0.8);
+    rThigh.position.set(0.2, -0.05, -0.05);
+    rThigh.rotation.z = -0.15;
+    figure.add(rThigh);
 
-    var rightFoot = new THREE.Mesh(footGeo, whiteMat);
-    rightFoot.position.set(0.25, -0.7, 0.1);
-    figure.add(rightFoot);
+    var rShinGeo = new THREE.CylinderGeometry(0.12, 0.1, 0.9, 8);
+    var rShin = glowMesh(rShinGeo, RED, 0.8);
+    rShin.position.set(0.1, -0.9, -0.2);
+    rShin.rotation.z = 0.1;
+    figure.add(rShin);
 
-    // Shorts (box overlay)
-    var shorts = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.5, 0.52), whiteMat);
-    shorts.position.y = 0.6;
-    figure.add(shorts);
+    // Foot pads (small icosahedrons)
+    var lFootGeo = new THREE.IcosahedronGeometry(0.13, 0);
+    var lFoot = glowMesh(lFootGeo, RED, 0.7);
+    lFoot.position.set(-0.08, -1.32, 0.28);
+    figure.add(lFoot);
 
-    // Ground platform (disc)
-    var platform = new THREE.Mesh(
-      new THREE.CylinderGeometry(2.2, 2.2, 0.08, 32),
-      new THREE.MeshPhongMaterial({color: 0x1a1a2e, shininess: 30, transparent: true, opacity: 0.6})
-    );
-    platform.position.y = -0.85;
-    scene.add(platform);
+    var rFootGeo = new THREE.IcosahedronGeometry(0.13, 0);
+    var rFoot = glowMesh(rFootGeo, WHITE, 0.7);
+    rFoot.position.set(0.08, -1.4, -0.28);
+    figure.add(rFoot);
 
     // Center the figure
-    figure.position.y = -0.2;
+    figure.position.y = -0.1;
 
-    // === OrbitControls (minimal manual implementation) ===
+    // ---- Particle system ----------------------------------------------------
+    var particleCount = 240;
+    var pPositions = new Float32Array(particleCount * 3);
+    var pColors    = new Float32Array(particleCount * 3);
+    var pRadii     = [];
+    var pAngles    = [];
+    var pHeights   = [];
+    var pSpeeds    = [];
+    var pTilt      = [];
+
+    for (var i = 0; i < particleCount; i++){
+      var r  = 2.2 + Math.random() * 2.4;
+      var a  = Math.random() * Math.PI * 2;
+      var yv = (Math.random() - 0.5) * 4.6;
+      var sp = 0.1 + Math.random() * 0.5;
+      pRadii.push(r);
+      pAngles.push(a);
+      pHeights.push(yv);
+      pSpeeds.push(sp);
+      pTilt.push((Math.random() - 0.5) * 0.6);
+
+      pPositions[i*3]   = Math.cos(a) * r;
+      pPositions[i*3+1] = yv;
+      pPositions[i*3+2] = Math.sin(a) * r;
+
+      if (Math.random() > 0.5){
+        pColors[i*3] = 1.0; pColors[i*3+1] = 0.176; pColors[i*3+2] = 0.333; // #FF2D55
+      } else {
+        pColors[i*3] = 0.94; pColors[i*3+1] = 0.94; pColors[i*3+2] = 0.94; // #f0f0f0
+      }
+    }
+
+    var pGeo = new THREE.BufferGeometry();
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
+    pGeo.setAttribute('color',    new THREE.BufferAttribute(pColors, 3));
+
+    var pMat = new THREE.PointsMaterial({
+      size: 0.06,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.9,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      sizeAttenuation: true
+    });
+
+    var particles = new THREE.Points(pGeo, pMat);
+    scene.add(particles);
+
+    // ---- Interaction: drag to rotate, wheel/touch to zoom -------------------
     var isDragging = false;
     var prevX = 0, prevY = 0;
     var rotY = 0, rotX = 0;
-    var camDist = 7;
+    var camDist = 8;
     var autoRotate = true;
 
-    canvas.addEventListener('pointerdown', function(e){
+    function onPointerDown(e){
       isDragging = true;
       autoRotate = false;
       prevX = e.clientX;
       prevY = e.clientY;
-      canvas.setPointerCapture(e.pointerId);
-    });
-    canvas.addEventListener('pointermove', function(e){
+      try { canvas.setPointerCapture(e.pointerId); } catch(_) {}
+    }
+    function onPointerMove(e){
       if(!isDragging) return;
-      var dx = e.clientX - prevX;
-      var dy = e.clientY - prevY;
-      rotY += dx * 0.01;
-      rotX += dy * 0.01;
-      rotX = Math.max(-1.0, Math.min(1.0, rotX));
+      rotY += (e.clientX - prevX) * 0.008;
+      rotX += (e.clientY - prevY) * 0.006;
+      rotX = Math.max(-0.8, Math.min(0.8, rotX));
       prevX = e.clientX;
       prevY = e.clientY;
-    });
-    canvas.addEventListener('pointerup', function(e){
+    }
+    function onPointerUp(e){
       isDragging = false;
-      canvas.releasePointerCapture(e.pointerId);
-    });
-    canvas.addEventListener('pointercancel', function(){ isDragging = false; });
+      try { canvas.releasePointerCapture(e.pointerId); } catch(_) {}
+    }
+    canvas.addEventListener('pointerdown', onPointerDown);
+    canvas.addEventListener('pointermove', onPointerMove);
+    canvas.addEventListener('pointerup', onPointerUp);
+    canvas.addEventListener('pointercancel', onPointerUp);
 
     canvas.addEventListener('wheel', function(e){
       e.preventDefault();
-      camDist += e.deltaY * 0.01;
-      camDist = Math.max(4, Math.min(12, camDist));
+      camDist += e.deltaY * 0.008;
+      camDist = Math.max(5, Math.min(13, camDist));
     }, {passive: false});
 
     // Touch pinch zoom
-    var touches = [];
     var lastPinch = 0;
     canvas.addEventListener('touchstart', function(e){
       if(e.touches.length === 2){
@@ -1754,7 +1886,7 @@ body::after{
         var dy = e.touches[0].clientY - e.touches[1].clientY;
         lastPinch = Math.sqrt(dx*dx + dy*dy);
       }
-    });
+    }, {passive: true});
     canvas.addEventListener('touchmove', function(e){
       if(e.touches.length === 2){
         e.preventDefault();
@@ -1762,23 +1894,82 @@ body::after{
         var dy = e.touches[0].clientY - e.touches[1].clientY;
         var pinch = Math.sqrt(dx*dx + dy*dy);
         camDist += (lastPinch - pinch) * 0.02;
-        camDist = Math.max(4, Math.min(12, camDist));
+        camDist = Math.max(5, Math.min(13, camDist));
         lastPinch = pinch;
       }
     }, {passive: false});
 
+    // ---- Visibility / performance gating ------------------------------------
+    var tabVisible = true;
+    var profileTab = null;
+    // The 3D canvas lives in the "Profile" tab content. Find its container.
+    var canvasParent = canvas.closest('.profile-head-card') || canvas.closest('.athlete-3d-section');
+    function isCanvasOnScreen(){
+      var r = canvas.getBoundingClientRect();
+      return r.width > 0 && r.height > 0 && r.top < window.innerHeight && r.bottom > 0;
+    }
+
+    // Pause render loop when the profile tab is not visible
+    var profileVisible = true;
+    function checkProfileVisibility(){
+      profileVisible = isCanvasOnScreen();
+    }
+    // Initial check + watch tab switches + scroll + resize
+    checkProfileVisibility();
+    window.addEventListener('resize', checkProfileVisibility);
+    window.addEventListener('scroll', checkProfileVisibility, {passive: true});
+    document.querySelectorAll('.tab-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        setTimeout(function(){ resize(); checkProfileVisibility(); }, 200);
+      });
+    });
+    // Also use IntersectionObserver when available for finer control
+    if (typeof IntersectionObserver !== 'undefined'){
+      var io = new IntersectionObserver(function(entries){
+        profileVisible = entries[0].isIntersecting;
+      }, {threshold: 0.05});
+      io.observe(canvas);
+    }
+
+    // ---- Render loop --------------------------------------------------------
     var clock = new THREE.Clock();
     function animate(){
       requestAnimationFrame(animate);
-      if(autoRotate){ rotY += 0.005; }
-      // Apply rotation to camera position
+      if(!profileVisible) return; // performance: skip when not visible
+
+      if(autoRotate){ rotY += 0.0045; }
+
+      // Camera orbit
       var camX = Math.sin(rotY) * camDist;
       var camZ = Math.cos(rotY) * camDist;
-      var camY = 1 + rotX * 2;
+      var camY = 1 + rotX * 2.5;
       camera.position.set(camX, camY, camZ);
       camera.lookAt(0, 0.8, 0);
-      // Gentle bob
-      figure.position.y = -0.2 + Math.sin(clock.getElapsedTime() * 1.5) * 0.05;
+
+      // Gentle bob on the figure
+      figure.position.y = -0.1 + Math.sin(clock.getElapsedTime() * 1.2) * 0.04;
+
+      // Rotate the base rings counter to the figure for subtle motion
+      ring2.rotation.z += 0.004;
+      ring.rotation.z  -= 0.002;
+
+      // Animate particles — slow orbit + vertical drift
+      var t = clock.getElapsedTime();
+      var posAttr = pGeo.getAttribute('position');
+      for (var i = 0; i < particleCount; i++){
+        pAngles[i] += pSpeeds[i] * 0.0035;
+        var r = pRadii[i];
+        var a = pAngles[i];
+        var yy = pHeights[i] + Math.sin(t * pSpeeds[i] + i) * 0.3;
+        posAttr.array[i*3]   = Math.cos(a) * r;
+        posAttr.array[i*3+1] = yy;
+        posAttr.array[i*3+2] = Math.sin(a) * r;
+      }
+      posAttr.needsUpdate = true;
+
+      // Faint spin of the ghost particle cloud
+      particles.rotation.y = t * 0.05;
+
       renderer.render(scene, camera);
     }
     animate();
