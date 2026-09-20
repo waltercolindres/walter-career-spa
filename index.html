@@ -1823,13 +1823,27 @@ if (typeof THREE !== 'undefined' && typeof THREE.GLTFLoader === 'undefined' && t
       refineHands();
       modelLoaded = true;
       if(loadingEl) loadingEl.style.display = 'none';
+      console.log('[3D Athlete] Model loaded successfully. Meshes:', allBodyMeshes.length);
     }
 
     function onModelError(err){
       console.error('[3D Athlete] GLB load failed:', err);
-      modelLoaded = false;
-      if(loadingEl) loadingEl.style.display = 'none';
-      if(errorEl) errorEl.style.display = 'block';
+      // Try loading via fetch as fallback
+      fetch('/basketball-player.glb')
+        .then(function(r){ return r.arrayBuffer(); })
+        .then(function(buf){
+          var loader2 = new GLTFLoaderCtor();
+          loader2.parse(buf, '/', onModelLoaded, function(e){
+            console.error('[3D Athlete] Fallback parse also failed:', e);
+            if(loadingEl) loadingEl.style.display = 'none';
+            if(errorEl) errorEl.style.display = 'block';
+          });
+        })
+        .catch(function(e){
+          console.error('[3D Athlete] Fetch fallback failed:', e);
+          if(loadingEl) loadingEl.style.display = 'none';
+          if(errorEl) errorEl.style.display = 'block';
+        });
     }
 
     if(GLTFLoaderCtor){
