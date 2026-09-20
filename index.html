@@ -1678,9 +1678,9 @@ body::after{
     var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
     camera.position.set(0, 1, 8);
 
-    var renderer = new THREE.WebGLRenderer({canvas: canvas, alpha: true, antialias: true});
+    var renderer = new THREE.WebGLRenderer({canvas: canvas, alpha: false, antialias: true});
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
+    renderer.setClearColor(0x0a0a0c, 1);
 
     function resize(){
       var w = canvas.clientWidth || 400;
@@ -1737,7 +1737,7 @@ body::after{
       obj.traverse(function(o){
         if(o.isMesh){
           o.material = new THREE.MeshBasicMaterial({
-            color: RED, wireframe: true, transparent: true, opacity: 0.8, depthWrite: false
+            color: RED, wireframe: true, transparent: true, opacity: 0.9
           });
           o.userData.bodyPart = classifyBodyPart(o);
           allBodyMeshes.push(o);
