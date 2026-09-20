@@ -619,6 +619,42 @@ body::after{
   font-weight:700;
   color:var(--red);
 }
+#athleteLoading{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-family:var(--header-font);
+  font-size:0.7rem;
+  font-weight:700;
+  color:var(--red);
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+  z-index:6;
+  pointer-events:none;
+  text-shadow:0 0 12px rgba(255,45,85,0.4);
+}
+#athleteError{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-family:var(--body-font);
+  font-size:0.7rem;
+  color:var(--text-dim);
+  z-index:6;
+  pointer-events:none;
+  text-align:center;
+  max-width:260px;
+  padding:10px;
+}
+#athleteError .aerr-title{
+  font-family:var(--header-font);
+  font-weight:700;
+  color:var(--red);
+  margin-bottom:6px;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  font-size:0.65rem;
+}
 
 /* ===== TWO-COLUMN TEAM CARDS ===== */
 .player-card-body.two-col{
@@ -728,6 +764,8 @@ body::after{
       <div class="athlete-3d-section">
         <div class="athlete-3d-wrap">
           <canvas id="athleteCanvas"></canvas>
+          <div id="athleteLoading">LOADING...</div>
+          <div id="athleteError" style="display:none;"><div class="aerr-title">Model Load Failed</div>The 3D athlete model could not be loaded. Please refresh the page.</div>
           <div class="floating-stat" data-stat="sales" style="top:8%;left:8%;">$1B+</div>
           <div class="floating-stat" data-stat="platforms" style="top:18%;right:6%;">18+</div>
           <div class="floating-stat" data-stat="growth" style="top:42%;left:2%;">130%</div>
@@ -1103,6 +1141,7 @@ body::after{
 <div class="shot-chart-tooltip" id="shotChartTooltip"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
 (function(){
   'use strict';
@@ -1624,13 +1663,16 @@ body::after{
     });
   });
 
-  /* ===== 3D ATHLETE MODEL (Three.js — digital twin wireframe) ===== */
+  /* ===== 3D ATHLETE MODEL (Three.js — GLB digital twin, wireframe) ===== */
   (function init3DAthlete(){
     var canvas = document.getElementById('athleteCanvas');
     if(!canvas || typeof THREE === 'undefined') return;
 
     var RED   = 0xFF2D55;
     var WHITE = 0xf0f0f0;
+
+    var loadingEl = document.getElementById('athleteLoading');
+    var errorEl   = document.getElementById('athleteError');
 
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
@@ -1662,29 +1704,12 @@ body::after{
     rimLight.position.set(0, 2, -4);
     scene.add(rimLight);
 
-    // ---- Wireframe material helpers -----------------------------------------
+    // ---- Wireframe material --------------------------------------------------
     function wireMat(color, opacity){
       var op = opacity == null ? 0.8 : opacity;
       return new THREE.MeshBasicMaterial({
         color: color, wireframe: true, transparent: true, opacity: op, depthWrite: false
       });
-    }
-
-    // glowing wireframe mesh: sharp core + faint ghost halo
-    function glowMesh(geo, color, opacity){
-      opacity = opacity == null ? 0.8 : opacity;
-      var g = new THREE.Group();
-      var core = new THREE.Mesh(geo, wireMat(color, opacity));
-      g.add(core);
-      var ghostGeo = geo.clone();
-      ghostGeo.scale(1.05, 1.05, 1.05);
-      var ghost = new THREE.Mesh(ghostGeo, wireMat(color, 0.15));
-      g.add(ghost);
-      g.userData.coreMat = core.material;
-      g.userData.ghostMat = ghost.material;
-      g.userData.baseOpacity = opacity;
-      g.userData.baseColor = color;
-      return g;
     }
 
     // ---- Skill data mapped to body parts ------------------------------------
@@ -1695,191 +1720,125 @@ body::after{
       legs:  { label:'Foundation · Infrastructure',   stats:[['E-commerce',99],['Mobile Apps',99],['QSR / Restaurant Tech',99]] }
     };
 
-    // ---- Athlete figure (digital twin, mid-air dunk) ------------------------
-    var figure = new THREE.Group();
-    scene.add(figure);
+    // ---- Model group (loaded GLB goes here) ----------------------------------
+    var modelRoot = new THREE.Group();
+    scene.add(modelRoot);
 
-    // interactive body-part groups
-    var headGroup  = new THREE.Group(); headGroup.userData.bodyPart  = 'head';
-    var armsGroup  = new THREE.Group(); armsGroup.userData.bodyPart  = 'arms';
-    var handsGroup = new THREE.Group(); handsGroup.userData.bodyPart = 'hands';
-    var legsGroup  = new THREE.Group(); legsGroup.userData.bodyPart  = 'legs';
-    figure.add(headGroup, armsGroup, handsGroup, legsGroup);
+    // bounding box for body-part region mapping (set after load)
+    var modelBox = null;
+    var allBodyMeshes = [];
+    var interactiveGroups = [];
 
-    // HEAD — icosahedron + neck
-    var head = glowMesh(new THREE.IcosahedronGeometry(0.4, 0), WHITE, 0.9);
-    head.position.set(0, 2.4, 0);
-    headGroup.add(head);
-    var neck = glowMesh(new THREE.CylinderGeometry(0.12, 0.15, 0.2, 8), RED, 0.7);
-    neck.position.set(0, 2.0, 0);
-    headGroup.add(neck);
+    // ---- Load GLB model -----------------------------------------------------
+    var modelLoaded = false;
+    var GLTFLoaderCtor = (typeof THREE !== 'undefined' && THREE.GLTFLoader) ? THREE.GLTFLoader : null;
 
-    // TORSO (core, non-interactive) — tapered cylinder, tilted forward
-    var torso = glowMesh(new THREE.CylinderGeometry(0.5, 0.36, 1.3, 14, 6, true), RED, 0.85);
-    torso.position.set(0, 1.2, 0);
-    torso.rotation.x = 0.1;
-    figure.add(torso);
+    function applyWireframe(obj){
+      obj.traverse(function(o){
+        if(o.isMesh){
+          o.material = new THREE.MeshBasicMaterial({
+            color: RED, wireframe: true, transparent: true, opacity: 0.8, depthWrite: false
+          });
+          o.userData.bodyPart = classifyBodyPart(o);
+          allBodyMeshes.push(o);
+        }
+      });
+    }
 
-    var pelvis = glowMesh(new THREE.CylinderGeometry(0.32, 0.28, 0.28, 10), WHITE, 0.7);
-    pelvis.position.set(0, 0.4, 0);
-    figure.add(pelvis);
-
-    // ARMS — dunk arm raised UP, balance arm extended out
-    var rUpper = glowMesh(new THREE.CylinderGeometry(0.12, 0.1, 0.7, 8), WHITE, 0.8);
-    rUpper.position.set(0.5, 1.85, 0); rUpper.rotation.z = -0.6;
-    armsGroup.add(rUpper);
-    var rFore = glowMesh(new THREE.CylinderGeometry(0.09, 0.08, 0.7, 8), RED, 0.8);
-    rFore.position.set(0.95, 2.35, 0); rFore.rotation.z = -0.3;
-    armsGroup.add(rFore);
-
-    var lUpper = glowMesh(new THREE.CylinderGeometry(0.12, 0.1, 0.7, 8), RED, 0.8);
-    lUpper.position.set(-0.5, 1.7, 0); lUpper.rotation.z = 0.5;
-    armsGroup.add(lUpper);
-    var lFore = glowMesh(new THREE.CylinderGeometry(0.09, 0.08, 0.6, 8), WHITE, 0.8);
-    lFore.position.set(-0.78, 1.15, 0.1); lFore.rotation.z = 0.15;
-    armsGroup.add(lFore);
-
-    // HANDS — octahedrons + basketball in the dunking hand
-    var rHand = glowMesh(new THREE.OctahedronGeometry(0.14, 0), WHITE, 0.85);
-    rHand.position.set(1.2, 2.7, 0);
-    handsGroup.add(rHand);
-    var lHand = glowMesh(new THREE.OctahedronGeometry(0.12, 0), RED, 0.85);
-    lHand.position.set(-0.82, 0.8, 0.15);
-    handsGroup.add(lHand);
-
-    var ball = glowMesh(new THREE.SphereGeometry(0.28, 14, 12), RED, 0.9);
-    ball.position.set(1.2, 3.0, 0.05);
-    handsGroup.add(ball);
-    var seam1 = new THREE.Mesh(new THREE.TorusGeometry(0.29, 0.008, 6, 28), wireMat(WHITE, 0.5));
-    seam1.rotation.x = Math.PI / 2; seam1.position.copy(ball.position);
-    handsGroup.add(seam1);
-    var seam2 = new THREE.Mesh(new THREE.TorusGeometry(0.29, 0.008, 6, 28), wireMat(WHITE, 0.5));
-    seam2.rotation.y = Math.PI / 2; seam2.position.copy(ball.position);
-    handsGroup.add(seam2);
-
-    // LEGS — athletic split (one forward, one back)
-    var lThigh = glowMesh(new THREE.CylinderGeometry(0.15, 0.12, 0.8, 8), RED, 0.8);
-    lThigh.position.set(-0.2, -0.05, 0.05); lThigh.rotation.z = 0.12;
-    legsGroup.add(lThigh);
-    var lShin = glowMesh(new THREE.CylinderGeometry(0.11, 0.09, 0.85, 8), WHITE, 0.8);
-    lShin.position.set(-0.06, -0.85, 0.18); lShin.rotation.z = -0.08;
-    legsGroup.add(lShin);
-    var rThigh = glowMesh(new THREE.CylinderGeometry(0.15, 0.12, 0.8, 8), WHITE, 0.8);
-    rThigh.position.set(0.2, -0.05, -0.05); rThigh.rotation.z = -0.15;
-    legsGroup.add(rThigh);
-    var rShin = glowMesh(new THREE.CylinderGeometry(0.11, 0.09, 0.9, 8), RED, 0.8);
-    rShin.position.set(0.1, -0.9, -0.2); rShin.rotation.z = 0.1;
-    legsGroup.add(rShin);
-
-    // FEET — small boxes
-    var lFoot = glowMesh(new THREE.BoxGeometry(0.22, 0.1, 0.3), RED, 0.7);
-    lFoot.position.set(-0.08, -1.32, 0.28);
-    legsGroup.add(lFoot);
-    var rFoot = glowMesh(new THREE.BoxGeometry(0.22, 0.1, 0.3), WHITE, 0.7);
-    rFoot.position.set(0.08, -1.4, -0.28);
-    legsGroup.add(rFoot);
-
-    figure.position.y = 0.1;
-
-    // ---- Point-cloud overlay (digital-twin mesh particles) ------------------
-    var pcCount = 700;
-    var pcPos = new Float32Array(pcCount * 3);
-    var pcCol = new Float32Array(pcCount * 3);
-    for (var i = 0; i < pcCount; i++){
-      pcPos[i*3]   = (Math.random() - 0.5) * 2.4;
-      pcPos[i*3+1] = -1.5 + Math.random() * 4.8;
-      pcPos[i*3+2] = (Math.random() - 0.5) * 1.2;
-      if (Math.random() > 0.5){
-        pcCol[i*3]=1.0; pcCol[i*3+1]=0.176; pcCol[i*3+2]=0.333;       // #FF2D55
+    // Classify a mesh into a body-part based on its world Y position relative to the model bbox.
+    function classifyBodyPart(mesh){
+      if(!modelBox) return 'legs';
+      var box = modelBox;
+      var pos = new THREE.Vector3();
+      mesh.getWorldPosition(pos);
+      var relY = (pos.y - box.min.y) / (box.max.y - box.min.y); // 0 = feet, 1 = head
+      // top 20% => head, 20-60% => torso/arms, 60-100% => legs
+      // but hands are at ~40% (mid-torso) — detect by x-extent
+      if(relY >= 0.80){
+        return 'head';
+      } else if(relY >= 0.40){
+        // Distinguish arms vs hands: hands are the extreme-x meshes in mid band.
+        // We'll tag as arms by default; hands detected separately below.
+        return 'arms';
       } else {
-        pcCol[i*3]=0.94; pcCol[i*3+1]=0.94; pcCol[i*3+2]=0.94;        // #f0f0f0
+        return 'legs';
       }
     }
-    var pcGeo = new THREE.BufferGeometry();
-    pcGeo.setAttribute('position', new THREE.BufferAttribute(pcPos, 3));
-    pcGeo.setAttribute('color',    new THREE.BufferAttribute(pcCol, 3));
-    var pcMat = new THREE.PointsMaterial({
-      size: 0.1, vertexColors: true, transparent: true, opacity: 0.6,
-      blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
-    });
-    var pointCloud = new THREE.Points(pcGeo, pcMat);
-    figure.add(pointCloud);
 
-    // ---- Motion trails: kinetic energy rings -------------------------------
-    var rings = [];
-    function makeRing(radius, tube, color, opacity, pos, euler){
-      var m = new THREE.Mesh(new THREE.TorusGeometry(radius, tube, 10, 80), wireMat(color, opacity));
-      m.position.copy(pos);
-      m.rotation.set(euler.x, euler.y, euler.z);
-      m.userData.spinSpeed = 0.01 + Math.random() * 0.015;
-      figure.add(m);
-      rings.push(m);
-      return m;
-    }
-    makeRing(0.80, 0.030, RED, 0.45, new THREE.Vector3(0, 0.5, 0),  new THREE.Euler(Math.PI/2, 0, 0));
-    makeRing(0.50, 0.025, RED, 0.50, new THREE.Vector3(0.9, 2.2, 0),new THREE.Euler(0, 0, Math.PI/2));
-    makeRing(0.70, 0.020, RED, 0.35, new THREE.Vector3(0, -0.5, 0), new THREE.Euler(Math.PI/2, 0, 0));
-    makeRing(0.65, 0.020, RED, 0.30, new THREE.Vector3(0, 1.2, 0),  new THREE.Euler(Math.PI/2, 0.3, 0.2));
-
-    // ---- Data panel (floating analytics UI) ---------------------------------
-    var panelGroup = new THREE.Group();
-    panelGroup.position.set(-2.2, 1.2, 0.5);
-    scene.add(panelGroup);
-
-    var panelW = 1.1, panelH = 0.9;
-    var border = new THREE.Mesh(
-      new THREE.PlaneGeometry(panelW + 0.06, panelH + 0.06),
-      new THREE.MeshBasicMaterial({ color: RED, transparent: true, opacity: 0.85, side: THREE.DoubleSide, depthWrite: false })
-    );
-    panelGroup.add(border);
-    var face = new THREE.Mesh(
-      new THREE.PlaneGeometry(panelW, panelH),
-      new THREE.MeshBasicMaterial({ color: 0x0a0a0c, transparent: true, opacity: 0.88, side: THREE.DoubleSide, depthWrite: false })
-    );
-    face.position.z = 0.01;
-    panelGroup.add(face);
-
-    function makeTextSprite(text, color){
-      var cv = document.createElement('canvas');
-      cv.width = 256; cv.height = 64;
-      var ctx = cv.getContext('2d');
-      ctx.fillStyle = color;
-      ctx.font = 'bold 26px monospace';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(text, 8, 32);
-      var tex = new THREE.CanvasTexture(cv);
-      var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
-      sp.scale.set(0.95, 0.22, 1);
-      return sp;
-    }
-    var statLines  = ['VERT: 36"', 'SPEED: 24.1 mph', 'HANG: 0.82s', 'POWER: 98%'];
-    var statColors = ['#FF2D55', '#f0f0f0', '#FF2D55', '#f0f0f0'];
-    for (var si = 0; si < statLines.length; si++){
-      var sp = makeTextSprite(statLines[si], statColors[si]);
-      sp.position.set(0, 0.34 - si * 0.22, 0.02);
-      panelGroup.add(sp);
+    // Second pass: identify hands as the two meshes with max |x| in the mid band.
+    function refineHands(){
+      if(!modelBox) return;
+      var midBand = allBodyMeshes.filter(function(m){
+        var p = new THREE.Vector3(); m.getWorldPosition(p);
+        var relY = (p.y - modelBox.min.y) / (modelBox.max.y - modelBox.min.y);
+        return relY >= 0.40 && relY < 0.80;
+      });
+      if(midBand.length < 3) return; // not enough to distinguish
+      midBand.sort(function(a,b){
+        var pa = new THREE.Vector3(); a.getWorldPosition(pa);
+        var pb = new THREE.Vector3(); b.getWorldPosition(pb);
+        return (Math.abs(pb.x) + Math.abs(pb.z)) - (Math.abs(pa.x) + Math.abs(pa.z));
+      });
+      // The two most extreme (likely hands) — but only if their x-extent is notably large.
+      // Keep it conservative: tag top-2 as hands only if their |x| > 25% of bbox width.
+      var bboxW = modelBox.max.x - modelBox.min.x;
+      var tagged = 0;
+      for(var i = 0; i < Math.min(2, midBand.length); i++){
+        var p = new THREE.Vector3(); midBand[i].getWorldPosition(p);
+        if(Math.abs(p.x) > 0.25 * bboxW){
+          midBand[i].userData.bodyPart = 'hands';
+          tagged++;
+        }
+      }
     }
 
-    // connecting callout line (panel → athlete), in scene space
-    var lineGeo = new THREE.BufferGeometry();
-    lineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-1.6, 1.15, 0.45, -0.35, 1.0, 0.0]), 3));
-    var callout = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: RED, transparent: true, opacity: 0.5 }));
-    scene.add(callout);
+    function fitModelToView(obj){
+      var box = new THREE.Box3().setFromObject(obj);
+      if(box.isEmpty()) return;
+      // recenter
+      var center = box.getCenter(new THREE.Vector3());
+      obj.position.sub(center);
+      // scale to fit ~4 unit height
+      var size = box.getSize(new THREE.Vector3());
+      var maxDim = Math.max(size.x, size.y, size.z);
+      if(maxDim > 0){
+        var scale = 4.0 / maxDim;
+        obj.scale.setScalar(scale);
+      }
+      // recompute box after transform for body-part classification
+      modelBox = new THREE.Box3().setFromObject(obj);
+    }
 
-    // ---- Ground reflection --------------------------------------------------
-    var floor = new THREE.Mesh(
-      new THREE.PlaneGeometry(10, 10),
-      new THREE.MeshBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.3, depthWrite: false })
-    );
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -1.7;
-    scene.add(floor);
+    function onModelLoaded(gltf){
+      var obj = gltf.scene || gltf;
+      modelRoot.add(obj);
+      fitModelToView(obj);
+      applyWireframe(obj);
+      refineHands();
+      modelLoaded = true;
+      if(loadingEl) loadingEl.style.display = 'none';
+    }
 
-    // base platform ring
-    var baseRing = new THREE.Mesh(new THREE.TorusGeometry(1.8, 0.03, 10, 80), wireMat(RED, 0.5));
-    baseRing.rotation.x = Math.PI / 2;
-    baseRing.position.y = -1.69;
-    scene.add(baseRing);
+    function onModelError(err){
+      console.error('[3D Athlete] GLB load failed:', err);
+      modelLoaded = false;
+      if(loadingEl) loadingEl.style.display = 'none';
+      if(errorEl) errorEl.style.display = 'block';
+    }
+
+    if(GLTFLoaderCtor){
+      var loader = new GLTFLoaderCtor();
+      loader.load(
+        '/basketball-player.glb',
+        onModelLoaded,
+        function(progress){ /* could update loading % here */ },
+        onModelError
+      );
+    } else {
+      // Fallback: if GLTFLoader is unavailable, try THREE.ObjectLoader (won't parse GLB binary,
+      // but at least surface a clear error instead of crashing).
+      onModelError(new Error('GLTFLoader not available on the THREE global.'));
+    }
 
     // ---- Interaction: orbit + zoom (lerp-damped) ----------------------------
     var isDragging = false;
@@ -1941,17 +1900,6 @@ body::after{
     // ---- Raycasting: body-part hover + click --------------------------------
     var raycaster = new THREE.Raycaster();
     var pointerNDC = new THREE.Vector2();
-    var interactiveGroups = [headGroup, armsGroup, handsGroup, legsGroup];
-    var allBodyMeshes = [];
-    interactiveGroups.forEach(function(grp){
-      grp.traverse(function(o){
-        if(o.isMesh){
-          o.userData.bodyPart = grp.userData.bodyPart;
-          o.userData.parentGroup = grp;
-          allBodyMeshes.push(o);
-        }
-      });
-    });
 
     var hoveredPart = null;
     var pulseStates = {};
@@ -1964,14 +1912,12 @@ body::after{
     wrap.appendChild(tooltip);
 
     function setHighlight(part, on){
-      interactiveGroups.forEach(function(grp){
-        if(grp.userData.bodyPart === part){
-          grp.traverse(function(o){
-            if(o.userData && o.userData.coreMat){
-              o.userData.coreMat.opacity = on ? 1.0 : o.userData.baseOpacity;
-              o.userData.ghostMat.opacity = on ? 0.45 : 0.15;
-            }
-          });
+      allBodyMeshes.forEach(function(o){
+        if(o.userData.bodyPart === part){
+          if(o.material && o.material.opacity !== undefined){
+            o.userData._baseOpacity = o.userData._baseOpacity || o.material.opacity;
+            o.material.opacity = on ? 1.0 : o.userData._baseOpacity;
+          }
         }
       });
     }
@@ -1992,6 +1938,7 @@ body::after{
     }
 
     function handleHover(e){
+      if(!modelLoaded || allBodyMeshes.length === 0) return;
       var rect = canvas.getBoundingClientRect();
       pointerNDC.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       pointerNDC.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -2014,6 +1961,7 @@ body::after{
     }
 
     canvas.addEventListener('click', function(e){
+      if(!modelLoaded || allBodyMeshes.length === 0) return;
       var rect = canvas.getBoundingClientRect();
       pointerNDC.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       pointerNDC.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -2031,7 +1979,10 @@ body::after{
       var r = canvas.getBoundingClientRect();
       return r.width > 0 && r.height > 0 && r.top < window.innerHeight && r.bottom > 0;
     }
-    function checkProfileVisibility(){ profileVisible = isCanvasOnScreen(); }
+    function checkProfileVisibility(){
+      var tab = document.getElementById('tab-profile');
+      profileVisible = !!(tab && tab.classList.contains('active')) && isCanvasOnScreen();
+    }
     checkProfileVisibility();
     window.addEventListener('resize', function(){ resize(); checkProfileVisibility(); });
     window.addEventListener('scroll', checkProfileVisibility, {passive: true});
@@ -2040,7 +1991,7 @@ body::after{
     });
     if(typeof IntersectionObserver !== 'undefined'){
       var io = new IntersectionObserver(function(entries){
-        profileVisible = entries[0].isIntersecting;
+        profileVisible = entries[0].isIntersecting && (document.getElementById('tab-profile').classList.contains('active'));
       }, {threshold: 0.05});
       io.observe(canvas);
     }
@@ -2065,32 +2016,26 @@ body::after{
 
       var t = clock.getElapsedTime();
 
-      // figure bob
-      figure.position.y = 0.1 + Math.sin(t * 1.2) * 0.05;
+      // model bob
+      if(modelLoaded){
+        modelRoot.position.y = 0.1 + Math.sin(t * 1.2) * 0.05;
+      }
 
-      // panel bob + face the camera
-      panelGroup.position.y = 1.2 + Math.sin(t * 0.8) * 0.1;
-      panelGroup.lookAt(camera.position);
-
-      // energy rings spin + pulsate
-      rings.forEach(function(ring, idx){
-        ring.rotation.z += ring.userData.spinSpeed;
-        var s = 1 + Math.sin(t * 2 + idx) * 0.08;
-        ring.scale.set(s, s, s);
-      });
-
-      // point cloud slow spin
-      pointCloud.rotation.y = t * 0.05;
-
-      // click pulse
+      // click pulse — scale meshes belonging to the pulsed part
       ['head','arms','hands','legs'].forEach(function(part){
         if(pulseStates[part] && pulseStates[part].active){
           pulseStates[part].t += 0.06;
           var pt = pulseStates[part].t;
-          var grp = interactiveGroups.find(function(g){ return g.userData.bodyPart === part; });
-          if(grp){
-            if(pt > 1){ pulseStates[part].active = false; grp.scale.set(1, 1, 1); }
-            else { var ps = 1 + Math.sin(pt * Math.PI) * 0.25; grp.scale.set(ps, ps, ps); }
+          if(pt > 1){
+            pulseStates[part].active = false;
+            allBodyMeshes.forEach(function(o){
+              if(o.userData.bodyPart === part) o.scale.set(1,1,1);
+            });
+          } else {
+            var ps = 1 + Math.sin(pt * Math.PI) * 0.25;
+            allBodyMeshes.forEach(function(o){
+              if(o.userData.bodyPart === part) o.scale.set(ps, ps, ps);
+            });
           }
         }
       });
