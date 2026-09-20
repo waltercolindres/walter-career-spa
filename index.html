@@ -1818,14 +1818,17 @@ body::after{
 
     function onModelLoaded(gltf){
       var obj = gltf.scene || gltf;
-      modelRoot.add(obj);
+      // Add directly to scene (not modelRoot) for debugging
+      scene.add(obj);
       
       // Auto-scale: compute bounding box, center and scale to fit
       var box = new THREE.Box3().setFromObject(obj);
+      console.log('[3D Athlete] Bounding box:', JSON.stringify({min: [box.min.x, box.min.y, box.min.z], max: [box.max.x, box.max.y, box.max.z], empty: box.isEmpty()}));
       if(!box.isEmpty()){
         var center = box.getCenter(new THREE.Vector3());
         var size = box.getSize(new THREE.Vector3());
         var maxDim = Math.max(size.x, size.y, size.z);
+        console.log('[3D Athlete] Size:', JSON.stringify({w: size.x, h: size.y, d: size.z, maxDim: maxDim}));
         if(maxDim > 0){
           obj.position.sub(center);
           obj.scale.setScalar(4.0 / maxDim);
@@ -1833,14 +1836,17 @@ body::after{
       }
       
       // Apply wireframe material to all meshes
+      var meshCount = 0;
       obj.traverse(function(o){
         if(o.isMesh || o.isSkinnedMesh || o.type === 'Mesh' || o.type === 'SkinnedMesh'){
           o.material = new THREE.MeshBasicMaterial({
             color: 0xFF2D55, wireframe: true, transparent: true, opacity: 0.9
           });
           allBodyMeshes.push(o);
+          meshCount++;
         }
       });
+      console.log('[3D Athlete] Meshes found:', meshCount, 'All body meshes:', allBodyMeshes.length);
       
       // Simple body part classification based on Y position
       if(allBodyMeshes.length > 0){
