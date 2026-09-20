@@ -1143,6 +1143,12 @@ body::after{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
+// Ensure GLTFLoader is on THREE global (some CDN builds don't attach it)
+if (typeof THREE !== 'undefined' && typeof THREE.GLTFLoader === 'undefined' && typeof GLTFLoader !== 'undefined') {
+  THREE.GLTFLoader = GLTFLoader;
+}
+</script>
+<script>
 (function(){
   'use strict';
 
