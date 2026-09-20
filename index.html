@@ -1853,6 +1853,13 @@ body::after{
       modelLoaded = true;
       if(loadingEl) loadingEl.style.display = 'none';
       console.log('[3D Athlete] Model loaded. Meshes:', allBodyMeshes.length);
+      
+      // Debug: add a visible test cube to verify rendering works
+      var testGeo = new THREE.BoxGeometry(2, 2, 2);
+      var testMat = new THREE.MeshBasicMaterial({color: 0x00ff00, wireframe: true});
+      var testCube = new THREE.Mesh(testGeo, testMat);
+      scene.add(testCube);
+      console.log('[3D Athlete] Test cube added. Scene children:', scene.children.length);
     }
 
     function onModelError(err){
