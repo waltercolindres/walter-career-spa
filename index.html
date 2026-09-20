@@ -722,8 +722,9 @@ body::after{
 
 <!-- ===== TABS ===== -->
 <div class="tabs">
-  <button class="tab-btn active" data-tab="profile">Player Profile</button>
-  <button class="tab-btn" data-tab="metrics">Metrics</button>
+  <button class="tab-btn active" data-tab="profile">Profile</button>
+  <button class="tab-btn" data-tab="traits">Traits</button>
+  <button class="tab-btn" data-tab="analytics">Analytics</button>
 </div>
 
 <!-- ===== TAB: PLAYER PROFILE ===== -->
@@ -761,22 +762,6 @@ body::after{
             <span class="profile-head-tag">4 Countries</span>
           </div>
         </div>
-      </div>
-
-      <!-- 3D Athlete Model -->
-      <div class="athlete-3d-section">
-        <div class="athlete-3d-wrap">
-          <canvas id="athleteCanvas"></canvas>
-          <div id="athleteLoading">LOADING...</div>
-          <div id="athleteError" style="display:none;"><div class="aerr-title">Model Load Failed</div>The 3D athlete model could not be loaded. Please refresh the page.</div>
-          <div class="floating-stat" data-stat="sales" style="top:8%;left:8%;">$1B+</div>
-          <div class="floating-stat" data-stat="platforms" style="top:18%;right:6%;">18+</div>
-          <div class="floating-stat" data-stat="growth" style="top:42%;left:2%;">130%</div>
-          <div class="floating-stat" data-stat="countries" style="bottom:30%;right:4%;">4</div>
-          <div class="floating-stat" data-stat="teammates" style="bottom:14%;left:10%;">100+</div>
-          <div class="floating-stat" data-stat="pay" style="bottom:8%;right:12%;">$94M</div>
-        </div>
-        <div class="athlete-3d-label">ATHLETE MODEL · CAREER ANALYTICS</div>
       </div>
 
     </div>
@@ -838,8 +823,44 @@ body::after{
 
 </div><!-- /tab-profile -->
 
-<!-- ===== TAB: METRICS ===== -->
-<div class="tab-pane" id="tab-metrics">
+<!-- ===== TAB: TRAITS ===== -->
+<div class="tab-pane" id="tab-traits">
+
+  <!-- 3D Athlete Model (centerpiece) -->
+  <div class="athlete-3d-section">
+    <div class="section-header" style="margin-bottom:18px;">
+      <div class="section-eyebrow">Digital Twin · Interactive Career Model</div>
+      <h2 class="section-title">Traits &amp; <span>Intangibles</span></h2>
+      <p class="section-sub">A live holographic readout of how Walter is built. Drag to rotate · scroll to zoom · hover a body region for the skill breakdown.</p>
+    </div>
+    <div class="athlete-3d-wrap">
+      <canvas id="athleteCanvas"></canvas>
+      <div id="athleteLoading">LOADING...</div>
+      <div id="athleteError" style="display:none;"><div class="aerr-title">Model Load Failed</div>The 3D athlete model could not be loaded. Please refresh the page.</div>
+      <div class="floating-stat" data-stat="sales" style="top:8%;left:8%;">$1B+</div>
+      <div class="floating-stat" data-stat="platforms" style="top:18%;right:6%;">18+</div>
+      <div class="floating-stat" data-stat="growth" style="top:42%;left:2%;">130%</div>
+      <div class="floating-stat" data-stat="countries" style="bottom:30%;right:4%;">4</div>
+      <div class="floating-stat" data-stat="teammates" style="bottom:14%;left:10%;">100+</div>
+      <div class="floating-stat" data-stat="pay" style="bottom:8%;right:12%;">$94M</div>
+    </div>
+    <div class="athlete-3d-label">ATHLETE MODEL · CAREER ANALYTICS</div>
+  </div>
+
+  <!-- Skills / Toolkit -->
+  <div class="section reveal">
+    <div class="section-header">
+      <div class="section-eyebrow">Player Attributes</div>
+      <h2 class="section-title">The <span>Toolkit</span></h2>
+      <p class="section-sub">Every skill Walter brings to the floor — rated like NBA 2K attribute bars.</p>
+    </div>
+    <div class="skills-grid" id="skillsGrid"></div>
+  </div>
+
+</div><!-- /tab-traits -->
+
+<!-- ===== TAB: ANALYTICS ===== -->
+<div class="tab-pane" id="tab-analytics">
 
   <!-- Shot Chart -->
   <div class="shot-chart-section">
@@ -1125,17 +1146,7 @@ body::after{
     </div>
   </div>
 
-  <!-- Skills -->
-  <div class="section reveal">
-    <div class="section-header">
-      <div class="section-eyebrow">Player Attributes</div>
-      <h2 class="section-title">The <span>Toolkit</span></h2>
-      <p class="section-sub">Every skill Walter brings to the floor — rated like NBA 2K attribute bars.</p>
-    </div>
-    <div class="skills-grid" id="skillsGrid"></div>
-  </div>
-
-</div><!-- /tab-metrics -->
+</div><!-- /tab-analytics -->
 
 <div class="footer">
   Walter Colindres · Career Analytics <span>·</span> Built for <span>Genius Sports</span> · #23
@@ -1190,8 +1201,8 @@ body::after{
             cardObserver.observe(card);
           }
         });
-        // Re-trigger hex animation if on metrics tab
-        if(tab === 'metrics'){
+        // Re-trigger hex animation if on analytics tab
+        if(tab === 'analytics'){
           hexesAnimated = false;
           var hexes = document.querySelectorAll('.shot-chart-hex');
           hexes.forEach(function(h){ h.style.opacity = '0'; });
@@ -1285,7 +1296,7 @@ body::after{
 
   function triggerAnimations(){
     triggerCountUp();
-    if(document.getElementById('tab-metrics').classList.contains('active')){
+    if(document.getElementById('tab-traits') && document.getElementById('tab-traits').classList.contains('active')){
       animateSkills();
     }
   }
