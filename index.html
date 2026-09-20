@@ -1741,7 +1741,7 @@ if (typeof THREE !== 'undefined' && typeof THREE.GLTFLoader === 'undefined' && t
 
     function applyWireframe(obj){
       obj.traverse(function(o){
-        if(o.isMesh){
+        if(o.isMesh || o.isSkinnedMesh || o.type === 'Mesh' || o.type === 'SkinnedMesh'){
           o.material = new THREE.MeshBasicMaterial({
             color: RED, wireframe: true, transparent: true, opacity: 0.9
           });
@@ -1823,7 +1823,21 @@ if (typeof THREE !== 'undefined' && typeof THREE.GLTFLoader === 'undefined' && t
       refineHands();
       modelLoaded = true;
       if(loadingEl) loadingEl.style.display = 'none';
-      console.log('[3D Athlete] Model loaded successfully. Meshes:', allBodyMeshes.length);
+      // Debug: log what we got
+      var meshCount = 0;
+      obj.traverse(function(o){ if(o.isMesh || o.isSkinnedMesh) meshCount++; });
+      console.log('[3D Athlete] Loaded. Total meshes:', meshCount, 'Wireframed:', allBodyMeshes.length);
+      // If no meshes found, try rendering with original materials
+      if(allBodyMeshes.length === 0){
+        obj.traverse(function(o){
+          if(o.geometry){
+            meshCount++;
+            if(!o.material) o.material = new THREE.MeshNormalMaterial({wireframe: true});
+            allBodyMeshes.push(o);
+          }
+        });
+        console.log('[3D Athlete] Fallback: found', allBodyMeshes.length, 'objects with geometry');
+      }
     }
 
     function onModelError(err){
