@@ -1696,6 +1696,13 @@ body::after{
     var ambient = new THREE.AmbientLight(0xffffff, 0.3);
     scene.add(ambient);
 
+    // Debug: add test cube IMMEDIATELY (not in loader callback)
+    var testGeo = new THREE.BoxGeometry(2, 2, 2);
+    var testMat = new THREE.MeshBasicMaterial({color: 0x00ff00, wireframe: false});
+    var testCube = new THREE.Mesh(testGeo, testMat);
+    scene.add(testCube);
+    console.log('[3D Athlete] Test cube added immediately. Scene children:', scene.children.length);
+
     var underLight = new THREE.PointLight(0xff2d55, 0.5, 20, 1.4);
     underLight.position.set(0, -2, 0.8);
     scene.add(underLight);
