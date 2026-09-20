@@ -1826,7 +1826,7 @@ body::after{
       
       obj.traverse(function(o){
         if(o.isMesh || o.isSkinnedMesh || o.type === 'Mesh' || o.type === 'SkinnedMesh'){
-          o.material = new THREE.MeshNormalMaterial({wireframe: true});
+          o.material = new THREE.MeshBasicMaterial({color: 0xFF2D55, wireframe: false});
           allBodyMeshes.push(o);
         }
       });
