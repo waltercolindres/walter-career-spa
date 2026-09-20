@@ -1663,28 +1663,30 @@ body::after{
     });
   });
 
-  /* ===== 3D ATHLETE MODEL (Three.js — GLB digital twin, wireframe) ===== */
+  /* ===== 3D ATHLETE MODEL (Three.js — simple working GLB, wireframe + interactive body parts) ===== */
   (function init3DAthlete(){
     var canvas = document.getElementById('athleteCanvas');
-    if(!canvas || typeof THREE === 'undefined') return;
+    if(!canvas || typeof THREE === 'undefined' || !THREE.GLTFLoader) return;
 
-    var RED   = 0xFF2D55;
-    var WHITE = 0xf0f0f0;
-
+    var RED = 0xFF2D55;
     var loadingEl = document.getElementById('athleteLoading');
     var errorEl   = document.getElementById('athleteError');
 
+    /* ---- Scene / camera / renderer (simple model-test.html approach) ---- */
     var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    camera.position.set(0, 1, 8);
+    scene.background = new THREE.Color(0x0a0a0c);
 
-    var renderer = new THREE.WebGLRenderer({canvas: canvas, alpha: false, antialias: true});
+    var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+    camera.position.set(0, 0, 8);
+
+    var renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true});
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x0a0a0c, 1);
 
     function resize(){
       var w = canvas.clientWidth || 400;
       var h = canvas.clientHeight || 380;
+      if(w < 2 || h < 2){ w = 400; h = 380; }
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
@@ -1692,209 +1694,103 @@ body::after{
     resize();
     window.addEventListener('resize', resize);
 
-    // ---- Lighting -----------------------------------------------------------
-    var ambient = new THREE.AmbientLight(0xffffff, 0.3);
-    scene.add(ambient);
+    /* ---- Lights ---- */
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    var dir = new THREE.DirectionalLight(0xffffff, 1);
+    dir.position.set(5, 10, 7);
+    scene.add(dir);
 
-    var underLight = new THREE.PointLight(0xff2d55, 0.5, 20, 1.4);
-    underLight.position.set(0, -2, 0.8);
-    scene.add(underLight);
+    /* ---- Model group (we rotate this, not the camera) ---- */
+    var model = new THREE.Group();
+    scene.add(model);
 
-    var rimLight = new THREE.PointLight(0xffffff, 0.3, 20, 1.4);
-    rimLight.position.set(0, 2, -4);
-    scene.add(rimLight);
-
-    // ---- Wireframe material --------------------------------------------------
-    function wireMat(color, opacity){
-      var op = opacity == null ? 0.8 : opacity;
-      return new THREE.MeshBasicMaterial({
-        color: color, wireframe: true, transparent: true, opacity: op, depthWrite: false
-      });
-    }
-
-    // ---- Skill data mapped to body parts ------------------------------------
-    var skillStats = {
-      head:  { label:'Thinking · Thought Leadership', stats:[['Product Strategy',99],['Roadmap & OKRs',98],['Executive Communication',96]] },
-      arms:  { label:'Reach · Growth',                stats:[['Go-to-Market',95],['Omnichannel',96],['Loyalty & Retention',97]] },
-      hands: { label:'Execution · Delivery',          stats:[['A/B Testing',95],['Conversion Optimization',99],['Agile Delivery',97]] },
-      legs:  { label:'Foundation · Infrastructure',   stats:[['E-commerce',99],['Mobile Apps',99],['QSR / Restaurant Tech',99]] }
-    };
-
-    // ---- Model group (loaded GLB goes here) ----------------------------------
-    var modelRoot = new THREE.Group();
-    scene.add(modelRoot);
-
-    // bounding box for body-part region mapping (set after load)
+    var allMeshes = [];
     var modelBox = null;
-    var allBodyMeshes = [];
-    var interactiveGroups = [];
-
-    // ---- Load GLB model -----------------------------------------------------
     var modelLoaded = false;
-    var GLTFLoaderCtor = (typeof THREE !== 'undefined' && THREE.GLTFLoader) ? THREE.GLTFLoader : null;
-
-    function applyWireframe(obj){
-      obj.traverse(function(o){
-        if(o.isMesh || o.isSkinnedMesh || o.type === 'Mesh' || o.type === 'SkinnedMesh'){
-          o.material = new THREE.MeshBasicMaterial({
-            color: RED, wireframe: true, transparent: true, opacity: 0.9
-          });
-          o.userData.bodyPart = classifyBodyPart(o);
-          allBodyMeshes.push(o);
-        }
-      });
-    }
-
-    // Classify a mesh into a body-part based on its world Y position relative to the model bbox.
-    function classifyBodyPart(mesh){
-      if(!modelBox) return 'legs';
-      var box = modelBox;
-      var pos = new THREE.Vector3();
-      mesh.getWorldPosition(pos);
-      var relY = (pos.y - box.min.y) / (box.max.y - box.min.y); // 0 = feet, 1 = head
-      // top 20% => head, 20-60% => torso/arms, 60-100% => legs
-      // but hands are at ~40% (mid-torso) — detect by x-extent
-      if(relY >= 0.80){
-        return 'head';
-      } else if(relY >= 0.40){
-        // Distinguish arms vs hands: hands are the extreme-x meshes in mid band.
-        // We'll tag as arms by default; hands detected separately below.
-        return 'arms';
-      } else {
-        return 'legs';
-      }
-    }
-
-    // Second pass: identify hands as the two meshes with max |x| in the mid band.
-    function refineHands(){
-      if(!modelBox) return;
-      var midBand = allBodyMeshes.filter(function(m){
-        var p = new THREE.Vector3(); m.getWorldPosition(p);
-        var relY = (p.y - modelBox.min.y) / (modelBox.max.y - modelBox.min.y);
-        return relY >= 0.40 && relY < 0.80;
-      });
-      if(midBand.length < 3) return; // not enough to distinguish
-      midBand.sort(function(a,b){
-        var pa = new THREE.Vector3(); a.getWorldPosition(pa);
-        var pb = new THREE.Vector3(); b.getWorldPosition(pb);
-        return (Math.abs(pb.x) + Math.abs(pb.z)) - (Math.abs(pa.x) + Math.abs(pa.z));
-      });
-      // The two most extreme (likely hands) — but only if their x-extent is notably large.
-      // Keep it conservative: tag top-2 as hands only if their |x| > 25% of bbox width.
-      var bboxW = modelBox.max.x - modelBox.min.x;
-      var tagged = 0;
-      for(var i = 0; i < Math.min(2, midBand.length); i++){
-        var p = new THREE.Vector3(); midBand[i].getWorldPosition(p);
-        if(Math.abs(p.x) > 0.25 * bboxW){
-          midBand[i].userData.bodyPart = 'hands';
-          tagged++;
-        }
-      }
-    }
-
-    function fitModelToView(obj){
-      var box = new THREE.Box3().setFromObject(obj);
-      if(box.isEmpty()) return;
-      // recenter
-      var center = box.getCenter(new THREE.Vector3());
-      obj.position.sub(center);
-      // scale to fit ~4 unit height
-      var size = box.getSize(new THREE.Vector3());
-      var maxDim = Math.max(size.x, size.y, size.z);
-      if(maxDim > 0){
-        var scale = 4.0 / maxDim;
-        obj.scale.setScalar(scale);
-      }
-      // recompute box after transform for body-part classification
-      modelBox = new THREE.Box3().setFromObject(obj);
-    }
-
-    function onModelLoaded(gltf){
-      var obj = gltf.scene || gltf;
-      scene.add(obj);
-      
-      var box = new THREE.Box3().setFromObject(obj);
-      if(!box.isEmpty()){
-        var center = box.getCenter(new THREE.Vector3());
-        var size = box.getSize(new THREE.Vector3());
-        var maxDim = Math.max(size.x, size.y, size.z);
-        if(maxDim > 0){
-          obj.position.sub(center);
-          obj.scale.setScalar(4.0 / maxDim);
-        }
-      }
-      
-      obj.traverse(function(o){
-        if(o.isMesh || o.isSkinnedMesh || o.type === 'Mesh' || o.type === 'SkinnedMesh'){
-          o.material = new THREE.MeshBasicMaterial({color: 0xFF2D55, wireframe: false});
-          allBodyMeshes.push(o);
-        }
-      });
-      
-      // Simple body part classification based on Y position
-      if(allBodyMeshes.length > 0){
-        modelBox = new THREE.Box3().setFromObject(obj);
-        allBodyMeshes.forEach(function(o){
-          var worldPos = new THREE.Vector3();
-          o.getWorldPosition(worldPos);
-          var normalizedY = (worldPos.y - modelBox.min.y) / (modelBox.max.y - modelBox.min.y);
-          if(normalizedY > 0.8) o.userData.bodyPart = 'head';
-          else if(normalizedY > 0.4) o.userData.bodyPart = 'arms';
-          else if(normalizedY > 0.2) o.userData.bodyPart = 'hands';
-          else o.userData.bodyPart = 'legs';
-        });
-      }
-      
-      refineHands();
-      modelLoaded = true;
-      if(loadingEl) loadingEl.style.display = 'none';
-      console.log('[3D Athlete] Model loaded. Meshes:', allBodyMeshes.length);
-    }
-
-    function onModelError(err){
-      console.error('[3D Athlete] GLB load failed:', err);
-      // Try loading via fetch as fallback
-      fetch('/basketball-player.glb')
-        .then(function(r){ return r.arrayBuffer(); })
-        .then(function(buf){
-          var loader2 = new GLTFLoaderCtor();
-          loader2.parse(buf, '/', onModelLoaded, function(e){
-            console.error('[3D Athlete] Fallback parse also failed:', e);
-            if(loadingEl) loadingEl.style.display = 'none';
-            if(errorEl) errorEl.style.display = 'block';
-          });
-        })
-        .catch(function(e){
-          console.error('[3D Athlete] Fetch fallback failed:', e);
-          if(loadingEl) loadingEl.style.display = 'none';
-          if(errorEl) errorEl.style.display = 'block';
-        });
-    }
-
-    if(GLTFLoaderCtor){
-      var loader = new GLTFLoaderCtor();
-      loader.load(
-        '/basketball-player.glb',
-        onModelLoaded,
-        function(progress){ /* could update loading % here */ },
-        onModelError
-      );
-    } else {
-      // Fallback: if GLTFLoader is unavailable, try THREE.ObjectLoader (won't parse GLB binary,
-      // but at least surface a clear error instead of crashing).
-      onModelError(new Error('GLTFLoader not available on the THREE global.'));
-    }
-
-    // ---- Interaction: orbit + zoom (lerp-damped) ----------------------------
-    var isDragging = false;
-    var prevX = 0, prevY = 0;
-    var rotY = 0, rotX = 0, targetRotY = 0, targetRotX = 0;
-    var camDist = 8, targetCamDist = 8;
     var autoRotate = true;
 
+    /* ---- Skill data per body part ---- */
+    var skillStats = {
+      head:  { label:'Thinking · Strategy',   stats:[['Product Strategy',99],['Roadmap & OKRs',98],['Executive Communication',95]] },
+      arms:  { label:'Execution · Delivery',   stats:[['A/B Testing',95],['Conversion Optimization',99],['Agile Delivery',92]] },
+      hands: { label:'Growth · Expansion',      stats:[['Go-to-Market',94],['Omnichannel',96],['Loyalty & Retention',97]] },
+      legs:  { label:'Foundation · Platforms',  stats:[['E-commerce',99],['Mobile Apps',99],['QSR / Restaurant Tech',95]] }
+    };
+
+    /* ---- Classify mesh into body part by normalized Y (0=feet, 1=head) ---- */
+    function classifyByY(normY){
+      if(normY >= 0.8) return 'head';   // top 20%
+      if(normY >= 0.6) return 'hands';  // 60-80%
+      if(normY >= 0.2) return 'arms';   // 20-60%
+      return 'legs';                    // bottom 20%
+    }
+
+    /* ---- Load GLB ---- */
+    var loader = new THREE.GLTFLoader();
+    loader.load('/basketball-player.glb',
+      function(gltf){
+        var obj = gltf.scene;
+
+        // Center and scale to ~4 unit max dim
+        var box = new THREE.Box3().setFromObject(obj);
+        if(!box.isEmpty()){
+          var center = box.getCenter(new THREE.Vector3());
+          var size = box.getSize(new THREE.Vector3());
+          var maxDim = Math.max(size.x, size.y, size.z);
+          if(maxDim > 0){
+            obj.position.sub(center);
+            obj.scale.setScalar(4.0 / maxDim);
+          }
+        }
+
+        // Apply wireframe material + classify body parts
+        obj.traverse(function(o){
+          if(o.isMesh || o.isSkinnedMesh){
+            o.material = new THREE.MeshBasicMaterial({
+              color: RED, wireframe: true, transparent: true, opacity: 0.85
+            });
+            allMeshes.push(o);
+          }
+        });
+
+        model.add(obj);
+
+        // Recompute bounding box after transform for body-part classification
+        modelBox = new THREE.Box3().setFromObject(model);
+        var range = modelBox.max.y - modelBox.min.y;
+        if(range > 0){
+          allMeshes.forEach(function(o){
+            var wp = new THREE.Vector3();
+            o.getWorldPosition(wp);
+            var normY = (wp.y - modelBox.min.y) / range;
+            o.userData.bodyPart = classifyByY(normY);
+          });
+        }
+
+        modelLoaded = true;
+        if(loadingEl) loadingEl.style.display = 'none';
+        console.log('[3D Athlete] Model loaded. Meshes:', allMeshes.length);
+      },
+      function(progress){
+        // could update loading % here
+      },
+      function(err){
+        console.error('[3D Athlete] GLB load failed:', err);
+        if(loadingEl) loadingEl.style.display = 'none';
+        if(errorEl) errorEl.style.display = 'block';
+      }
+    );
+
+    /* ---- Drag to rotate model (not camera) ---- */
+    var isDragging = false;
+    var prevX = 0, prevY = 0;
+    var targetRotY = 0, targetRotX = 0;
+
     function onPointerDown(e){
-      isDragging = true; autoRotate = false;
-      prevX = e.clientX; prevY = e.clientY;
+      isDragging = true;
+      autoRotate = false;
+      prevX = e.clientX;
+      prevY = e.clientY;
       try { canvas.setPointerCapture(e.pointerId); } catch(_) {}
     }
     function onPointerMove(e){
@@ -1903,7 +1799,8 @@ body::after{
       targetRotY += (e.clientX - prevX) * 0.008;
       targetRotX += (e.clientY - prevY) * 0.006;
       targetRotX = Math.max(-0.8, Math.min(0.8, targetRotX));
-      prevX = e.clientX; prevY = e.clientY;
+      prevX = e.clientX;
+      prevY = e.clientY;
     }
     function onPointerUp(e){
       isDragging = false;
@@ -1915,13 +1812,14 @@ body::after{
     canvas.addEventListener('pointercancel', onPointerUp);
     canvas.addEventListener('pointerleave', function(){ clearHover(); });
 
+    /* ---- Scroll / pinch to zoom (camera.position.z between 4 and 12) ---- */
+    var targetCamZ = 8;
     canvas.addEventListener('wheel', function(e){
       e.preventDefault();
-      targetCamDist += e.deltaY * 0.008;
-      targetCamDist = Math.max(5, Math.min(13, targetCamDist));
+      targetCamZ += e.deltaY * 0.008;
+      targetCamZ = Math.max(4, Math.min(12, targetCamZ));
     }, {passive: false});
 
-    // touch pinch zoom
     var lastPinch = 0;
     canvas.addEventListener('touchstart', function(e){
       if(e.touches.length === 2){
@@ -1936,20 +1834,17 @@ body::after{
         var dx = e.touches[0].clientX - e.touches[1].clientX;
         var dy = e.touches[0].clientY - e.touches[1].clientY;
         var pinch = Math.sqrt(dx*dx + dy*dy);
-        targetCamDist += (lastPinch - pinch) * 0.02;
-        targetCamDist = Math.max(5, Math.min(13, targetCamDist));
+        targetCamZ += (lastPinch - pinch) * 0.02;
+        targetCamZ = Math.max(4, Math.min(12, targetCamZ));
         lastPinch = pinch;
       }
     }, {passive: false});
 
-    // ---- Raycasting: body-part hover + click --------------------------------
+    /* ---- Raycasting: body-part hover + tooltip + highlight ---- */
     var raycaster = new THREE.Raycaster();
     var pointerNDC = new THREE.Vector2();
-
     var hoveredPart = null;
-    var pulseStates = {};
 
-    // tooltip
     var wrap = canvas.closest('.athlete-3d-wrap') || canvas.parentElement;
     var tooltip = document.createElement('div');
     tooltip.className = 'body-part-tooltip';
@@ -1957,21 +1852,16 @@ body::after{
     wrap.appendChild(tooltip);
 
     function setHighlight(part, on){
-      allBodyMeshes.forEach(function(o){
-        if(o.userData.bodyPart === part){
-          if(o.material && o.material.opacity !== undefined){
-            o.userData._baseOpacity = o.userData._baseOpacity || o.material.opacity;
-            o.material.opacity = on ? 1.0 : o.userData._baseOpacity;
-          }
+      allMeshes.forEach(function(o){
+        if(o.userData.bodyPart === part && o.material){
+          o.material.opacity = on ? 1.0 : 0.85;
         }
       });
     }
-
     function clearHover(){
       if(hoveredPart){ setHighlight(hoveredPart, false); hoveredPart = null; }
       tooltip.style.display = 'none';
     }
-
     function showTooltip(part){
       var d = skillStats[part];
       if(!d) return;
@@ -1981,14 +1871,13 @@ body::after{
       });
       tooltip.innerHTML = html;
     }
-
     function handleHover(e){
-      if(!modelLoaded || allBodyMeshes.length === 0) return;
+      if(!modelLoaded || allMeshes.length === 0) return;
       var rect = canvas.getBoundingClientRect();
-      pointerNDC.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      pointerNDC.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      pointerNDC.x =  ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointerNDC.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
       raycaster.setFromCamera(pointerNDC, camera);
-      var hits = raycaster.intersectObjects(allBodyMeshes, false);
+      var hits = raycaster.intersectObjects(allMeshes, false);
       if(hits.length > 0){
         var part = hits[0].object.userData.bodyPart;
         if(part !== hoveredPart){
@@ -1998,92 +1887,28 @@ body::after{
           showTooltip(part);
         }
         tooltip.style.left = Math.max(8, (e.clientX - rect.left + 14)) + 'px';
-        tooltip.style.top  = Math.max(8, (e.clientY - rect.top + 14)) + 'px';
+        tooltip.style.top  = Math.max(8, (e.clientY - rect.top  + 14)) + 'px';
         tooltip.style.display = 'block';
       } else {
         clearHover();
       }
     }
 
-    canvas.addEventListener('click', function(e){
-      if(!modelLoaded || allBodyMeshes.length === 0) return;
-      var rect = canvas.getBoundingClientRect();
-      pointerNDC.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      pointerNDC.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-      raycaster.setFromCamera(pointerNDC, camera);
-      var hits = raycaster.intersectObjects(allBodyMeshes, false);
-      if(hits.length > 0){
-        var part = hits[0].object.userData.bodyPart;
-        pulseStates[part] = { t: 0, active: true };
-      }
-    });
-
-    // ---- Visibility / performance gating ------------------------------------
-    var profileVisible = true;
-    function isCanvasOnScreen(){
-      var r = canvas.getBoundingClientRect();
-      return r.width > 0 && r.height > 0 && r.top < window.innerHeight && r.bottom > 0;
-    }
-    function checkProfileVisibility(){
-      var tab = document.getElementById('tab-profile');
-      profileVisible = !!(tab && tab.classList.contains('active')) && isCanvasOnScreen();
-    }
-    checkProfileVisibility();
-    window.addEventListener('resize', function(){ resize(); checkProfileVisibility(); });
-    window.addEventListener('scroll', checkProfileVisibility, {passive: true});
-    document.querySelectorAll('.tab-btn').forEach(function(btn){
-      btn.addEventListener('click', function(){ setTimeout(function(){ resize(); checkProfileVisibility(); }, 200); });
-    });
-    if(typeof IntersectionObserver !== 'undefined'){
-      var io = new IntersectionObserver(function(entries){
-        profileVisible = entries[0].isIntersecting && (document.getElementById('tab-profile').classList.contains('active'));
-      }, {threshold: 0.05});
-      io.observe(canvas);
-    }
-
-    // ---- Render loop --------------------------------------------------------
-    var clock = new THREE.Clock();
+    /* ---- Simple render loop: auto-rotate model + lerp camera Z ---- */
+    var curRotY = 0, curRotX = 0, curCamZ = 8;
     function animate(){
       requestAnimationFrame(animate);
-      // Always render — visibility gating causes issues in some browsers
-      if(autoRotate && modelLoaded){ targetRotY += 0.005; }
-      // lerp damping
-      rotY    += (targetRotY    - rotY)    * 0.1;
-      rotX    += (targetRotX    - rotX)    * 0.1;
-      camDist += (targetCamDist - camDist) * 0.1;
-
-      var camX = Math.sin(rotY) * camDist;
-      var camZ = Math.cos(rotY) * camDist;
-      var camY = 1 + rotX * 2.5;
-      camera.position.set(camX, camY, camZ);
-      camera.lookAt(0, 0.8, 0);
-
-      var t = clock.getElapsedTime();
-
-      // model bob
-      if(modelLoaded){
-        modelRoot.position.y = 0.1 + Math.sin(t * 1.2) * 0.05;
+      // Auto-rotate the model group on Y
+      if(autoRotate && modelLoaded){
+        targetRotY += 0.005;
       }
-
-      // click pulse — scale meshes belonging to the pulsed part
-      ['head','arms','hands','legs'].forEach(function(part){
-        if(pulseStates[part] && pulseStates[part].active){
-          pulseStates[part].t += 0.06;
-          var pt = pulseStates[part].t;
-          if(pt > 1){
-            pulseStates[part].active = false;
-            allBodyMeshes.forEach(function(o){
-              if(o.userData.bodyPart === part) o.scale.set(1,1,1);
-            });
-          } else {
-            var ps = 1 + Math.sin(pt * Math.PI) * 0.25;
-            allBodyMeshes.forEach(function(o){
-              if(o.userData.bodyPart === part) o.scale.set(ps, ps, ps);
-            });
-          }
-        }
-      });
-
+      // lerp damping for smooth drag
+      curRotY += (targetRotY - curRotY) * 0.1;
+      curRotX += (targetRotX - curRotX) * 0.1;
+      curCamZ += (targetCamZ - curCamZ) * 0.1;
+      model.rotation.y = curRotY;
+      model.rotation.x = curRotX;
+      camera.position.z = curCamZ;
       renderer.render(scene, camera);
     }
     animate();
