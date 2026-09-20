@@ -382,54 +382,92 @@ body::after{
   font-family:var(--header-font);font-size:0.75rem;
   color:var(--red);font-weight:600;white-space:nowrap;text-align:right;
 }
-/* ===== JERSEY ===== */
-.jersey-svg{
-  width:64px;height:80px;flex-shrink:0;
+/* ===== COMPANY LOGO (SVG) ===== */
+.logo-svg{
+  width:60px;height:60px;flex-shrink:0;
   filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));
   transition:transform 0.4s cubic-bezier(.25,.8,.25,1);
 }
-.jersey-svg .jersey-body{transition:fill .2s;}
-.player-card:hover .jersey-svg{transform:scale(1.08) rotate(-3deg);}
-.jersey-num{
-  font-family:var(--header-font);
-  font-weight:700;
-  fill:#fff;
-  text-anchor:middle;
+.player-card:hover .logo-svg{transform:scale(1.08) rotate(-3deg);}
+
+/* ===== STAT DASHBOARD ===== */
+.stat-dashboard{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  padding:16px 20px 20px;
 }
-.jersey-pos{
-  font-family:var(--header-font);
-  font-weight:600;
-  font-size:7px;
-  fill:rgba(255,255,255,0.5);
-  text-anchor:middle;
+@media(max-width:560px){
+  .stat-dashboard{grid-template-columns:repeat(2,1fr);}
 }
-.player-card-body{padding:16px 20px 20px;}
-.player-card-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
-.stat-cell{
-  background:rgba(255,255,255,0.02);border:1px solid var(--border);
-  border-radius:var(--radius);padding:12px;position:relative;
+.stat-panel{
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px 10px 10px;
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;
   transition:transform 0.2s ease, border-color 0.2s ease;
+  min-height:118px;justify-content:flex-start;gap:6px;
 }
-.stat-cell:hover{
+.stat-panel:hover{
   transform:translateY(-2px);
   border-color:var(--red);
 }
-.stat-cell-value{
-  font-family:var(--header-font);font-size:1.4rem;font-weight:700;
-  color:var(--red);line-height:1;margin-bottom:4px;
+.stat-panel-label{
+  font-family:var(--body-font);font-size:0.6rem;
+  color:var(--text-dim);font-weight:600;line-height:1.25;
+  text-transform:uppercase;letter-spacing:0.04em;
 }
-.stat-cell-meta{font-size:0.65rem;color:var(--text-dim);font-weight:500;line-height:1.3;}
-.stat-cell-meta strong{color:var(--text);font-weight:600;}
-.stat-cell-bball{
-  font-size:0.55rem;color:var(--text-mid);text-transform:uppercase;
-  letter-spacing:0.05em;margin-top:4px;font-weight:600;
+.stat-panel-label strong{color:var(--text);font-weight:700;}
+.stat-panel-sub{
+  font-family:var(--body-font);font-size:0.55rem;
+  color:var(--text-mid);font-weight:500;line-height:1.2;
 }
-.stat-change{
-  display:inline-flex;align-items:center;gap:3px;
-  font-size:0.65rem;font-weight:700;padding:2px 6px;border-radius:4px;margin-top:5px;
+
+/* Circular gauge */
+.gauge-svg{width:78px;height:78px;display:block;}
+.gauge-track{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:7;}
+.gauge-fill{fill:none;stroke:var(--red);stroke-width:7;stroke-linecap:round;
+  transition:stroke-dashoffset 1s cubic-bezier(.25,.8,.25,1);}
+.gauge-value{
+  font-family:var(--header-font);font-size:1rem;font-weight:700;
+  fill:var(--text);text-anchor:middle;dominant-baseline:central;
 }
-.stat-change.up{color:var(--green);background:rgba(0,255,157,0.1);}
-.stat-change.down{color:var(--red);background:rgba(255,45,85,0.1);}
+
+/* Bar meter */
+.bar-svg{width:100%;height:54px;display:block;}
+.bar-track{fill:rgba(255,255,255,0.05);rx:4;}
+.bar-fill{fill:var(--red);rx:4;transition:width 0.9s cubic-bezier(.25,.8,.25,1);}
+.bar-start{fill:rgba(255,255,255,0.25);}
+.bar-end{fill:var(--red);}
+.bar-start-label,.bar-end-label{
+  font-family:var(--header-font);font-size:7px;font-weight:700;
+  fill:var(--text-mid);text-anchor:middle;
+}
+
+/* Big number */
+.stat-bignum{
+  font-family:var(--header-font);font-size:1.7rem;font-weight:800;
+  color:var(--red);line-height:1;letter-spacing:-0.02em;
+  display:flex;align-items:baseline;justify-content:center;gap:2px;
+}
+.stat-bignum .bn-unit{font-size:0.6em;font-weight:700;opacity:0.9;}
+
+/* Trend */
+.stat-trend{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--header-font);font-size:1.35rem;font-weight:800;
+  line-height:1;
+}
+.stat-trend .trend-arrow{font-size:1.1em;}
+.stat-trend.up{color:var(--green);}
+.stat-trend.down{color:var(--red);}
+.stat-trend.neutral{color:var(--red);}
+.stat-trend-sub{
+  font-family:var(--body-font);font-size:0.6rem;font-weight:700;
+  color:var(--text-mid);margin-top:-2px;
+}
 
 /* ===== SKILLS ===== */
 .skills-grid{display:grid;grid-template-columns:1fr;gap:10px;max-width:900px;margin:0 auto;}
@@ -497,9 +535,8 @@ body::after{
 
 /* ===== MOBILE ===== */
 @media(max-width:480px){
-  .player-card-stats{grid-template-columns:1fr;}
-  .stat-cell{padding:10px;}
-  .stat-cell-value{font-size:1.2rem;}
+  .stat-dashboard{grid-template-columns:1fr;}
+  .stat-panel{padding:10px 8px 8px;}
 }
 
 /* ===== ANIMATIONS ===== */
@@ -657,52 +694,6 @@ body::after{
   letter-spacing:0.15em;
   text-transform:uppercase;
   font-size:0.65rem;
-}
-
-/* ===== TWO-COLUMN TEAM CARDS ===== */
-.player-card-body.two-col{
-  display:flex;
-  gap:16px;
-  padding:16px 20px 20px;
-}
-.stats-col{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-.chart-col{
-  flex:0 0 200px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.stats-col .stat-cell{
-  border-radius:8px;
-  padding:10px 12px;
-  transition:border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-}
-.stats-col .stat-cell.stat-hover{
-  border-color:var(--red);
-  box-shadow:0 0 0 1px var(--red), 0 0 12px rgba(255,45,85,0.3);
-}
-.stats-col .stat-cell.stat-dim{ opacity:0.5; }
-.stats-col .stat-cell-value{font-size:1.2rem;}
-.mini-chart-svg{width:200px;height:180px;display:block;}
-.mini-court-hex{
-  transition:opacity 0.2s ease, transform 0.2s ease;
-  transform-origin:center;
-  transform-box:fill-box;
-}
-.mini-court-hex.hex-active{
-  opacity:1 !important;
-  stroke:var(--red);
-  stroke-width:2;
-}
-.mini-court-hex.hex-dim{ opacity:0.35; }
-@media(max-width:600px){
-  .player-card-body.two-col{flex-direction:column;}
-  .chart-col{flex:0 0 auto;width:100%;}
 }
 
 /* reduced motion */
@@ -895,7 +886,7 @@ body::after{
     </div>
     <div class="teams-grid">
 
-      <!-- TEAM 1: JACK IN THE BOX — PG -->
+      <!-- TEAM 1: JACK IN THE BOX -->
       <div class="player-card">
         <div class="player-card-head">
           <div class="player-card-head-left">
@@ -903,45 +894,39 @@ body::after{
             <div class="player-card-name">Jack in the Box</div>
             <div class="player-card-role">Sr. Director of Product Management</div>
           </div>
-          <svg class="jersey-svg" viewBox="0 0 64 80"><path class="jersey-body" d="M 12 10 L 8 16 L 6 24 L 10 26 L 10 72 Q 10 78 16 78 L 48 78 Q 54 78 54 72 L 54 26 L 58 24 L 56 16 L 52 10 L 40 12 Q 38 16 32 16 Q 26 16 24 12 Z" fill="#FF2D55"/><text class="jersey-num" x="32" y="50" font-size="22">23</text><text class="jersey-pos" x="32" y="64">PG</text></svg>
+          <svg class="logo-svg" viewBox="0 0 60 60">
+            <!-- Jack-in-the-box jester head: yellow face, red 3-pointed hat -->
+            <circle cx="30" cy="38" r="16" fill="#FFE100"/>
+            <path d="M 14 30 Q 14 20 22 18 L 30 8 L 38 18 Q 46 20 46 30 Q 42 24 38 26 Q 34 22 30 24 Q 26 22 22 26 Q 18 24 14 30 Z" fill="#E8202C"/>
+            <circle cx="23" cy="38" r="2.5" fill="#0a0a0c"/>
+            <circle cx="37" cy="38" r="2.5" fill="#0a0a0c"/>
+            <path d="M 22 44 Q 30 50 38 44" fill="none" stroke="#0a0a0c" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="22" cy="18" r="2" fill="#FFE100"/>
+            <circle cx="38" cy="18" r="2" fill="#FFE100"/>
+          </svg>
           <div class="player-card-years">2024<br>Present</div>
         </div>
-        <div class="player-card-body two-col">
-          <div class="stats-col">
-            <div class="stat-cell" data-hex-id="hex-jitb-0">
-              <div class="stat-cell-value">2.6→4.8</div>
-              <div class="stat-cell-meta"><strong>App Store Rating</strong> — Rebuild in 8 months</div>
-              <div class="stat-change up">▲ +84% rating</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-jitb-1">
-              <div class="stat-cell-value">90%</div>
-              <div class="stat-cell-meta"><strong>Checkout Conversion</strong> — Post-launch</div>
-              <div class="stat-change up">▲ 90% checkout rate</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-jitb-2">
-              <div class="stat-cell-value">−50%</div>
-              <div class="stat-cell-meta"><strong>Time to Order</strong> — 10min → 4min</div>
-              <div class="stat-change up">▼ Friction reduction</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-jitb-3">
-              <div class="stat-cell-value">95%+</div>
-              <div class="stat-cell-meta"><strong>Login &amp; Sign-up Success</strong> — Auth flows</div>
-              <div class="stat-change up">▲ 95%+ success rate</div>
-            </div>
+        <div class="stat-dashboard">
+          <div class="stat-panel" data-stat-type="bar" data-stat-start="2.6" data-stat-end="4.8" data-stat-max="5.0">
+            <div class="stat-panel-label"><strong>App Store Rating</strong></div>
+            <div class="stat-panel-sub">2.6 → 4.8 · Rebuild in 8mo</div>
           </div>
-          <div class="chart-col">
-            <svg class="mini-chart-svg" viewBox="0 0 200 180">
-              <rect x="0" y="0" width="200" height="180" fill="none" stroke="rgba(255,45,85,0.15)" stroke-width="1"/>
-              <polygon id="hex-jitb-0" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-jitb-1" class="mini-court-hex" points="" fill="#fff5cc" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-jitb-2" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-jitb-3" class="mini-court-hex" points="" fill="#fff5cc" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-            </svg>
+          <div class="stat-panel" data-stat-type="gauge" data-stat-value="90">
+            <div class="stat-panel-label"><strong>Checkout Conversion</strong></div>
+            <div class="stat-panel-sub">Post-launch</div>
+          </div>
+          <div class="stat-panel" data-stat-type="trend" data-stat-value="−50%" data-stat-dir="down">
+            <div class="stat-panel-label"><strong>Time to Order</strong></div>
+            <div class="stat-panel-sub">10min → 4min</div>
+          </div>
+          <div class="stat-panel" data-stat-type="gauge" data-stat-value="95">
+            <div class="stat-panel-label"><strong>Login &amp; Sign-up</strong></div>
+            <div class="stat-panel-sub">Auth flow success</div>
           </div>
         </div>
       </div>
 
-      <!-- TEAM 2: DISNEY — SG -->
+      <!-- TEAM 2: DISNEY -->
       <div class="player-card">
         <div class="player-card-head">
           <div class="player-card-head-left">
@@ -949,45 +934,34 @@ body::after{
             <div class="player-card-name">Disney</div>
             <div class="player-card-role">Sr. Product Manager</div>
           </div>
-          <svg class="jersey-svg" viewBox="0 0 64 80"><path class="jersey-body" d="M 12 10 L 8 16 L 6 24 L 10 26 L 10 72 Q 10 78 16 78 L 48 78 Q 54 78 54 72 L 54 26 L 58 24 L 56 16 L 52 10 L 40 12 Q 38 16 32 16 Q 26 16 24 12 Z" fill="#0099ff"/><text class="jersey-num" x="32" y="50" font-size="22">10</text><text class="jersey-pos" x="32" y="64">SG</text></svg>
+          <svg class="logo-svg" viewBox="0 0 60 60">
+            <!-- Disney script logo in blue -->
+            <text x="30" y="36" font-family="'Brush Script MT', cursive, serif" font-size="20" font-weight="700" fill="#003087" text-anchor="middle" font-style="italic">Disney</text>
+            <path d="M 8 42 Q 30 38 52 42" fill="none" stroke="#003087" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+          </svg>
           <div class="player-card-years">2022<br>2023</div>
         </div>
-        <div class="player-card-body two-col">
-          <div class="stats-col">
-            <div class="stat-cell" data-hex-id="hex-disney-0">
-              <div class="stat-cell-value">Millions</div>
-              <div class="stat-cell-meta"><strong>Users Served</strong> — High-traffic digital properties</div>
-              <div class="stat-change up">▲ Entertainment ecosystem</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-disney-1">
-              <div class="stat-cell-value">5 PMs</div>
-              <div class="stat-cell-meta"><strong>PM Team Managed</strong> — Backlog grooming &amp; sprint planning</div>
-              <div class="stat-change up">▲ 5 PMs across portfolio</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-disney-2">
-              <div class="stat-cell-value">Rewards</div>
-              <div class="stat-cell-meta"><strong>Quests Programs</strong> — Engaging millions of users</div>
-              <div class="stat-change up">▲ Engagement strategy</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-disney-3">
-              <div class="stat-cell-value">↑</div>
-              <div class="stat-cell-meta"><strong>Engagement &amp; Retention</strong> — Web &amp; mobile platforms</div>
-              <div class="stat-change up">▲ Retention improved</div>
-            </div>
+        <div class="stat-dashboard">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="M+" data-stat-label="Users Served">
+            <div class="stat-panel-label"><strong>Users Served</strong></div>
+            <div class="stat-panel-sub">Millions · High-traffic</div>
           </div>
-          <div class="chart-col">
-            <svg class="mini-chart-svg" viewBox="0 0 200 180">
-              <rect x="0" y="0" width="200" height="180" fill="none" stroke="rgba(255,45,85,0.15)" stroke-width="1"/>
-              <polygon id="hex-disney-0" class="mini-court-hex" points="" fill="#FF2D55" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-disney-1" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-disney-2" class="mini-court-hex" points="" fill="#FF2D55" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-disney-3" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-            </svg>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="5" data-stat-label="PMs Managed">
+            <div class="stat-panel-label"><strong>PMs Managed</strong></div>
+            <div class="stat-panel-sub">Backlog &amp; sprint planning</div>
+          </div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="Quests" data-stat-label="Quests Programs">
+            <div class="stat-panel-label"><strong>Quests Programs</strong></div>
+            <div class="stat-panel-sub">Engaging millions</div>
+          </div>
+          <div class="stat-panel" data-stat-type="trend" data-stat-value="↑" data-stat-dir="up">
+            <div class="stat-panel-label"><strong>Engagement &amp; Retention</strong></div>
+            <div class="stat-panel-sub">Web &amp; mobile platforms</div>
           </div>
         </div>
       </div>
 
-      <!-- TEAM 3: VISTAPRINT — SF -->
+      <!-- TEAM 3: VISTAPRINT -->
       <div class="player-card">
         <div class="player-card-head">
           <div class="player-card-head-left">
@@ -995,45 +969,34 @@ body::after{
             <div class="player-card-name">VistaPrint</div>
             <div class="player-card-role">Director of Growth &amp; Retention</div>
           </div>
-          <svg class="jersey-svg" viewBox="0 0 64 80"><path class="jersey-body" d="M 12 10 L 8 16 L 6 24 L 10 26 L 10 72 Q 10 78 16 78 L 48 78 Q 54 78 54 72 L 54 26 L 58 24 L 56 16 L 52 10 L 40 12 Q 38 16 32 16 Q 26 16 24 12 Z" fill="#00cc88"/><text class="jersey-num" x="32" y="50" font-size="22">11</text><text class="jersey-pos" x="32" y="64">SF</text></svg>
+          <svg class="logo-svg" viewBox="0 0 60 60">
+            <!-- Vistaprint logo: stylized "V" + text in blue -->
+            <path d="M 12 18 L 24 18 L 30 32 L 36 18 L 48 18 L 34 44 L 26 44 Z" fill="#0066CC"/>
+            <text x="30" y="52" font-family="'Space Grotesk', sans-serif" font-size="7" font-weight="700" fill="#0066CC" text-anchor="middle">Vistaprint</text>
+          </svg>
           <div class="player-card-years">2021<br>2022</div>
         </div>
-        <div class="player-card-body two-col">
-          <div class="stats-col">
-            <div class="stat-cell" data-hex-id="hex-vista-0">
-              <div class="stat-cell-value">7 PMs</div>
-              <div class="stat-cell-meta"><strong>Growth &amp; Retention Team</strong> — ~$1.6B revenue platform</div>
-              <div class="stat-change up">▲ Led 7-person PM team</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-vista-1">
-              <div class="stat-cell-value">−25%</div>
-              <div class="stat-cell-meta"><strong>Planning Cycle Time</strong> — Streamlined prioritization</div>
-              <div class="stat-change up">▼ 25% faster planning</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-vista-2">
-              <div class="stat-cell-value">↑</div>
-              <div class="stat-cell-meta"><strong>Customer LTV</strong> — ML-powered retention modeling</div>
-              <div class="stat-change up">▲ LTV increased</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-vista-3">
-              <div class="stat-cell-value">↓</div>
-              <div class="stat-cell-meta"><strong>Acquisition Cost</strong> — CAC optimization</div>
-              <div class="stat-change down">▼ CAC reduced</div>
-            </div>
+        <div class="stat-dashboard">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="7" data-stat-label="PMs Led">
+            <div class="stat-panel-label"><strong>Growth Team Led</strong></div>
+            <div class="stat-panel-sub">7 PMs · ~$1.6B platform</div>
           </div>
-          <div class="chart-col">
-            <svg class="mini-chart-svg" viewBox="0 0 200 180">
-              <rect x="0" y="0" width="200" height="180" fill="none" stroke="rgba(255,45,85,0.15)" stroke-width="1"/>
-              <polygon id="hex-vista-0" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-vista-1" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-vista-2" class="mini-court-hex" points="" fill="#FF2D55" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-vista-3" class="mini-court-hex" points="" fill="#FF2D55" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-            </svg>
+          <div class="stat-panel" data-stat-type="trend" data-stat-value="−25%" data-stat-dir="down">
+            <div class="stat-panel-label"><strong>Planning Cycle Time</strong></div>
+            <div class="stat-panel-sub">Streamlined prioritization</div>
+          </div>
+          <div class="stat-panel" data-stat-type="trend" data-stat-value="↑" data-stat-dir="up">
+            <div class="stat-panel-label"><strong>Customer LTV</strong></div>
+            <div class="stat-panel-sub">ML-powered retention</div>
+          </div>
+          <div class="stat-panel" data-stat-type="trend" data-stat-value="↓" data-stat-dir="down">
+            <div class="stat-panel-label"><strong>Acquisition Cost</strong></div>
+            <div class="stat-panel-sub">CAC optimization</div>
           </div>
         </div>
       </div>
 
-      <!-- TEAM 4: RBI — PF -->
+      <!-- TEAM 4: RBI -->
       <div class="player-card">
         <div class="player-card-head">
           <div class="player-card-head-left">
@@ -1041,57 +1004,44 @@ body::after{
             <div class="player-card-name">Burger King · Popeyes · Tim Hortons</div>
             <div class="player-card-role">Sr. Product Manager</div>
           </div>
-          <svg class="jersey-svg" viewBox="0 0 64 80"><path class="jersey-body" d="M 12 10 L 8 16 L 6 24 L 10 26 L 10 72 Q 10 78 16 78 L 48 78 Q 54 78 54 72 L 54 26 L 58 24 L 56 16 L 52 10 L 40 12 Q 38 16 32 16 Q 26 16 24 12 Z" fill="#ff9500"/><text class="jersey-num" x="32" y="50" font-size="22">04</text><text class="jersey-pos" x="32" y="64">PF</text></svg>
+          <svg class="logo-svg" viewBox="0 0 60 60">
+            <!-- RBI: three brand color dots + "RBI" text -->
+            <circle cx="18" cy="28" r="6" fill="#D62300"/>
+            <circle cx="30" cy="28" r="6" fill="#FF7E00"/>
+            <circle cx="42" cy="28" r="6" fill="#C8102E"/>
+            <text x="30" y="48" font-family="'Space Grotesk', sans-serif" font-size="14" font-weight="800" fill="#fff" text-anchor="middle">RBI</text>
+          </svg>
           <div class="player-card-years">2019<br>2021</div>
         </div>
-        <div class="player-card-body two-col">
-          <div class="stats-col">
-            <div class="stat-cell" data-hex-id="hex-rbi-0">
-              <div class="stat-cell-value">$94MM</div>
-              <div class="stat-cell-meta"><strong>Apple/Google Pay Revenue</strong> — $81MM + $13MM net new</div>
-              <div class="stat-change up">▲ $94MM new revenue</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-rbi-1">
-              <div class="stat-cell-value">1.7M</div>
-              <div class="stat-cell-meta"><strong>New Users (Goal: 1M)</strong> — Tim Hortons Roll Up to Win</div>
-              <div class="stat-change up">▲ 170% of target</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-rbi-2">
-              <div class="stat-cell-value">41%</div>
-              <div class="stat-cell-meta"><strong>Digital Sales Share</strong> — Goal was 30-35%</div>
-              <div class="stat-change up">▲ Beat target by 6pt</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-rbi-3">
-              <div class="stat-cell-value">2M+</div>
-              <div class="stat-cell-meta"><strong>App Downloads</strong> — #1 in Canada, built in 7 weeks</div>
-              <div class="stat-change up">▲ #1 app in Canada</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-rbi-4">
-              <div class="stat-cell-value">3.36→9.82</div>
-              <div class="stat-cell-meta"><strong>Popeyes Conversion</strong> — +193% increase</div>
-              <div class="stat-change up">▲ +193% conversion</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-rbi-5">
-              <div class="stat-cell-value">42K→139K</div>
-              <div class="stat-cell-meta"><strong>Popeyes Offers Redeemed</strong> — +231% increase</div>
-              <div class="stat-change up">▲ +231% redemptions</div>
-            </div>
+        <div class="stat-dashboard">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="$94MM" data-stat-label="Pay Revenue">
+            <div class="stat-panel-label"><strong>Apple/Google Pay Rev</strong></div>
+            <div class="stat-panel-sub">$81MM + $13MM net new</div>
           </div>
-          <div class="chart-col">
-            <svg class="mini-chart-svg" viewBox="0 0 200 180">
-              <rect x="0" y="0" width="200" height="180" fill="none" stroke="rgba(255,45,85,0.15)" stroke-width="1"/>
-              <polygon id="hex-rbi-0" class="mini-court-hex" points="" fill="#fff5cc" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-rbi-1" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-rbi-2" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-rbi-3" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-rbi-4" class="mini-court-hex" points="" fill="#FF2D55" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-rbi-5" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-            </svg>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="1.7M" data-stat-label="New Users">
+            <div class="stat-panel-label"><strong>New Users</strong></div>
+            <div class="stat-panel-sub">170% of 1M target</div>
+          </div>
+          <div class="stat-panel" data-stat-type="gauge" data-stat-value="41">
+            <div class="stat-panel-label"><strong>Digital Sales Share</strong></div>
+            <div class="stat-panel-sub">Goal: 30-35%</div>
+          </div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="2M+" data-stat-label="App Downloads">
+            <div class="stat-panel-label"><strong>App Downloads</strong></div>
+            <div class="stat-panel-sub">#1 in Canada · 7-week build</div>
+          </div>
+          <div class="stat-panel" data-stat-type="bar" data-stat-start="3.36" data-stat-end="9.82" data-stat-max="10.0">
+            <div class="stat-panel-label"><strong>Popeyes Conversion</strong></div>
+            <div class="stat-panel-sub">+193% increase</div>
+          </div>
+          <div class="stat-panel" data-stat-type="bar" data-stat-start="42" data-stat-end="139" data-stat-max="150" data-stat-suffix="K">
+            <div class="stat-panel-label"><strong>Offers Redeemed</strong></div>
+            <div class="stat-panel-sub">+231% increase</div>
           </div>
         </div>
       </div>
 
-      <!-- TEAM 5: SONIC DRIVE-IN — C -->
+      <!-- TEAM 5: SONIC DRIVE-IN -->
       <div class="player-card">
         <div class="player-card-head">
           <div class="player-card-head-left">
@@ -1099,40 +1049,29 @@ body::after{
             <div class="player-card-name">Sonic Drive-In</div>
             <div class="player-card-role">PM / Developer</div>
           </div>
-          <svg class="jersey-svg" viewBox="0 0 64 80"><path class="jersey-body" d="M 12 10 L 8 16 L 6 24 L 10 26 L 10 72 Q 10 78 16 78 L 48 78 Q 54 78 54 72 L 54 26 L 58 24 L 56 16 L 52 10 L 40 12 Q 38 16 32 16 Q 26 16 24 12 Z" fill="#ffeb3b"/><text class="jersey-num" x="32" y="50" font-size="22" fill="#0a0a0c">05</text><text class="jersey-pos" x="32" y="64" fill="rgba(10,10,12,0.5)">C</text></svg>
+          <svg class="logo-svg" viewBox="0 0 60 60">
+            <!-- Sonic Drive-In: red arrow/shark-fin shape + "SONIC" text -->
+            <path d="M 10 34 L 30 14 L 50 34 L 42 34 L 30 22 L 18 34 Z" fill="#EE3B34"/>
+            <text x="30" y="48" font-family="'Space Grotesk', sans-serif" font-size="9" font-weight="800" fill="#003DA5" text-anchor="middle" letter-spacing="1">SONIC</text>
+          </svg>
           <div class="player-card-years">2014<br>2018</div>
         </div>
-        <div class="player-card-body two-col">
-          <div class="stats-col">
-            <div class="stat-cell" data-hex-id="hex-sonic-0">
-              <div class="stat-cell-value">15%</div>
-              <div class="stat-cell-meta"><strong>Digital Sales Share</strong> — Order Ahead app capture</div>
-              <div class="stat-change up">▲ 15% of all digital sales</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-sonic-1">
-              <div class="stat-cell-value">100K/day</div>
-              <div class="stat-cell-meta"><strong>Transactions Processed</strong> — 99.9% uptime</div>
-              <div class="stat-change up">▲ 100K+ daily transactions</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-sonic-2">
-              <div class="stat-cell-value">380M+</div>
-              <div class="stat-cell-meta"><strong>Views Across Properties</strong> — 43M+ users, 62M+ sessions</div>
-              <div class="stat-change up">▲ 380M+ views</div>
-            </div>
-            <div class="stat-cell" data-hex-id="hex-sonic-3">
-              <div class="stat-cell-value">Cannes</div>
-              <div class="stat-cell-meta"><strong>Lion Shortlist</strong> — Digital innovation recognition</div>
-              <div class="stat-change up">▲ Cannes Lion shortlist</div>
-            </div>
+        <div class="stat-dashboard">
+          <div class="stat-panel" data-stat-type="gauge" data-stat-value="15">
+            <div class="stat-panel-label"><strong>Digital Sales Share</strong></div>
+            <div class="stat-panel-sub">Order Ahead app capture</div>
           </div>
-          <div class="chart-col">
-            <svg class="mini-chart-svg" viewBox="0 0 200 180">
-              <rect x="0" y="0" width="200" height="180" fill="none" stroke="rgba(255,45,85,0.15)" stroke-width="1"/>
-              <polygon id="hex-sonic-0" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-sonic-1" class="mini-court-hex" points="" fill="#7b2cf5" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-sonic-2" class="mini-court-hex" points="" fill="#FF2D55" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-              <polygon id="hex-sonic-3" class="mini-court-hex" points="" fill="#ffeb3b" stroke="#0a0a0c" stroke-width="1" opacity="0.85"/>
-            </svg>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="100K" data-stat-label="Daily Transactions">
+            <div class="stat-panel-label"><strong>Transactions/day</strong></div>
+            <div class="stat-panel-sub">99.9% uptime</div>
+          </div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="380M+" data-stat-label="Views">
+            <div class="stat-panel-label"><strong>Views</strong></div>
+            <div class="stat-panel-sub">43M+ users · 62M+ sessions</div>
+          </div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="Cannes" data-stat-label="Lion Shortlist">
+            <div class="stat-panel-label"><strong>Cannes Lion</strong></div>
+            <div class="stat-panel-sub">Digital innovation recognition</div>
           </div>
         </div>
       </div>
@@ -1596,172 +1535,164 @@ body::after{
     });
   });
 
-  /* ===== MINI SHOT CHART HEXES — full court hex fill + court lines + stat hexes on top ===== */
-  // Mini court layout: viewBox 0 0 200 180, basket at bottom center (100, 165)
-  function miniHexPoints(cx, cy, r){
-    var pts = [];
-    for(var i=0;i<6;i++){
-      var a = (Math.PI/3)*i - Math.PI/2;
-      pts.push((cx + r*Math.cos(a)).toFixed(1) + ',' + (cy + r*Math.sin(a)).toFixed(1));
+  /* ===== STAT PANEL DASHBOARD — gauges, bar meters, big numbers, trend arrows ===== */
+  function buildStatPanels(){
+    var ns = 'http://www.w3.org/2000/svg';
+
+    function makeGauge(val){
+      var svg = document.createElementNS(ns, 'svg');
+      svg.setAttribute('class', 'gauge-svg');
+      svg.setAttribute('viewBox', '0 0 80 80');
+      var v = Math.max(0, Math.min(100, val));
+      // 270° arc: from 135° to 405° (i.e., bottom-left to bottom-right, going clockwise over the top)
+      var r = 32, cx = 40, cy = 40;
+      var circumference = Math.PI * r; // half-circle arc length = pi*r, but we use 270° = 1.5*pi*2*r/2... 
+      // Actually for a 270° arc: arc length = (270/360)*2*pi*r = 1.5*pi*r
+      var arcLen = 1.5 * Math.PI * r;
+      var dashOffset = arcLen * (1 - v / 100);
+      var track = document.createElementNS(ns, 'circle');
+      track.setAttribute('class', 'gauge-track');
+      track.setAttribute('cx', cx); track.setAttribute('cy', cy); track.setAttribute('r', r);
+      track.setAttribute('stroke-dasharray', arcLen + ' ' + (2 * Math.PI * r));
+      track.setAttribute('transform', 'rotate(135 ' + cx + ' ' + cy + ')');
+      svg.appendChild(track);
+      var fill = document.createElementNS(ns, 'circle');
+      fill.setAttribute('class', 'gauge-fill');
+      fill.setAttribute('cx', cx); fill.setAttribute('cy', cy); fill.setAttribute('r', r);
+      fill.setAttribute('stroke-dasharray', arcLen + ' ' + (2 * Math.PI * r));
+      fill.setAttribute('stroke-dashoffset', dashOffset);
+      fill.setAttribute('transform', 'rotate(135 ' + cx + ' ' + cy + ')');
+      svg.appendChild(fill);
+      var txt = document.createElementNS(ns, 'text');
+      txt.setAttribute('class', 'gauge-value');
+      txt.setAttribute('x', cx); txt.setAttribute('y', cy);
+      txt.textContent = Math.round(v) + '%';
+      svg.appendChild(txt);
+      return svg;
     }
-    return pts.join(' ');
-  }
 
-  // Mini hex geometry — scaled-down version of the main chart's hexSize/rowHeight ratio
-  // Main: hexSize=18, hexW=18*sqrt(3)≈31.18, rowH=18*1.5=27, court 400x370
-  // Mini:  scale factor 0.42 → hexSize=7.5, hexW≈13, rowH=11.25, court 200x180
-  var mHexSize = 7.5;
-  var mHexW    = mHexSize * Math.sqrt(3);
-  var mRowH    = mHexSize * 1.5;
-  // Mini court bounds (matches the 200x180 viewBox)
-  var mLeft = 18, mRight = 182, mTop = 12, mBottom = 170;
+    function makeBar(start, end, max, suffix){
+      var svg = document.createElementNS(ns, 'svg');
+      svg.setAttribute('class', 'bar-svg');
+      svg.setAttribute('viewBox', '0 0 120 54');
+      var mx = Math.max(max || 1, start || 0, end || 0);
+      if(mx <= 0) mx = 1;
+      var trackW = 100, trackX = 10, trackY = 20, trackH = 14;
+      var track = document.createElementNS(ns, 'rect');
+      track.setAttribute('class', 'bar-track');
+      track.setAttribute('x', trackX); track.setAttribute('y', trackY);
+      track.setAttribute('width', trackW); track.setAttribute('height', trackH);
+      track.setAttribute('rx', 4);
+      svg.appendChild(track);
+      var fillW = Math.max(2, (end / mx) * trackW);
+      var startW = Math.max(1, (start / mx) * trackW);
+      var fill = document.createElementNS(ns, 'rect');
+      fill.setAttribute('class', 'bar-fill');
+      fill.setAttribute('x', trackX); fill.setAttribute('y', trackY);
+      fill.setAttribute('width', 0); fill.setAttribute('height', trackH);
+      fill.setAttribute('rx', 4);
+      svg.appendChild(fill);
+      // animate fill
+      setTimeout(function(){ fill.setAttribute('width', fillW); }, 50);
+      // start marker
+      var startMark = document.createElementNS(ns, 'rect');
+      startMark.setAttribute('class', 'bar-start');
+      startMark.setAttribute('x', trackX + startW - 1.5);
+      startMark.setAttribute('y', trackY - 3);
+      startMark.setAttribute('width', 3); startMark.setAttribute('height', trackH + 6);
+      startMark.setAttribute('rx', 1.5);
+      svg.appendChild(startMark);
+      // end marker
+      var endMark = document.createElementNS(ns, 'rect');
+      endMark.setAttribute('class', 'bar-end');
+      endMark.setAttribute('x', trackX + fillW - 1.5);
+      endMark.setAttribute('y', trackY - 3);
+      endMark.setAttribute('width', 3); endMark.setAttribute('height', trackH + 6);
+      endMark.setAttribute('rx', 1.5);
+      svg.appendChild(endMark);
+      // labels
+      var sfx = suffix || '';
+      var sLab = document.createElementNS(ns, 'text');
+      sLab.setAttribute('class', 'bar-start-label');
+      sLab.setAttribute('x', trackX + startW); sLab.setAttribute('y', trackY + trackH + 14);
+      sLab.textContent = (start) + sfx;
+      svg.appendChild(sLab);
+      var eLab = document.createElementNS(ns, 'text');
+      eLab.setAttribute('class', 'bar-end-label');
+      eLab.setAttribute('x', trackX + fillW); eLab.setAttribute('y', trackY + trackH + 14);
+      eLab.textContent = (end) + sfx;
+      svg.appendChild(eLab);
+      // arrow between
+      var arrY = trackY + trackH / 2 + 1;
+      var arr = document.createElementNS(ns, 'text');
+      arr.setAttribute('x', 110); arr.setAttribute('y', arrY + 3);
+      arr.setAttribute('font-size', 12); arr.setAttribute('fill', '#FF2D55');
+      arr.setAttribute('text-anchor', 'middle'); arr.setAttribute('font-weight', 700);
+      arr.textContent = end > start ? '▲' : '▼';
+      svg.appendChild(arr);
+      return svg;
+    }
 
-  // Generate the full background hex grid for a mini court
-  function buildMiniHexGrid(svgEl){
-    var bgGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    bgGroup.setAttribute('class', 'mini-bg-hexes');
-    var row = 0;
-    for(var cy = mTop + mHexSize; cy < mBottom; cy += mRowH){
-      var offset = (row % 2) ? mHexW / 2 : 0;
-      for(var cx = mLeft + mHexSize + offset; cx < mRight; cx += mHexW){
-        if(cx > mLeft && cx < mRight && cy > mTop && cy < mBottom){
-          var poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-          poly.setAttribute('points', miniHexPoints(cx, cy, mHexSize));
-          poly.setAttribute('fill', '#0a0a0c');
-          poly.setAttribute('stroke', 'rgba(255,45,85,0.08)');
-          poly.setAttribute('stroke-width', '0.5');
-          poly.setAttribute('opacity', '0.5');
-          bgGroup.appendChild(poly);
-        }
+    function makeBigNum(val, label){
+      var wrap = document.createElement('div');
+      wrap.className = 'stat-bignum';
+      // Split number and unit (e.g., "$94MM" → "$94" + "MM", "380M+" → "380M" + "+")
+      var m = String(val).match(/^([^0-9]*)([\d.]+)(.*)$/);
+      if(m){
+        var prefix = m[1], num = m[2], unit = m[3];
+        if(prefix){ var ps = document.createElement('span'); ps.className = 'bn-unit'; ps.textContent = prefix; wrap.appendChild(ps); }
+        var ns2 = document.createElement('span'); ns2.textContent = num; wrap.appendChild(ns2);
+        if(unit){ var us = document.createElement('span'); us.className = 'bn-unit'; us.textContent = unit; wrap.appendChild(us); }
+      } else {
+        wrap.textContent = val;
       }
-      row++;
+      return wrap;
     }
-    // Insert background hexes as the FIRST child so stat hexes + court lines render on top
-    svgEl.insertBefore(bgGroup, svgEl.firstChild);
-    return bgGroup;
-  }
 
-  // Draw mini court lines on top of the background hexes
-  function buildMiniCourtLines(svgEl){
-    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    g.setAttribute('pointer-events', 'none');
-    var mc = 'rgba(255,45,85,0.4)';
-    var sw = 1;
-    // Half-court boundary
-    var boundary = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    boundary.setAttribute('d', 'M 18 10 L 182 10 L 182 170 L 18 170 Z');
-    boundary.setAttribute('fill', 'none'); boundary.setAttribute('stroke', mc); boundary.setAttribute('stroke-width', sw);
-    g.appendChild(boundary);
-    // Backboard
-    var bb = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    bb.setAttribute('x1','92'); bb.setAttribute('y1','155'); bb.setAttribute('x2','108'); bb.setAttribute('y2','155');
-    bb.setAttribute('stroke', mc); bb.setAttribute('stroke-width','1.5'); g.appendChild(bb);
-    // Rim
-    var rim = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    rim.setAttribute('cx','100'); rim.setAttribute('cy','162'); rim.setAttribute('r','3.5');
-    rim.setAttribute('fill','none'); rim.setAttribute('stroke', mc); rim.setAttribute('stroke-width','1'); g.appendChild(rim);
-    // Restricted arc
-    var ra = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    ra.setAttribute('d','M 91 155 A 9 9 0 0 0 109 155');
-    ra.setAttribute('fill','none'); ra.setAttribute('stroke', mc); ra.setAttribute('stroke-width', sw); g.appendChild(ra);
-    // Key
-    var key = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    key.setAttribute('x','70'); key.setAttribute('y','92'); key.setAttribute('width','60'); key.setAttribute('height','78');
-    key.setAttribute('fill','none'); key.setAttribute('stroke', mc); key.setAttribute('stroke-width', sw); g.appendChild(key);
-    // Free-throw line
-    var ft = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    ft.setAttribute('x1','70'); ft.setAttribute('y1','92'); ft.setAttribute('x2','130'); ft.setAttribute('y2','92');
-    ft.setAttribute('stroke', mc); ft.setAttribute('stroke-width', sw); g.appendChild(ft);
-    // FT circle
-    var ftc = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    ftc.setAttribute('cx','100'); ftc.setAttribute('cy','92'); ftc.setAttribute('r','30');
-    ftc.setAttribute('fill','none'); ftc.setAttribute('stroke', mc); ftc.setAttribute('stroke-width', sw); g.appendChild(ftc);
-    // 3-point arc
-    var tp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    tp.setAttribute('d','M 25 170 L 25 125 A 80 80 0 0 1 175 125 L 175 170');
-    tp.setAttribute('fill','none'); tp.setAttribute('stroke', mc); tp.setAttribute('stroke-width', sw); g.appendChild(tp);
-    svgEl.appendChild(g);
-  }
-
-  // Team hex positions on the mini court — stat hexes rendered ON TOP of the background grid
-  // val: 0-1 thermal scale (higher = hotter color)
-  var miniTeams = {
-    'jitb':   [{x:60,y:140,val:0.95},{x:100,y:150,val:0.90},{x:140,y:140,val:0.85},{x:100,y:110,val:0.88}],
-    'disney': [{x:60,y:140,val:0.82},{x:140,y:140,val:0.75},{x:100,y:150,val:0.78},{x:100,y:110,val:0.72}],
-    'vista':  [{x:60,y:140,val:0.70},{x:140,y:140,val:0.68},{x:100,y:150,val:0.65},{x:100,y:110,val:0.62}],
-    'rbi':    [{x:50,y:145,val:0.92},{x:100,y:155,val:0.88},{x:150,y:145,val:0.85},{x:70,y:115,val:0.80},{x:130,y:115,val:0.75},{x:100,y:85,val:0.78}],
-    'sonic':  [{x:60,y:140,val:0.60},{x:140,y:140,val:0.65},{x:100,y:150,val:0.55},{x:100,y:110,val:0.58}]
-  };
-
-  // Build each mini chart: background hex grid → court lines → stat hexes on top
-  document.querySelectorAll('.mini-chart-svg').forEach(function(svgEl){
-    buildMiniHexGrid(svgEl);
-    buildMiniCourtLines(svgEl);
-    // Re-attach stat hexes on top (they already exist in the DOM, but ensure they're after court lines)
-    var prefix = null;
-    // Determine which team this SVG belongs to by checking hex IDs inside it
-    var firstHex = svgEl.querySelector('.mini-court-hex');
-    if(firstHex && firstHex.id){
-      var m = firstHex.id.match(/^hex-([a-z]+)-\d+$/);
-      if(m) prefix = m[1];
+    function makeTrend(val, dir){
+      var wrap = document.createElement('div');
+      wrap.className = 'stat-trend ' + (dir === 'down' ? 'down' : 'up');
+      var arrow = document.createElement('span');
+      arrow.className = 'trend-arrow';
+      arrow.textContent = dir === 'down' ? '▼' : '▲';
+      wrap.appendChild(arrow);
+      var valSpan = document.createElement('span');
+      valSpan.textContent = val;
+      wrap.appendChild(valSpan);
+      return wrap;
     }
-    if(prefix && miniTeams[prefix]){
-      miniTeams[prefix].forEach(function(pos, i){
-        var hex = svgEl.querySelector('#hex-' + prefix + '-' + i);
-        if(!hex) return;
-        hex.setAttribute('points', miniHexPoints(pos.x, pos.y, mHexSize));
-        hex.setAttribute('fill', heatColor(pos.val));
-        hex.setAttribute('opacity', '1');
-        hex.setAttribute('stroke', '#0a0a0c');
-        hex.setAttribute('stroke-width', '1');
-        // Move stat hex to the end so it's definitely on top
-        svgEl.appendChild(hex);
-      });
-    }
-  });
 
-  /* ===== STAT CELL → HEX HOVER LINKING ===== */
-  document.querySelectorAll('.stats-col .stat-cell[data-hex-id]').forEach(function(cell){
-    var hexId = cell.getAttribute('data-hex-id');
-    cell.addEventListener('mouseenter', function(){
-      cell.classList.add('stat-hover');
-      // dim all siblings, highlight target hex
-      var parent = cell.closest('.stats-col');
-      if(parent){
-        parent.querySelectorAll('.stat-cell').forEach(function(s){
-          if(s !== cell) s.classList.add('stat-dim');
-        });
+    document.querySelectorAll('.stat-panel').forEach(function(panel){
+      var type = panel.getAttribute('data-stat-type');
+      var labelEl = panel.querySelector('.stat-panel-label');
+      var subEl = panel.querySelector('.stat-panel-sub');
+      var chart;
+      if(type === 'gauge'){
+        var v = parseFloat(panel.getAttribute('data-stat-value'));
+        chart = makeGauge(v);
+      } else if(type === 'bar'){
+        var s = parseFloat(panel.getAttribute('data-stat-start'));
+        var e = parseFloat(panel.getAttribute('data-stat-end'));
+        var mx = parseFloat(panel.getAttribute('data-stat-max'));
+        var sfx = panel.getAttribute('data-stat-suffix') || '';
+        chart = makeBar(s, e, mx, sfx);
+      } else if(type === 'bignum'){
+        var val = panel.getAttribute('data-stat-value');
+        var lab = panel.getAttribute('data-stat-label');
+        chart = makeBigNum(val, lab);
+      } else if(type === 'trend'){
+        var tv = panel.getAttribute('data-stat-value');
+        var td = panel.getAttribute('data-stat-dir') || 'up';
+        chart = makeTrend(tv, td);
       }
-      var svg = cell.closest('.player-card-body').querySelector('.mini-chart-svg');
-      if(svg){
-        svg.querySelectorAll('.mini-court-hex').forEach(function(h){
-          if(h.id === hexId){
-            h.classList.add('hex-active');
-            h.classList.remove('hex-dim');
-          } else {
-            h.classList.add('hex-dim');
-            h.classList.remove('hex-active');
-          }
-        });
+      if(chart){
+        // Insert chart BEFORE the label
+        panel.insertBefore(chart, labelEl);
       }
     });
-    cell.addEventListener('mouseleave', function(){
-      cell.classList.remove('stat-hover');
-      var parent = cell.closest('.stats-col');
-      if(parent){
-        parent.querySelectorAll('.stat-cell').forEach(function(s){
-          s.classList.remove('stat-dim');
-        });
-      }
-      var svg = cell.closest('.player-card-body').querySelector('.mini-chart-svg');
-      if(svg){
-        svg.querySelectorAll('.mini-court-hex').forEach(function(h){
-          h.classList.remove('hex-active');
-          h.classList.remove('hex-dim');
-        });
-      }
-    });
-  });
+  }
+
+  buildStatPanels();
 
   /* ===== 3D ATHLETE MODEL (Three.js — simple working GLB, wireframe + interactive body parts) ===== */
   (function init3DAthlete(){
