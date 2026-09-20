@@ -1848,6 +1848,12 @@ body::after{
       });
       console.log('[3D Athlete] Meshes found:', meshCount, 'All body meshes:', allBodyMeshes.length);
       
+      // Debug: show mesh count on page
+      var dbg = document.createElement('div');
+      dbg.style.cssText = 'position:absolute;bottom:5px;left:5px;color:#0f0;font-size:10px;z-index:100;background:rgba(0,0,0,0.8);padding:4px;border-radius:4px;';
+      dbg.textContent = 'MESHES: ' + meshCount + ' | BOX: ' + (box.isEmpty() ? 'EMPTY' : 'OK') + ' | MAX: ' + (maxDim || 0);
+      canvas.parentElement.appendChild(dbg);
+      
       // Simple body part classification based on Y position
       if(allBodyMeshes.length > 0){
         modelBox = new THREE.Box3().setFromObject(obj);
