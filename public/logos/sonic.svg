@@ -1,41 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<meta charset="utf-8">
-<title>Wikimedia Error</title>
-<style>
-* { margin: 0; padding: 0; }
-body { background: #fff; font: 15px/1.6 sans-serif; color: #333; }
-.content { margin: 7% auto 0; padding: 2em 1em 1em; max-width: 640px; display: flex; flex-direction: row; flex-wrap: wrap; }
-.footer { clear: both; margin-top: 14%; border-top: 1px solid #e5e5e5; background: #f9f9f9; padding: 2em 0; font-size: 0.8em; text-align: center; }
-img { margin: 0 2em 2em 0; }
-a img { border: 0; }
-h1 { margin-top: 1em; font-size: 1.2em; }
-.content-text { flex: 1; }
-p { margin: 0.7em 0 1em 0; }
-a { color: #0645ad; text-decoration: none; }
-a:hover { text-decoration: underline; }
-code { font-family: sans-serif; }
-summary { font-weight: bold; cursor: pointer; }
-details[open] { background: #970302; color: #dfdedd; }
-.text-muted { color: #777; }
-@media (prefers-color-scheme: dark) {
-  a { color: #9e9eff; }
-  body { background: transparent; color: #ddd; }
-  .footer { border-top: 1px solid #444; background: #060606; }
-  #logo { filter: invert(1) hue-rotate(180deg); }
-  .text-muted { color: #888; }
-}
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 28.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1"
+	 id="svg2" xmlns:cc="http://creativecommons.org/ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 4931.7 2604.3"
+	 style="enable-background:new 0 0 4931.7 2604.3;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
 </style>
-<meta name="color-scheme" content="light dark">
-<div class="content" role="main">
-<a href="https://www.wikimedia.org"><img id="logo" src="https://www.wikimedia.org/static/images/wmf-logo.png" srcset="https://www.wikimedia.org/static/images/wmf-logo-2x.png 2x" alt="Wikimedia" width="135" height="101">
-</a>
-<div class="content-text">
-<h1>Error</h1>
-
-<p>Too many requests - please contact noc@wikimedia.org to discuss a less disruptive approach or instead use thumbnail images in sizes listed on https://w.wiki/GHai. (0c640b1)</p>
-</div>
-</div>
-<div class="footer"><p>If you report this error to the Wikimedia System Administrators, please include the details below.</p><p class="text-muted"><code>Request served via cp4048 cp4048, Varnish XID 98451660<br>Upstream caches: cp4048 int<br>Error: 429, Too many requests - please contact noc@wikimedia.org to discuss a less disruptive approach or instead use thumbnail images in sizes listed on https://w.wiki/GHai. (0c640b1) at Sun, 20 Sep 2026 04:33:21 GMT<br><details><summary>Sensitive client information</summary>IP address: 76.147.224.128</details></code></p>
-</div>
-</html>
+<g id="g10" transform="matrix(1.3333333,0,0,-1.3333333,-0.40540869,2604.9209)">
+	<g id="g12" transform="scale(0.1)">
+		<g id="g14" transform="scale(2.16141)">
+			<path id="path16" class="st0" d="M16211.6,222.2c19.9-1.2,39.1-7.4,55.9-18l6.7-3.5l25.8,51.9l-5.4,3.6
+				c-12.4,8.1-25.7,14.6-39.6,19.4c-16.7,5.1-34.1,7.4-51.5,6.9v-0.1c-23.4,0.1-46.1-8.3-63.9-23.6c-16.1-15.6-24.7-37.4-23.7-59.7
+				c-0.7-15.1,3.6-30.1,12-42.7c7.3-10.6,17-19.4,28.2-25.6c12.4-6.7,25.1-12.5,38.2-17.5c15.4-6.2,33.7-15.9,33.7-28.7
+				c0.6-6.7-2.7-13.1-8.6-16.4c-17-8.1-36.7-8.1-53.8,0c-10.3,3.8-20.1,9-29.1,15.4l-6.4,4.8l-30.1-52.9l5.2-3.8
+				c13.8-9.8,29.1-17.3,45.3-22.3c15.8-4.7,32.3-7.1,48.8-7.1c17.7-0.5,35.4,3.3,51.4,10.9c13.9,6.7,25.6,17.1,33.9,30.1
+				c7.6,12.4,11.6,26.7,11.6,41.2c0.5,14.7-2.9,29.3-9.7,42.4c-5.7,10.6-13.8,19.7-23.7,26.5c-10.5,6.5-21.6,11.9-33.2,16.1
+				c-12.3,4.4-24.1,10.2-35.1,17.3c-6,3.1-9.9,9.1-10.4,15.9c-0.6,5.6,1.8,11.1,6.4,14.5C16196.9,220.8,16204.2,222.6,16211.6,222.2
+				L16211.6,222.2z"/>
+		</g>
+		<g id="g18" transform="scale(2.20433)">
+			<path id="path20" class="st0" d="M16299.3,286.9l-10.7-0.1L16158.9,107l-124.5,176.8l-2.6,3l-10.7-0.1V5.2l63-0.1v100.2
+				l68.1-93.9l2.8-2.8l7.2-0.1l73.2,103.9V5.2l64.6-0.1v274.5L16299.3,286.9z"/>
+		</g>
+		<g id="g26" transform="scale(1.92653)">
+			<path id="path28" class="st0" d="M7450.9,5795.1c457.3,0,756.2-435.3,664.7-970.5s-536.3-970.2-993.3-970.2
+				c-457.6,0-755.9,435.5-664.7,970.2C6548.7,5359.3,6993.5,5795.1,7450.9,5795.1L7450.9,5795.1z M13524.2,6386.2l-771.1-0.1
+				L12236,3263.4l771-0.1L13524.2,6386.2z M5759.8,6385.9l-1686-0.1h-0.1c-417.4,0-781-338.4-811.9-756.1
+				c-24.1-267.7,108.5-525.3,340.3-661.3v-0.1l1001.1-632.7c62.7-38.2,98.3-108.7,91.7-181.9c-9.5-108.7-93.9-195.9-202.3-208.7
+				l-22.9-0.1H2855.5l-393-681.9l1991.5-0.1c509.4,0.1,952.9,413.3,990.4,922.7c29.4,327.4-133.5,642.3-417.7,807.5v-0.1
+				L4043,5600.2c-16.3,14.3-24.9,35.5-23.1,57.2c3.5,41.6,38,73.8,79.8,74.5l1282.1-0.1L5759.8,6385.9z M10121.1,6386.4
+				c-0.1,0-0.2,0-0.2,0l-660.2-0.1l-517.2-3123l753.5-0.1l326.5,1972.2l830.1-1721.3c128.1-270.4,345.6-319.1,538.6-319.1
+				c319.1,0,464.5,173.1,522.2,544l438.2,2646.9l-753.5-0.1l-331.8-2009l-887.5,1846.6C10332.2,6323,10231.5,6386.4,10121.1,6386.4
+				L10121.1,6386.4z M7559.9,6456.9c-887.8,0-1732.8-732-1883.5-1632.3c-150.8-900.3,448.3-1632,1336.3-1632
+				s1732.8,732.2,1883.5,1632C9047,5724.4,8447.7,6456.9,7559.9,6456.9L7559.9,6456.9z M15483,6455.8
+				c-917.6,0-1744.5-618.2-1909.9-1617.9c-159.2-961.2,347.5-1645.3,1313.5-1645.3c400.9,0,780.9,127.1,1069.6,385l-186.9,576.4
+				c-184.8-211.6-469.3-298.3-693.7-298.3c-546.1,0-841.5,404.1-742.8,999.2c94.6,569.3,561.5,941.5,1051.8,941.5
+				c240.3,0,431.3-62.5,561.5-201.8l353.9,611.6C16118.4,6372.9,15809.7,6455.8,15483,6455.8L15483,6455.8z"/>
+		</g>
+		<g id="g30" transform="scale(2.26994)">
+			<path id="path32" class="st0" d="M14384.2,23.6c-86.8,0.3-173.2,12.7-256.5,36.8L7458.1,1971.7L1063.5,138.9
+				c-325.4-97.3-677.2,17-883.2,287C-32,691.2-57.8,1060.3,115.6,1352.5l1462.5,2537.3c112.5,195,137.1,428.5,67.7,642.7
+				L939.9,6698.8c-95.3,292.1-21.5,612.9,191.7,834c213.2,221.1,531.1,306.5,826.5,221.9l5167.6-1481.5l8005.9,2295.9
+				c356.7,106.9,742.3-18.4,968.1-314.6c232.7-290.7,261-695.2,71.1-1015.5l-1666.5-2891.8c-112.2-194.7-136.8-427.7-67.7-641.5
+				l806.7-2489.3c89.3-276.2,41.8-578.4-127.9-813.9C14945.7,167,14674,26.3,14383.8,23.6H14384.2L14384.2,23.6z M7458.1,2347.9
+				l49.9-14.2l6718.6-1926.5c195.2-56.1,405.5,0.1,546.6,146.2s190.1,358.2,127.2,551.3l-806.9,2489.7
+				c-100.5,311-64.8,649.9,98.1,933.1L15858,7419.6c112.4,193.9,95.6,436.6-42.3,613.2c-137.9,176.6-369.2,251.7-584.6,189.7
+				L7124.5,5898.2l-5266,1509.4c-166.8,47.8-346.4-0.4-466.9-125.2c-120.5-124.8-162.3-306-108.8-471L1988.5,4644
+				c101.2-311.3,65.7-651-97.7-934.7L428.3,1172c-95.7-165.7-81.3-372.9,36.5-523.7S780.1,433.3,964,486L7458.1,2347.9z"/>
+		</g>
+	</g>
+</g>
+</svg>

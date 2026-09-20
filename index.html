@@ -382,9 +382,21 @@ body::after{
   font-family:var(--header-font);font-size:0.75rem;
   color:var(--red);font-weight:600;white-space:nowrap;text-align:right;
 }
-/* ===== COMPANY LOGO (SVG) ===== */
-.logo-svg{
-  width:60px;height:60px;flex-shrink:0;
+/* ===== COMPANY LOGO ===== */
+.company-logo{
+  max-height:48px;max-width:60px;object-fit:contain;
+  flex-shrink:0;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+  transition:transform 0.4s cubic-bezier(.25,.8,.25,1);
+}
+.player-card:hover .company-logo{transform:scale(1.08);}
+.rbi-logos{display:flex;flex-direction:column;gap:4px;flex-shrink:0;align-items:center;}
+.company-logo-sm{
+  max-height:22px;max-width:40px;object-fit:contain;
+  filter:drop-shadow(0 1px 4px rgba(0,0,0,0.3));
+  transition:transform 0.4s cubic-bezier(.25,.8,.25,1);
+}
+.player-card:hover .company-logo-sm{transform:scale(1.05);}
+.logo-svg{width:60px;height:60px;flex-shrink:0;
   filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));
   transition:transform 0.4s cubic-bezier(.25,.8,.25,1);
 }
@@ -894,16 +906,7 @@ body::after{
             <div class="player-card-name">Jack in the Box</div>
             <div class="player-card-role">Sr. Director of Product Management</div>
           </div>
-          <svg class="logo-svg" viewBox="0 0 60 60">
-            <!-- Jack-in-the-box jester head: yellow face, red 3-pointed hat -->
-            <circle cx="30" cy="38" r="16" fill="#FFE100"/>
-            <path d="M 14 30 Q 14 20 22 18 L 30 8 L 38 18 Q 46 20 46 30 Q 42 24 38 26 Q 34 22 30 24 Q 26 22 22 26 Q 18 24 14 30 Z" fill="#E8202C"/>
-            <circle cx="23" cy="38" r="2.5" fill="#0a0a0c"/>
-            <circle cx="37" cy="38" r="2.5" fill="#0a0a0c"/>
-            <path d="M 22 44 Q 30 50 38 44" fill="none" stroke="#0a0a0c" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="22" cy="18" r="2" fill="#FFE100"/>
-            <circle cx="38" cy="18" r="2" fill="#FFE100"/>
-          </svg>
+          <img src="/logos/jack-in-the-box.svg" alt="Jack in the Box" class="company-logo">
           <div class="player-card-years">2024<br>Present</div>
         </div>
         <div class="stat-dashboard">
@@ -934,11 +937,7 @@ body::after{
             <div class="player-card-name">Disney</div>
             <div class="player-card-role">Sr. Product Manager</div>
           </div>
-          <svg class="logo-svg" viewBox="0 0 60 60">
-            <!-- Disney script logo in blue -->
-            <text x="30" y="36" font-family="'Brush Script MT', cursive, serif" font-size="20" font-weight="700" fill="#003087" text-anchor="middle" font-style="italic">Disney</text>
-            <path d="M 8 42 Q 30 38 52 42" fill="none" stroke="#003087" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
-          </svg>
+          <img src="/logos/disney.svg" alt="Disney" class="company-logo">
           <div class="player-card-years">2022<br>2023</div>
         </div>
         <div class="stat-dashboard">
@@ -969,11 +968,7 @@ body::after{
             <div class="player-card-name">VistaPrint</div>
             <div class="player-card-role">Director of Growth &amp; Retention</div>
           </div>
-          <svg class="logo-svg" viewBox="0 0 60 60">
-            <!-- Vistaprint logo: stylized "V" + text in blue -->
-            <path d="M 12 18 L 24 18 L 30 32 L 36 18 L 48 18 L 34 44 L 26 44 Z" fill="#0066CC"/>
-            <text x="30" y="52" font-family="'Space Grotesk', sans-serif" font-size="7" font-weight="700" fill="#0066CC" text-anchor="middle">Vistaprint</text>
-          </svg>
+          <img src="/logos/vistaprint.svg" alt="Vistaprint" class="company-logo">
           <div class="player-card-years">2021<br>2022</div>
         </div>
         <div class="stat-dashboard">
@@ -1004,13 +999,11 @@ body::after{
             <div class="player-card-name">Burger King · Popeyes · Tim Hortons</div>
             <div class="player-card-role">Sr. Product Manager</div>
           </div>
-          <svg class="logo-svg" viewBox="0 0 60 60">
-            <!-- RBI: three brand color dots + "RBI" text -->
-            <circle cx="18" cy="28" r="6" fill="#D62300"/>
-            <circle cx="30" cy="28" r="6" fill="#FF7E00"/>
-            <circle cx="42" cy="28" r="6" fill="#C8102E"/>
-            <text x="30" y="48" font-family="'Space Grotesk', sans-serif" font-size="14" font-weight="800" fill="#fff" text-anchor="middle">RBI</text>
-          </svg>
+          <div class="rbi-logos">
+            <img src="/logos/burger-king.svg" alt="Burger King" class="company-logo-sm">
+            <img src="/logos/popeyes.svg" alt="Popeyes" class="company-logo-sm">
+            <img src="/logos/tim-hortons.svg" alt="Tim Hortons" class="company-logo-sm">
+          </div>
           <div class="player-card-years">2019<br>2021</div>
         </div>
         <div class="stat-dashboard">
@@ -1049,11 +1042,7 @@ body::after{
             <div class="player-card-name">Sonic Drive-In</div>
             <div class="player-card-role">PM / Developer</div>
           </div>
-          <svg class="logo-svg" viewBox="0 0 60 60">
-            <!-- Sonic Drive-In: red arrow/shark-fin shape + "SONIC" text -->
-            <path d="M 10 34 L 30 14 L 50 34 L 42 34 L 30 22 L 18 34 Z" fill="#EE3B34"/>
-            <text x="30" y="48" font-family="'Space Grotesk', sans-serif" font-size="9" font-weight="800" fill="#003DA5" text-anchor="middle" letter-spacing="1">SONIC</text>
-          </svg>
+          <img src="/logos/sonic.svg" alt="Sonic Drive-In" class="company-logo">
           <div class="player-card-years">2014<br>2018</div>
         </div>
         <div class="stat-dashboard">
