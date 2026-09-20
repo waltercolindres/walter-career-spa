@@ -1783,7 +1783,8 @@ body::after{
     scene.background = new THREE.Color(0x0a0a0c);
 
     var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-    camera.position.set(0, 0, 6);
+    camera.position.set(0, 1, 11);
+    camera.lookAt(0, 0, 0);
 
     var renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true});
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -1814,6 +1815,7 @@ body::after{
     var modelBox = null;
     var modelLoaded = false;
     var autoRotate = true;
+    var markerDots = [];
 
     /* ---- Skill data per body part ---- */
     var skillStats = {
@@ -1891,6 +1893,61 @@ body::after{
         modelLoaded = true;
         if(loadingEl) loadingEl.style.display = 'none';
         console.log('[3D Athlete] Model loaded. Meshes:', allMeshes.length);
+
+        /* ---- Ground ring under the model ---- */
+        var groundY = modelBox.min.y - 0.5;
+        var groundOuter = new THREE.Mesh(
+          new THREE.RingGeometry(1.8, 2.6, 64),
+          new THREE.MeshBasicMaterial({color: RED, transparent: true, opacity: 0.15, side: THREE.DoubleSide, depthWrite: false})
+        );
+        groundOuter.rotation.x = -Math.PI / 2;
+        groundOuter.position.y = groundY;
+        model.add(groundOuter);
+
+        var groundInner = new THREE.Mesh(
+          new THREE.RingGeometry(1.9, 2.05, 64),
+          new THREE.MeshBasicMaterial({color: RED, transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false})
+        );
+        groundInner.rotation.x = -Math.PI / 2;
+        groundInner.position.y = groundY + 0.001;
+        model.add(groundInner);
+
+        /* ---- Body-part marker dots (pulsing, always visible) ---- */
+        var dotGeo = new THREE.SphereGeometry(0.08, 16, 16);
+        var dotMatBase = {color: RED, transparent: true, opacity: 0.9, depthTest: false, depthWrite: false};
+
+        function addDot(x, y, z){
+          var mat = new THREE.MeshBasicMaterial(dotMatBase);
+          var dot = new THREE.Mesh(dotGeo, mat);
+          dot.position.set(x, y, z);
+          dot.renderOrder = 999;
+          model.add(dot);
+          markerDots.push(dot);
+        }
+
+        var cx = (modelBox.min.x + modelBox.max.x) / 2;
+        var cz = (modelBox.min.z + modelBox.max.z) / 2;
+        var halfX = (modelBox.max.x - modelBox.min.x) / 2;
+        var halfZ = (modelBox.max.z - modelBox.min.z) / 2;
+
+        // Head: top 10% of bounding box (center top)
+        var headY = modelBox.max.y - (range * 0.08);
+        addDot(cx, headY, cz);
+
+        // Arms: 20-60% height, left & right sides
+        var armsY = modelBox.min.y + range * 0.5;
+        addDot(modelBox.max.x, armsY, cz);
+        addDot(modelBox.min.x, armsY, cz);
+
+        // Hands: 60-80% height (left & right)
+        var handsY = modelBox.min.y + range * 0.7;
+        addDot(modelBox.max.x - halfX * 0.3, handsY, cz);
+        addDot(modelBox.min.x + halfX * 0.3, handsY, cz);
+
+        // Legs: bottom 20% (left & right)
+        var legsY = modelBox.min.y + range * 0.1;
+        addDot(cx - halfX * 0.35, legsY, cz);
+        addDot(cx + halfX * 0.35, legsY, cz);
       },
       function(progress){
         // could update loading % here
@@ -1934,12 +1991,12 @@ body::after{
     canvas.addEventListener('click', handleClick);
     canvas.addEventListener('pointerleave', function(){ clearHover(); });
 
-    /* ---- Scroll / pinch to zoom (camera.position.z between 4 and 12) ---- */
-    var targetCamZ = 6;
+    /* ---- Scroll / pinch to zoom (camera.position.z between 7 and 16) ---- */
+    var targetCamZ = 11;
     canvas.addEventListener('wheel', function(e){
       e.preventDefault();
       targetCamZ += e.deltaY * 0.008;
-      targetCamZ = Math.max(3, Math.min(10, targetCamZ));
+      targetCamZ = Math.max(7, Math.min(16, targetCamZ));
     }, {passive: false});
 
     var lastPinch = 0;
@@ -1957,7 +2014,7 @@ body::after{
         var dy = e.touches[0].clientY - e.touches[1].clientY;
         var pinch = Math.sqrt(dx*dx + dy*dy);
         targetCamZ += (lastPinch - pinch) * 0.02;
-        targetCamZ = Math.max(3, Math.min(10, targetCamZ));
+        targetCamZ = Math.max(7, Math.min(16, targetCamZ));
         lastPinch = pinch;
       }
     }, {passive: false});
@@ -2060,7 +2117,7 @@ body::after{
     }
 
     /* ---- Simple render loop: auto-rotate model + lerp camera Z + pulse + pin expiry ---- */
-    var curRotY = 0, curRotX = 0, curCamZ = 6;
+    var curRotY = 0, curRotX = 0, curCamZ = 11;
     function animate(){
       requestAnimationFrame(animate);
       var now = performance.now();
@@ -2090,6 +2147,12 @@ body::after{
             o.userData._pulseStart = null;
           }
         }
+      });
+
+      // Pulsing marker dots: scale oscillation
+      var dotPulse = 1 + Math.sin(now * 0.002 * 2) * 0.2;
+      markerDots.forEach(function(dot){
+        dot.scale.setScalar(dotPulse);
       });
 
       // Pin tooltip expiry
