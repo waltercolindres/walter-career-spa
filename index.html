@@ -1602,7 +1602,7 @@ body::after{
     });
   });
 
-  /* ===== MINI SHOT CHART HEXES ===== */
+  /* ===== MINI SHOT CHART HEXES — full court hex fill + court lines + stat hexes on top ===== */
   // Mini court layout: viewBox 0 0 200 180, basket at bottom center (100, 165)
   function miniHexPoints(cx, cy, r){
     var pts = [];
@@ -1613,8 +1613,83 @@ body::after{
     return pts.join(' ');
   }
 
-  // Team hex positions on the mini court — spread across the court
-  // Format: [teamPrefix, [{x, y, val}, ...]]
+  // Mini hex geometry — scaled-down version of the main chart's hexSize/rowHeight ratio
+  // Main: hexSize=18, hexW=18*sqrt(3)≈31.18, rowH=18*1.5=27, court 400x370
+  // Mini:  scale factor 0.42 → hexSize=7.5, hexW≈13, rowH=11.25, court 200x180
+  var mHexSize = 7.5;
+  var mHexW    = mHexSize * Math.sqrt(3);
+  var mRowH    = mHexSize * 1.5;
+  // Mini court bounds (matches the 200x180 viewBox)
+  var mLeft = 18, mRight = 182, mTop = 12, mBottom = 170;
+
+  // Generate the full background hex grid for a mini court
+  function buildMiniHexGrid(svgEl){
+    var bgGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    bgGroup.setAttribute('class', 'mini-bg-hexes');
+    var row = 0;
+    for(var cy = mTop + mHexSize; cy < mBottom; cy += mRowH){
+      var offset = (row % 2) ? mHexW / 2 : 0;
+      for(var cx = mLeft + mHexSize + offset; cx < mRight; cx += mHexW){
+        if(cx > mLeft && cx < mRight && cy > mTop && cy < mBottom){
+          var poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+          poly.setAttribute('points', miniHexPoints(cx, cy, mHexSize));
+          poly.setAttribute('fill', '#0a0a0c');
+          poly.setAttribute('stroke', 'rgba(255,45,85,0.08)');
+          poly.setAttribute('stroke-width', '0.5');
+          poly.setAttribute('opacity', '0.5');
+          bgGroup.appendChild(poly);
+        }
+      }
+      row++;
+    }
+    // Insert background hexes as the FIRST child so stat hexes + court lines render on top
+    svgEl.insertBefore(bgGroup, svgEl.firstChild);
+    return bgGroup;
+  }
+
+  // Draw mini court lines on top of the background hexes
+  function buildMiniCourtLines(svgEl){
+    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('pointer-events', 'none');
+    var mc = 'rgba(255,45,85,0.4)';
+    var sw = 1;
+    // Half-court boundary
+    var boundary = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    boundary.setAttribute('d', 'M 18 10 L 182 10 L 182 170 L 18 170 Z');
+    boundary.setAttribute('fill', 'none'); boundary.setAttribute('stroke', mc); boundary.setAttribute('stroke-width', sw);
+    g.appendChild(boundary);
+    // Backboard
+    var bb = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    bb.setAttribute('x1','92'); bb.setAttribute('y1','155'); bb.setAttribute('x2','108'); bb.setAttribute('y2','155');
+    bb.setAttribute('stroke', mc); bb.setAttribute('stroke-width','1.5'); g.appendChild(bb);
+    // Rim
+    var rim = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    rim.setAttribute('cx','100'); rim.setAttribute('cy','162'); rim.setAttribute('r','3.5');
+    rim.setAttribute('fill','none'); rim.setAttribute('stroke', mc); rim.setAttribute('stroke-width','1'); g.appendChild(rim);
+    // Restricted arc
+    var ra = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    ra.setAttribute('d','M 91 155 A 9 9 0 0 0 109 155');
+    ra.setAttribute('fill','none'); ra.setAttribute('stroke', mc); ra.setAttribute('stroke-width', sw); g.appendChild(ra);
+    // Key
+    var key = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    key.setAttribute('x','70'); key.setAttribute('y','92'); key.setAttribute('width','60'); key.setAttribute('height','78');
+    key.setAttribute('fill','none'); key.setAttribute('stroke', mc); key.setAttribute('stroke-width', sw); g.appendChild(key);
+    // Free-throw line
+    var ft = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    ft.setAttribute('x1','70'); ft.setAttribute('y1','92'); ft.setAttribute('x2','130'); ft.setAttribute('y2','92');
+    ft.setAttribute('stroke', mc); ft.setAttribute('stroke-width', sw); g.appendChild(ft);
+    // FT circle
+    var ftc = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    ftc.setAttribute('cx','100'); ftc.setAttribute('cy','92'); ftc.setAttribute('r','30');
+    ftc.setAttribute('fill','none'); ftc.setAttribute('stroke', mc); ftc.setAttribute('stroke-width', sw); g.appendChild(ftc);
+    // 3-point arc
+    var tp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    tp.setAttribute('d','M 25 170 L 25 125 A 80 80 0 0 1 175 125 L 175 170');
+    tp.setAttribute('fill','none'); tp.setAttribute('stroke', mc); tp.setAttribute('stroke-width', sw); g.appendChild(tp);
+    svgEl.appendChild(g);
+  }
+
+  // Team hex positions on the mini court — stat hexes rendered ON TOP of the background grid
   // val: 0-1 thermal scale (higher = hotter color)
   var miniTeams = {
     'jitb':   [{x:60,y:140,val:0.95},{x:100,y:150,val:0.90},{x:140,y:140,val:0.85},{x:100,y:110,val:0.88}],
@@ -1624,14 +1699,31 @@ body::after{
     'sonic':  [{x:60,y:140,val:0.60},{x:140,y:140,val:0.65},{x:100,y:150,val:0.55},{x:100,y:110,val:0.58}]
   };
 
-  Object.keys(miniTeams).forEach(function(prefix){
-    var positions = miniTeams[prefix];
-    positions.forEach(function(pos, i){
-      var hex = document.getElementById('hex-' + prefix + '-' + i);
-      if(!hex) return;
-      hex.setAttribute('points', miniHexPoints(pos.x, pos.y, 16));
-      hex.setAttribute('fill', heatColor(pos.val));
-    });
+  // Build each mini chart: background hex grid → court lines → stat hexes on top
+  document.querySelectorAll('.mini-chart-svg').forEach(function(svgEl){
+    buildMiniHexGrid(svgEl);
+    buildMiniCourtLines(svgEl);
+    // Re-attach stat hexes on top (they already exist in the DOM, but ensure they're after court lines)
+    var prefix = null;
+    // Determine which team this SVG belongs to by checking hex IDs inside it
+    var firstHex = svgEl.querySelector('.mini-court-hex');
+    if(firstHex && firstHex.id){
+      var m = firstHex.id.match(/^hex-([a-z]+)-\d+$/);
+      if(m) prefix = m[1];
+    }
+    if(prefix && miniTeams[prefix]){
+      miniTeams[prefix].forEach(function(pos, i){
+        var hex = svgEl.querySelector('#hex-' + prefix + '-' + i);
+        if(!hex) return;
+        hex.setAttribute('points', miniHexPoints(pos.x, pos.y, mHexSize));
+        hex.setAttribute('fill', heatColor(pos.val));
+        hex.setAttribute('opacity', '1');
+        hex.setAttribute('stroke', '#0a0a0c');
+        hex.setAttribute('stroke-width', '1');
+        // Move stat hex to the end so it's definitely on top
+        svgEl.appendChild(hex);
+      });
+    }
   });
 
   /* ===== STAT CELL → HEX HOVER LINKING ===== */
@@ -1839,6 +1931,7 @@ body::after{
     canvas.addEventListener('pointermove', onPointerMove);
     canvas.addEventListener('pointerup', onPointerUp);
     canvas.addEventListener('pointercancel', onPointerUp);
+    canvas.addEventListener('click', handleClick);
     canvas.addEventListener('pointerleave', function(){ clearHover(); });
 
     /* ---- Scroll / pinch to zoom (camera.position.z between 4 and 12) ---- */
@@ -1869,10 +1962,12 @@ body::after{
       }
     }, {passive: false});
 
-    /* ---- Raycasting: body-part hover + tooltip + highlight ---- */
+    /* ---- Raycasting: body-part hover + tooltip + highlight + click pulse ---- */
     var raycaster = new THREE.Raycaster();
     var pointerNDC = new THREE.Vector2();
     var hoveredPart = null;
+    var pinnedPart = null;
+    var pinnedUntil = 0;
 
     var wrap = canvas.closest('.athlete-3d-wrap') || canvas.parentElement;
     var tooltip = document.createElement('div');
@@ -1889,14 +1984,20 @@ body::after{
           if(o.userData.points && o.userData.points.material){
             o.userData.points.material.opacity = on ? 0.85 : 0.5;
           }
+          if(o.material && o.material.transparent){
+            o.material.opacity = on ? 0.12 : 0.04;
+          }
         }
       });
     }
+
     function clearHover(){
-      if(hoveredPart){ setHighlight(hoveredPart, false); hoveredPart = null; }
-      tooltip.style.display = 'none';
+      if(hoveredPart && hoveredPart !== pinnedPart){ setHighlight(hoveredPart, false); }
+      hoveredPart = null;
+      if(!pinnedPart){ tooltip.style.display = 'none'; }
     }
-    function showTooltip(part){
+
+    function showTooltip(part, clientX, clientY){
       var d = skillStats[part];
       if(!d) return;
       var html = '<div class="bpt-label">' + d.label + '</div>';
@@ -1904,7 +2005,12 @@ body::after{
         html += '<div class="bpt-row"><span>' + s[0] + '</span><span class="bpt-val">' + s[1] + '</span></div>';
       });
       tooltip.innerHTML = html;
+      var rect = canvas.getBoundingClientRect();
+      tooltip.style.left = Math.max(8, Math.min(rect.width - 200, (clientX - rect.left) + 14)) + 'px';
+      tooltip.style.top  = Math.max(8, (clientY - rect.top + 14)) + 'px';
+      tooltip.style.display = 'block';
     }
+
     function handleHover(e){
       if(!modelLoaded || allMeshes.length === 0) return;
       var rect = canvas.getBoundingClientRect();
@@ -1915,23 +2021,49 @@ body::after{
       if(hits.length > 0){
         var part = hits[0].object.userData.bodyPart;
         if(part !== hoveredPart){
-          if(hoveredPart) setHighlight(hoveredPart, false);
+          if(hoveredPart && hoveredPart !== pinnedPart) setHighlight(hoveredPart, false);
           hoveredPart = part;
           setHighlight(part, true);
-          showTooltip(part);
+          if(!pinnedPart){ showTooltip(part, e.clientX, e.clientY); }
+        } else if(!pinnedPart){
+          showTooltip(part, e.clientX, e.clientY);
         }
-        tooltip.style.left = Math.max(8, (e.clientX - rect.left + 14)) + 'px';
-        tooltip.style.top  = Math.max(8, (e.clientY - rect.top  + 14)) + 'px';
-        tooltip.style.display = 'block';
       } else {
         clearHover();
       }
     }
 
-    /* ---- Simple render loop: auto-rotate model + lerp camera Z ---- */
+    /* ---- Click: pulse the body part + pin tooltip for ~3 seconds ---- */
+    function handleClick(e){
+      if(!modelLoaded || allMeshes.length === 0) return;
+      var rect = canvas.getBoundingClientRect();
+      pointerNDC.x =  ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointerNDC.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointerNDC, camera);
+      var hits = raycaster.intersectObjects(allMeshes, false);
+      if(hits.length > 0){
+        var part = hits[0].object.userData.bodyPart;
+        // Pulse: scale up 1.2x then back to 1.0 over ~400ms
+        allMeshes.forEach(function(o){
+          if(o.userData.bodyPart === part){
+            o.userData._origScale = o.userData._origScale || o.scale.x;
+            o.userData._pulseStart = performance.now();
+          }
+        });
+        // Pin tooltip
+        if(pinnedPart && pinnedPart !== hoveredPart) setHighlight(pinnedPart, false);
+        pinnedPart = part;
+        setHighlight(part, true);
+        showTooltip(part, e.clientX, e.clientY);
+        pinnedUntil = performance.now() + 3000;
+      }
+    }
+
+    /* ---- Simple render loop: auto-rotate model + lerp camera Z + pulse + pin expiry ---- */
     var curRotY = 0, curRotX = 0, curCamZ = 6;
     function animate(){
       requestAnimationFrame(animate);
+      var now = performance.now();
       // Auto-rotate the model group on Y
       if(autoRotate && modelLoaded){
         targetRotY += 0.005;
@@ -1943,6 +2075,31 @@ body::after{
       model.rotation.y = curRotY;
       model.rotation.x = curRotX;
       camera.position.z = curCamZ;
+
+      // Click pulse: scale 1.0 → 1.2 → 1.0 over ~400ms
+      allMeshes.forEach(function(o){
+        if(o.userData._pulseStart){
+          var elapsed = now - o.userData._pulseStart;
+          var dur = 400;
+          if(elapsed < dur){
+            var t = elapsed / dur;
+            var pulse = t < 0.5 ? (t / 0.5) : (1 - (t - 0.5) / 0.5); // 0→1→0
+            o.scale.setScalar((o.userData._origScale || 1) * (1 + 0.2 * pulse));
+          } else {
+            o.scale.setScalar(o.userData._origScale || 1);
+            o.userData._pulseStart = null;
+          }
+        }
+      });
+
+      // Pin tooltip expiry
+      if(pinnedPart && now > pinnedUntil){
+        setHighlight(pinnedPart, false);
+        if(hoveredPart !== pinnedPart) pinnedPart = null;
+        else pinnedPart = null;
+        if(!hoveredPart) tooltip.style.display = 'none';
+      }
+
       renderer.render(scene, camera);
     }
     animate();
