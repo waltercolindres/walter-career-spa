@@ -1810,6 +1810,7 @@ body::after{
     var modelLoaded = false;
     var autoRotate = true;
     var markerDots = [];
+    var groundOuter = null;
 
     /* ---- Skill data per body part ---- */
     var skillStats = {
@@ -1890,9 +1891,9 @@ body::after{
 
         /* ---- Ground ring under the model ---- */
         var groundY = modelBox.min.y - 0.5;
-        var groundOuter = new THREE.Mesh(
+        groundOuter = new THREE.Mesh(
           new THREE.RingGeometry(1.8, 2.6, 64),
-          new THREE.MeshBasicMaterial({color: RED, transparent: true, opacity: 0.15, side: THREE.DoubleSide, depthWrite: false})
+          new THREE.MeshBasicMaterial({color: 0xf0f0f0, transparent: true, opacity: 0.1, side: THREE.DoubleSide, depthWrite: false})
         );
         groundOuter.rotation.x = -Math.PI / 2;
         groundOuter.position.y = groundY;
@@ -1900,7 +1901,7 @@ body::after{
 
         var groundInner = new THREE.Mesh(
           new THREE.RingGeometry(1.9, 2.05, 64),
-          new THREE.MeshBasicMaterial({color: RED, transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false})
+          new THREE.MeshBasicMaterial({color: 0xf0f0f0, transparent: true, opacity: 0.25, side: THREE.DoubleSide, depthWrite: false})
         );
         groundInner.rotation.x = -Math.PI / 2;
         groundInner.position.y = groundY + 0.001;
@@ -1908,13 +1909,14 @@ body::after{
 
         /* ---- Body-part marker dots (pulsing, always visible) ---- */
         var dotGeo = new THREE.SphereGeometry(0.08, 16, 16);
-        var dotMatBase = {color: RED, transparent: true, opacity: 0.9, depthTest: false, depthWrite: false};
+        var dotMatBase = {color: 0xf0f0f0, transparent: true, opacity: 0.9, depthTest: false, depthWrite: false};
 
-        function addDot(x, y, z){
+        function addDot(x, y, z, bodyPart){
           var mat = new THREE.MeshBasicMaterial(dotMatBase);
           var dot = new THREE.Mesh(dotGeo, mat);
           dot.position.set(x, y, z);
           dot.renderOrder = 999;
+          dot.userData.bodyPart = bodyPart;
           model.add(dot);
           markerDots.push(dot);
         }
@@ -1926,22 +1928,22 @@ body::after{
 
         // Head: top 10% of bounding box (center top)
         var headY = modelBox.max.y - (range * 0.08);
-        addDot(cx, headY, cz);
+        addDot(cx, headY, cz, 'head');
 
         // Arms: 20-60% height, left & right sides
         var armsY = modelBox.min.y + range * 0.5;
-        addDot(modelBox.max.x, armsY, cz);
-        addDot(modelBox.min.x, armsY, cz);
+        addDot(modelBox.max.x, armsY, cz, 'arms');
+        addDot(modelBox.min.x, armsY, cz, 'arms');
 
         // Hands: 60-80% height (left & right)
         var handsY = modelBox.min.y + range * 0.7;
-        addDot(modelBox.max.x - halfX * 0.3, handsY, cz);
-        addDot(modelBox.min.x + halfX * 0.3, handsY, cz);
+        addDot(modelBox.max.x - halfX * 0.3, handsY, cz, 'hands');
+        addDot(modelBox.min.x + halfX * 0.3, handsY, cz, 'hands');
 
         // Legs: bottom 20% (left & right)
         var legsY = modelBox.min.y + range * 0.1;
-        addDot(cx - halfX * 0.35, legsY, cz);
-        addDot(cx + halfX * 0.35, legsY, cz);
+        addDot(cx - halfX * 0.35, legsY, cz, 'legs');
+        addDot(cx + halfX * 0.35, legsY, cz, 'legs');
       },
       function(progress){
         // could update loading % here
@@ -2027,17 +2029,20 @@ body::after{
     wrap.appendChild(tooltip);
 
     function setHighlight(part, on){
+      // Highlight marker dots for the active part
+      markerDots.forEach(function(dot){
+        if(dot.userData.bodyPart === part){
+          dot.material.opacity = on ? 1.0 : 0.5;
+          dot.scale.setScalar(on ? 1.4 : 1.0);
+        }
+      });
+      // Highlight model meshes — since we have 1 mesh, change opacity based on whether this part is active
       allMeshes.forEach(function(o){
-        if(o.userData.bodyPart === part){
-          if(o.userData.edges && o.userData.edges.material){
-            o.userData.edges.material.opacity = on ? 1.0 : 0.9;
-          }
-          if(o.userData.points && o.userData.points.material){
-            o.userData.points.material.opacity = on ? 0.85 : 0.5;
-          }
-          if(o.material && o.material.transparent){
-            o.material.opacity = on ? 0.12 : 0.04;
-          }
+        if(o.userData.edges && o.userData.edges.material){
+          o.userData.edges.material.opacity = on ? 1.0 : 0.9;
+        }
+        if(o.userData.points && o.userData.points.material){
+          o.userData.points.material.opacity = on ? 0.85 : 0.5;
         }
       });
     }
@@ -2065,12 +2070,15 @@ body::after{
     function handleHover(e){
       if(!modelLoaded || allMeshes.length === 0) return;
       var rect = canvas.getBoundingClientRect();
-      pointerNDC.x =  ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      pointerNDC.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+      pointerNDC.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointerNDC.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
       raycaster.setFromCamera(pointerNDC, camera);
       var hits = raycaster.intersectObjects(allMeshes, false);
       if(hits.length > 0){
-        var part = hits[0].object.userData.bodyPart;
+        // Determine body part from the HIT POINT's Y coordinate, not the mesh's userData
+        var hitPoint = hits[0].point;
+        var normY = (hitPoint.y - modelBox.min.y) / (modelBox.max.y - modelBox.min.y);
+        var part = classifyByY(normY);
         if(part !== hoveredPart){
           if(hoveredPart && hoveredPart !== pinnedPart) setHighlight(hoveredPart, false);
           hoveredPart = part;
@@ -2088,12 +2096,15 @@ body::after{
     function handleClick(e){
       if(!modelLoaded || allMeshes.length === 0) return;
       var rect = canvas.getBoundingClientRect();
-      pointerNDC.x =  ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      pointerNDC.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+      pointerNDC.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointerNDC.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
       raycaster.setFromCamera(pointerNDC, camera);
       var hits = raycaster.intersectObjects(allMeshes, false);
       if(hits.length > 0){
-        var part = hits[0].object.userData.bodyPart;
+        // Determine body part from hit point Y
+        var hitPoint = hits[0].point;
+        var normY = (hitPoint.y - modelBox.min.y) / (modelBox.max.y - modelBox.min.y);
+        var part = classifyByY(normY);
         // Pulse: scale up 1.2x then back to 1.0 over ~400ms
         allMeshes.forEach(function(o){
           if(o.userData.bodyPart === part){
@@ -2144,10 +2155,16 @@ body::after{
       });
 
       // Pulsing marker dots: scale oscillation
-      var dotPulse = 1 + Math.sin(now * 0.002 * 2) * 0.2;
+      var dotPulse = 1 + Math.sin(now * 0.004) * 0.25;
       markerDots.forEach(function(dot){
         dot.scale.setScalar(dotPulse);
       });
+
+      // Pulsing ground ring
+      if(groundOuter){
+        var ringPulse = 0.1 + Math.sin(now * 0.003) * 0.05;
+        groundOuter.material.opacity = ringPulse;
+      }
 
       // Pin tooltip expiry
       if(pinnedPart && now > pinnedUntil){
