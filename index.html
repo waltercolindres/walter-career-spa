@@ -1814,18 +1814,18 @@ body::after{
 
     /* ---- Skill data per body part ---- */
     var skillStats = {
-      head:  { label:'Thinking · Strategy',   stats:[['Product Strategy',99],['Roadmap & OKRs',98],['Executive Communication',95]] },
-      arms:  { label:'Execution · Delivery',   stats:[['A/B Testing',95],['Conversion Optimization',99],['Agile Delivery',92]] },
-      hands: { label:'Growth · Reach',          stats:[['Go-to-Market',94],['Omnichannel',96],['Loyalty & Retention',97]] },
-      legs:  { label:'Foundation · Infrastructure', stats:[['E-commerce',99],['Mobile Apps',99],['QSR / Restaurant Tech',95]] }
+      head:  { label:'Strategic Leadership',   stats:[['Product Strategy',99],['Roadmap & OKRs',98],['Executive Communication',95]] },
+      hands: { label:'Execution',              stats:[['A/B Testing',95],['Conversion Optimization',99],['Agile Delivery',92]] },
+      legs:  { label:'Foundation',             stats:[['E-commerce',99],['Mobile Apps',99],['QSR / Restaurant Tech',95]] },
+      feet:  { label:'Agility',                stats:[['Rapid Prototyping',97],['Lean Startup',94],['Iterative Delivery',96]] }
     };
 
     /* ---- Classify mesh into body part by normalized Y (0=feet, 1=head) ---- */
     function classifyByY(normY){
-      if(normY >= 0.8) return 'head';   // top 20%
-      if(normY >= 0.6) return 'hands';  // 60-80%
-      if(normY >= 0.2) return 'arms';   // 20-60%
-      return 'legs';                    // bottom 20%
+      if(normY >= 0.80) return 'head';   // top 20%
+      if(normY >= 0.50) return 'hands';  // 50-80%
+      if(normY >= 0.20) return 'legs';   // 20-50%
+      return 'feet';                     // bottom 20%
     }
 
     /* ---- Load GLB ---- */
@@ -1926,24 +1926,22 @@ body::after{
         var halfX = (modelBox.max.x - modelBox.min.x) / 2;
         var halfZ = (modelBox.max.z - modelBox.min.z) / 2;
 
-        // Head: top 10% of bounding box (center top)
+        // One dot per body part (4 total)
+        // Head: top of bounding box
         var headY = modelBox.max.y - (range * 0.08);
         addDot(cx, headY, cz, 'head');
 
-        // Arms: 20-60% height, left & right sides
-        var armsY = modelBox.min.y + range * 0.5;
-        addDot(modelBox.max.x, armsY, cz, 'arms');
-        addDot(modelBox.min.x, armsY, cz, 'arms');
+        // Hands: ~65% height, centered (model has arms raised holding ball)
+        var handsY = modelBox.min.y + range * 0.65;
+        addDot(cx, handsY, cz + halfZ * 0.5, 'hands');
 
-        // Hands: 60-80% height (left & right)
-        var handsY = modelBox.min.y + range * 0.7;
-        addDot(modelBox.max.x - halfX * 0.3, handsY, cz, 'hands');
-        addDot(modelBox.min.x + halfX * 0.3, handsY, cz, 'hands');
+        // Legs: ~35% height, centered
+        var legsY = modelBox.min.y + range * 0.35;
+        addDot(cx, legsY, cz, 'legs');
 
-        // Legs: bottom 20% (left & right)
-        var legsY = modelBox.min.y + range * 0.1;
-        addDot(cx - halfX * 0.35, legsY, cz, 'legs');
-        addDot(cx + halfX * 0.35, legsY, cz, 'legs');
+        // Feet: bottom of bounding box
+        var feetY = modelBox.min.y + range * 0.05;
+        addDot(cx, feetY, cz, 'feet');
       },
       function(progress){
         // could update loading % here
@@ -2101,15 +2099,14 @@ body::after{
       raycaster.setFromCamera(pointerNDC, camera);
       var hits = raycaster.intersectObjects(allMeshes, false);
       if(hits.length > 0){
-        // Determine body part from hit point Y
         var hitPoint = hits[0].point;
         var normY = (hitPoint.y - modelBox.min.y) / (modelBox.max.y - modelBox.min.y);
         var part = classifyByY(normY);
-        // Pulse: scale up 1.2x then back to 1.0 over ~400ms
-        allMeshes.forEach(function(o){
-          if(o.userData.bodyPart === part){
-            o.userData._origScale = o.userData._origScale || o.scale.x;
-            o.userData._pulseStart = performance.now();
+        // Pulse marker dots for this part
+        markerDots.forEach(function(dot){
+          if(dot.userData.bodyPart === part){
+            dot.userData._origScale = dot.userData._origScale || 1;
+            dot.userData._pulseStart = performance.now();
           }
         });
         // Pin tooltip
@@ -2138,26 +2135,28 @@ body::after{
       model.rotation.x = curRotX;
       camera.position.z = curCamZ;
 
-      // Click pulse: scale 1.0 → 1.2 → 1.0 over ~400ms
-      allMeshes.forEach(function(o){
-        if(o.userData._pulseStart){
-          var elapsed = now - o.userData._pulseStart;
+      // Click pulse on marker dots: scale 1.0 → 1.5 → 1.0 over ~400ms
+      markerDots.forEach(function(dot){
+        if(dot.userData._pulseStart){
+          var elapsed = now - dot.userData._pulseStart;
           var dur = 400;
           if(elapsed < dur){
             var t = elapsed / dur;
-            var pulse = t < 0.5 ? (t / 0.5) : (1 - (t - 0.5) / 0.5); // 0→1→0
-            o.scale.setScalar((o.userData._origScale || 1) * (1 + 0.2 * pulse));
+            var pulse = t < 0.5 ? (t / 0.5) : (1 - (t - 0.5) / 0.5);
+            dot.scale.setScalar((dot.userData._origScale || 1) * (1 + 0.5 * pulse));
           } else {
-            o.scale.setScalar(o.userData._origScale || 1);
-            o.userData._pulseStart = null;
+            dot.scale.setScalar(dot.userData._origScale || 1);
+            dot.userData._pulseStart = null;
           }
         }
       });
 
-      // Pulsing marker dots: scale oscillation
+      // Pulsing marker dots: scale oscillation (idle pulse)
       var dotPulse = 1 + Math.sin(now * 0.004) * 0.25;
       markerDots.forEach(function(dot){
-        dot.scale.setScalar(dotPulse);
+        if(!dot.userData._pulseStart){
+          dot.scale.setScalar(dotPulse);
+        }
       });
 
       // Pulsing ground ring
