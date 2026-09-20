@@ -2026,14 +2026,10 @@ body::after{
 
     // ---- Render loop --------------------------------------------------------
     var clock = new THREE.Clock();
-    var forceVisible = true; // Force render on first frame
     function animate(){
       requestAnimationFrame(animate);
-      if(!profileVisible && !forceVisible) return;
-      forceVisible = false; // Only force first frame
-      if(!profileVisible) { renderer.render(scene, camera); return; }
-
-      if(autoRotate){ targetRotY += 0.005; }
+      // Always render — visibility gating causes issues in some browsers
+      if(autoRotate && modelLoaded){ targetRotY += 0.005; }
       // lerp damping
       rotY    += (targetRotY    - rotY)    * 0.1;
       rotX    += (targetRotX    - rotX)    * 0.1;
