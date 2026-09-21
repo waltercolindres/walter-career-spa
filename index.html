@@ -17,15 +17,15 @@
   --bg-card:rgba(18,16,20,0.7);
   --bg-card-2:rgba(22,18,24,0.6);
   --court:#0a0a0c;
-  --court-line:rgba(255,45,85,0.5);
+  --court-line:rgba(212,175,55,0.5);
   --text:#f0f0f0;
   --text-dim:#707078;
   --text-mid:#909098;
-  --border:rgba(255,45,85,0.12);
-  --border-bright:rgba(255,45,85,0.4);
-  --red:#FF2D55;
-  --deep-red:#C41E3A;
-  --red-glow:rgba(255,45,85,0.5);
+  --border:rgba(212,175,55,0.12);
+  --border-bright:rgba(212,175,55,0.4);
+  --red:#D4AF37;
+  --deep-red:#B8860B;
+  --red-glow:rgba(212,175,55,0.5);
   --green:#00E676;
   --gold:#FFB800;
   --cyan:#00D9FF;
@@ -53,8 +53,8 @@ body::before{
   position:fixed;
   inset:0;
   background:
-    linear-gradient(rgba(255,45,85,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,45,85,0.02) 1px, transparent 1px);
+    linear-gradient(rgba(212,175,55,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212,175,55,0.02) 1px, transparent 1px);
   background-size:40px 40px;
   pointer-events:none;
   z-index:0;
@@ -65,7 +65,7 @@ body::after{
   content:'';
   position:fixed;
   inset:0;
-  background:linear-gradient(transparent 50%, rgba(255,45,85,0.008) 50%);
+  background:linear-gradient(transparent 50%, rgba(212,175,55,0.008) 50%);
   background-size:100% 4px;
   pointer-events:none;
   z-index:9998;
@@ -140,8 +140,17 @@ body::after{
   position:relative;
   padding:40px 20px 30px;
   overflow:hidden;
-  background:radial-gradient(ellipse at 50% 100%, rgba(255,45,85,0.06) 0%, transparent 60%),
+  background:radial-gradient(ellipse at 50% 100%, rgba(212,175,55,0.06) 0%, transparent 60%),
              linear-gradient(180deg, var(--bg) 0%, rgba(18,16,20,0.5) 100%);
+}
+.profile-hero-bg{
+  position:absolute;inset:0;
+  background-image:url("/court-bg.jpg");
+  background-size:cover;
+  background-position:center;
+  opacity:0.08;
+  z-index:0;
+  pointer-events:none;
 }
 .court-bg-svg{position:absolute;inset:0;width:100%;height:100%;opacity:0.08;z-index:0;pointer-events:none;}
 .profile-content{position:relative;z-index:1;max-width:900px;margin:0 auto;width:100%;}
@@ -169,7 +178,7 @@ body::after{
 }
 .profile-name .last{
   color:var(--red);
-  text-shadow:0 0 20px rgba(255,45,85,0.3);
+  text-shadow:0 0 20px rgba(212,175,55,0.3);
 }
 .profile-title{
   font-size:clamp(0.85rem,3.5vw,1.2rem);
@@ -188,7 +197,51 @@ body::after{
 }
 .profile-bio em{color:var(--red);font-style:normal;font-weight:700;}
 
-/* Profile header card */
+/* Flipping basketball trading card */
+.flip-card{
+  width:300px;max-width:100%;
+  margin:0 auto 28px;
+  perspective:1200px;
+  cursor:pointer;
+  position:relative;z-index:1;
+}
+.flip-card-inner{
+  position:relative;
+  width:100%;
+  aspect-ratio:896/1199;
+  transform-style:preserve-3d;
+  -webkit-transform-style:preserve-3d;
+  transition:transform 0.8s cubic-bezier(.25,.8,.25,1);
+}
+.flip-card-inner.flipped{
+  transform:rotateY(180deg);
+}
+.flip-card-face{
+  position:absolute;inset:0;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 0 30px rgba(212,175,55,0.25), 0 8px 30px rgba(0,0,0,0.5);
+  border:1px solid rgba(212,175,55,0.3);
+}
+.flip-card-face img{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+.flip-card-back{
+  transform:rotateY(180deg);
+}
+.flip-card-hint{
+  text-align:center;
+  font-size:0.7rem;
+  color:var(--text-dim);
+  margin-top:14px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  font-weight:600;
+}
+
+/* Profile header card (legacy — replaced by flip card) */
 .profile-head-card{
   display:flex;
   align-items:center;
@@ -200,7 +253,7 @@ body::after{
   border-radius:var(--radius);
   padding:20px;
   margin-bottom:24px;
-  box-shadow:0 0 30px rgba(255,45,85,0.06);
+  box-shadow:0 0 30px rgba(212,175,55,0.06);
 }
 .profile-avatar{
   width:80px;height:80px;flex-shrink:0;
@@ -210,7 +263,7 @@ body::after{
   font-family:var(--header-font);
   font-size:2rem;font-weight:800;
   color:#fff;
-  box-shadow:0 4px 20px rgba(255,45,85,0.2);
+  box-shadow:0 4px 20px rgba(212,175,55,0.2);
 }
 .profile-head-info{flex:1;min-width:0;}
 .profile-head-name{font-family:var(--header-font);font-size:1.4rem;font-weight:700;text-transform:uppercase;line-height:1;}
@@ -220,8 +273,8 @@ body::after{
   font-size:0.65rem;font-weight:600;letter-spacing:0.05em;
   text-transform:uppercase;
   padding:4px 10px;border-radius:6px;
-  background:rgba(255,45,85,0.1);color:var(--red);
-  border:1px solid rgba(255,45,85,0.2);
+  background:rgba(212,175,55,0.1);color:var(--red);
+  border:1px solid rgba(212,175,55,0.2);
 }
 
 /* ===== CAREER TOTALS ===== */
@@ -259,7 +312,7 @@ body::after{
   transition:background 0.2s ease;
 }
 .totals-cell:hover{
-  background:rgba(255,45,85,0.06);
+  background:rgba(212,175,55,0.06);
 }
 .totals-num{
   font-family:var(--header-font);
@@ -306,7 +359,7 @@ body::after{
   padding:20px 16px;
   position:relative;
   overflow:hidden;
-  box-shadow:inset 0 0 60px rgba(255,45,85,0.06), 0 0 40px rgba(0,0,0,0.4);
+  box-shadow:inset 0 0 60px rgba(212,175,55,0.06), 0 0 40px rgba(0,0,0,0.4);
 }
 .shot-chart-svg{width:100%;height:auto;display:block;}
 .shot-chart-hex{
@@ -321,7 +374,7 @@ body::after{
   border-radius:var(--radius);padding:10px 14px;
   font-size:0.75rem;color:var(--text);
   pointer-events:none;z-index:9999;max-width:240px;
-  box-shadow:0 4px 20px rgba(255,45,85,0.2), 0 0 30px rgba(255,45,85,0.08);
+  box-shadow:0 4px 20px rgba(212,175,55,0.2), 0 0 30px rgba(212,175,55,0.08);
   backdrop-filter:blur(12px);
   -webkit-backdrop-filter:blur(12px);
   opacity:0;transition:opacity .15s;
@@ -363,12 +416,12 @@ body::after{
 .player-card:hover{
   border-color:var(--red);
   transform:translateY(-3px);
-  box-shadow:0 16px 40px rgba(0,0,0,0.4),0 0 0 1px var(--red),0 0 30px rgba(255,45,85,0.12);
+  box-shadow:0 16px 40px rgba(0,0,0,0.4),0 0 0 1px var(--red),0 0 30px rgba(212,175,55,0.12);
 }
 .player-card-head{
   display:flex;align-items:flex-start;justify-content:space-between;
   padding:20px;gap:14px;
-  background:linear-gradient(135deg,rgba(255,45,85,0.05) 0%,rgba(255,45,85,0.01) 100%);
+  background:linear-gradient(135deg,rgba(212,175,55,0.05) 0%,rgba(212,175,55,0.01) 100%);
   border-bottom:1px solid var(--border);
 }
 .player-card-head-left{flex:1;min-width:0;}
@@ -409,8 +462,8 @@ body::after{
 .stat-dashboard{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  padding:16px 20px 20px;
+  gap:14px;
+  padding:18px 22px 24px;
 }
 @media(max-width:560px){
   .stat-dashboard{grid-template-columns:repeat(2,1fr);}
@@ -419,11 +472,11 @@ body::after{
   background:rgba(255,255,255,0.02);
   border:1px solid var(--border);
   border-radius:10px;
-  padding:14px 10px 12px;
+  padding:16px 12px 14px;
   display:flex;flex-direction:column;align-items:center;
   text-align:center;
   transition:opacity 0.5s ease, transform 0.5s ease, border-color 0.2s ease;
-  min-height:130px;justify-content:flex-start;gap:6px;
+  min-height:165px;justify-content:flex-start;gap:8px;
   opacity:0;transform:translateY(20px);
 }
 .stat-panel.stat-visible{opacity:1;transform:translateY(0);}
@@ -443,19 +496,19 @@ body::after{
 .gauge-svg{width:90px;height:90px;display:block;
   animation:gaugeGlow 2.5s ease-in-out infinite;}
 @keyframes gaugeGlow{
-  0%,100%{filter:drop-shadow(0 0 3px rgba(255,45,85,0.3));}
-  50%{filter:drop-shadow(0 0 10px rgba(255,45,85,0.7));}
+  0%,100%{filter:drop-shadow(0 0 3px rgba(212,175,55,0.3));}
+  50%{filter:drop-shadow(0 0 10px rgba(212,175,55,0.7));}
 }
 .gauge-track{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:8;}
 .gauge-fill{fill:none;stroke:var(--red);stroke-width:8;stroke-linecap:round;
   transition:stroke-dashoffset 1.4s cubic-bezier(.25,.8,.25,1);
-  filter:drop-shadow(0 0 6px rgba(255,45,85,0.5));}
+  filter:drop-shadow(0 0 6px rgba(212,175,55,0.5));}
 .stat-panel[data-stat-color="cyan"] .gauge-fill{stroke:var(--cyan);filter:drop-shadow(0 0 6px rgba(0,217,255,0.5));}
 .stat-panel[data-stat-color="orange"] .gauge-fill{stroke:var(--orange);filter:drop-shadow(0 0 6px rgba(255,107,53,0.5));}
 .stat-panel[data-stat-color="green"] .gauge-fill{stroke:var(--green);filter:drop-shadow(0 0 6px rgba(0,230,118,0.5));}
 .stat-panel[data-stat-color="gold"] .gauge-fill{stroke:var(--gold);filter:drop-shadow(0 0 6px rgba(255,184,0,0.5));}
 .stat-panel[data-stat-color="purple"] .gauge-fill{stroke:var(--purple);filter:drop-shadow(0 0 6px rgba(179,136,255,0.5));}
-.stat-panel[data-stat-color="red"] .gauge-fill{stroke:var(--red);filter:drop-shadow(0 0 6px rgba(255,45,85,0.5));}
+.stat-panel[data-stat-color="red"] .gauge-fill{stroke:var(--red);filter:drop-shadow(0 0 6px rgba(212,175,55,0.5));}
 .gauge-value{
   font-family:var(--header-font);font-size:1.15rem;font-weight:700;
   fill:var(--text);text-anchor:middle;dominant-baseline:central;
@@ -466,10 +519,10 @@ body::after{
 .bar-track{fill:rgba(255,255,255,0.05);rx:4;}
 .bar-fill{fill:var(--red);rx:4;
   transition:width 1.2s cubic-bezier(.25,.8,.25,1);
-  filter:drop-shadow(0 0 4px rgba(255,45,85,0.4));}
+  filter:drop-shadow(0 0 4px rgba(212,175,55,0.4));}
 .stat-panel[data-stat-color="green"] .bar-fill{fill:var(--green);filter:drop-shadow(0 0 4px rgba(0,230,118,0.4));}
 .stat-panel[data-stat-color="gold"] .bar-fill{fill:var(--gold);filter:drop-shadow(0 0 4px rgba(255,184,0,0.4));}
-.stat-panel[data-stat-color="red"] .bar-fill{fill:var(--red);filter:drop-shadow(0 0 4px rgba(255,45,85,0.4));}
+.stat-panel[data-stat-color="red"] .bar-fill{fill:var(--red);filter:drop-shadow(0 0 4px rgba(212,175,55,0.4));}
 .stat-panel[data-stat-color="orange"] .bar-fill{fill:var(--orange);filter:drop-shadow(0 0 4px rgba(255,107,53,0.4));}
 .stat-panel[data-stat-color="cyan"] .bar-fill{fill:var(--cyan);filter:drop-shadow(0 0 4px rgba(0,217,255,0.4));}
 .stat-panel[data-stat-color="purple"] .bar-fill{fill:var(--purple);filter:drop-shadow(0 0 4px rgba(179,136,255,0.4));}
@@ -491,7 +544,7 @@ body::after{
   font-family:var(--header-font);font-size:2rem;font-weight:800;
   color:var(--red);line-height:1;letter-spacing:-0.02em;
   display:flex;align-items:baseline;justify-content:center;gap:2px;
-  filter:drop-shadow(0 0 6px rgba(255,45,85,0.3));
+  filter:drop-shadow(0 0 6px rgba(212,175,55,0.3));
 }
 .stat-bignum .bn-unit{font-size:0.6em;font-weight:700;opacity:0.9;}
 
@@ -519,7 +572,7 @@ body::after{
 }
 
 /* Line chart (sparkline) */
-.line-svg{width:100%;height:50px;display:block;}
+.line-svg{width:100%;height:60px;display:block;}
 .line-grid{stroke:rgba(255,255,255,0.04);stroke-width:0.5;}
 .line-area{opacity:0.18;}
 .line-path{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
@@ -539,7 +592,7 @@ body::after{
 .stat-panel[data-stat-color="green"] .stat-bignum,.stat-panel[data-stat-color="green"] .stat-trend{color:var(--green);filter:drop-shadow(0 0 6px rgba(0,230,118,0.3));}
 .stat-panel[data-stat-color="orange"] .stat-bignum,.stat-panel[data-stat-color="orange"] .stat-trend{color:var(--orange);filter:drop-shadow(0 0 6px rgba(255,107,53,0.3));}
 .stat-panel[data-stat-color="purple"] .stat-bignum,.stat-panel[data-stat-color="purple"] .stat-trend{color:var(--purple);filter:drop-shadow(0 0 6px rgba(179,136,255,0.3));}
-.stat-panel[data-stat-color="red"] .stat-bignum,.stat-panel[data-stat-color="red"] .stat-trend{color:var(--red);filter:drop-shadow(0 0 6px rgba(255,45,85,0.3));}
+.stat-panel[data-stat-color="red"] .stat-bignum,.stat-panel[data-stat-color="red"] .stat-trend{color:var(--red);filter:drop-shadow(0 0 6px rgba(212,175,55,0.3));}
 
 .stat-panel[data-stat-color="gold"]:hover{border-color:var(--gold);}
 .stat-panel[data-stat-color="cyan"]:hover{border-color:var(--cyan);}
@@ -564,7 +617,7 @@ body::after{
   content:'';flex-shrink:0;
   width:7px;height:7px;margin-top:5px;
   border-radius:50%;background:var(--red);
-  box-shadow:0 0 8px rgba(255,45,85,0.6);
+  box-shadow:0 0 8px rgba(212,175,55,0.6);
 }
 
 /* ===== SKILLS ===== */
@@ -675,7 +728,7 @@ body::after{
   min-height:44px;transition:all .2s;width:100%;
 }
 @media(min-width:600px){.contact-link{width:auto;}}
-.contact-link:hover{border-color:var(--red);background:rgba(255,45,85,0.06);transform:translateY(-3px) translateX(2px);}
+.contact-link:hover{border-color:var(--red);background:rgba(212,175,55,0.06);transform:translateY(-3px) translateX(2px);}
 .contact-link-icon{
   width:26px;height:26px;border-radius:6px;background:var(--red);
   display:flex;align-items:center;justify-content:center;
@@ -694,15 +747,15 @@ body::after{
 /* ===== MOBILE ===== */
 @media(max-width:480px){
   .stat-dashboard{grid-template-columns:repeat(2,1fr);}
-  .stat-panel{padding:10px 8px 8px;min-height:110px;}
+  .stat-panel{padding:12px 10px 10px;min-height:140px;}
   .gauge-svg{width:76px;height:76px;}
   .stat-bignum{font-size:1.6rem;}
 }
 
 /* ===== ANIMATIONS ===== */
 @keyframes pulseGlow {
-  0%, 100% { filter: drop-shadow(0 0 4px rgba(255,45,85,0.5)); }
-  50% { filter: drop-shadow(0 0 10px rgba(255,45,85,0.8)); }
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(212,175,55,0.5)); }
+  50% { filter: drop-shadow(0 0 10px rgba(212,175,55,0.8)); }
 }
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(30px); }
@@ -745,7 +798,7 @@ body::after{
   border-radius:var(--radius);
   background:radial-gradient(ellipse at center, rgba(10,10,14,0.9) 0%, rgba(10,10,14,0.95) 100%);
   border:1px solid var(--border-bright);
-  box-shadow:inset 0 0 80px rgba(255,45,85,0.08), 0 0 60px rgba(0,0,0,0.5);
+  box-shadow:inset 0 0 80px rgba(212,175,55,0.08), 0 0 60px rgba(0,0,0,0.5);
   cursor:grab;
 }
 #athleteCanvas:active{cursor:grabbing;}
@@ -767,11 +820,11 @@ body::after{
   font-size:0.7rem;font-weight:700;
   color:var(--red);
   background:rgba(10,10,14,0.7);
-  border:1px solid rgba(255,45,85,0.3);
+  border:1px solid rgba(212,175,55,0.3);
   border-radius:6px;
   padding:3px 8px;
   white-space:nowrap;
-  text-shadow:0 0 8px rgba(255,45,85,0.3);
+  text-shadow:0 0 8px rgba(212,175,55,0.3);
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
   transition:opacity .3s;
@@ -785,13 +838,13 @@ body::after{
   display:none;
   min-width:180px;
   background:rgba(10,10,14,0.92);
-  border:1px solid rgba(255,45,85,0.5);
+  border:1px solid rgba(212,175,55,0.5);
   border-radius:8px;
   padding:10px 12px;
   font-family:var(--body-font);
   backdrop-filter:blur(10px);
   -webkit-backdrop-filter:blur(10px);
-  box-shadow:0 0 24px rgba(255,45,85,0.25);
+  box-shadow:0 0 24px rgba(212,175,55,0.25);
   transition:opacity .2s;
 }
 .body-part-tooltip .bpt-label{
@@ -803,7 +856,7 @@ body::after{
   letter-spacing:0.15em;
   margin-bottom:8px;
   padding-bottom:6px;
-  border-bottom:1px solid rgba(255,45,85,0.2);
+  border-bottom:1px solid rgba(212,175,55,0.2);
 }
 .body-part-tooltip .bpt-row{
   display:flex;
@@ -831,7 +884,7 @@ body::after{
   text-transform:uppercase;
   z-index:6;
   pointer-events:none;
-  text-shadow:0 0 12px rgba(255,45,85,0.4);
+  text-shadow:0 0 12px rgba(212,175,55,0.4);
 }
 #athleteError{
   position:absolute;
@@ -883,14 +936,15 @@ body::after{
 
   <!-- Hero -->
   <div class="profile-hero">
+    <div class="profile-hero-bg"></div>
     <svg class="court-bg-svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice">
       <rect x="0" y="0" width="400" height="200" fill="none"/>
-      <line x1="200" y1="0" x2="200" y2="200" stroke="rgba(255,45,85,0.5)" stroke-width="1"/>
-      <circle cx="200" cy="100" r="30" fill="none" stroke="rgba(255,45,85,0.5)" stroke-width="1"/>
-      <rect x="80" y="0" width="240" height="50" fill="none" stroke="rgba(255,45,85,0.5)" stroke-width="1"/>
-      <rect x="80" y="150" width="240" height="50" fill="none" stroke="rgba(255,45,85,0.5)" stroke-width="1"/>
-      <path d="M 80 50 L 120 100 L 80 150" fill="none" stroke="rgba(255,45,85,0.5)" stroke-width="1"/>
-      <path d="M 320 50 L 280 100 L 320 150" fill="none" stroke="rgba(255,45,85,0.5)" stroke-width="1"/>
+      <line x1="200" y1="0" x2="200" y2="200" stroke="rgba(212,175,55,0.5)" stroke-width="1"/>
+      <circle cx="200" cy="100" r="30" fill="none" stroke="rgba(212,175,55,0.5)" stroke-width="1"/>
+      <rect x="80" y="0" width="240" height="50" fill="none" stroke="rgba(212,175,55,0.5)" stroke-width="1"/>
+      <rect x="80" y="150" width="240" height="50" fill="none" stroke="rgba(212,175,55,0.5)" stroke-width="1"/>
+      <path d="M 80 50 L 120 100 L 80 150" fill="none" stroke="rgba(212,175,55,0.5)" stroke-width="1"/>
+      <path d="M 320 50 L 280 100 L 320 150" fill="none" stroke="rgba(212,175,55,0.5)" stroke-width="1"/>
     </svg>
     <div class="profile-content">
       <div class="profile-jersey">#23 · SR. DIRECTOR</div>
@@ -899,20 +953,18 @@ body::after{
         <span class="last">Colindres</span>
       </h1>
       <p class="profile-title">Sr. Director of Product Management · <span>Consumer Digital Commerce</span></p>
-      <p class="profile-bio">I build <em>$1B+ digital commerce engines</em> the way a coach builds a championship roster — talent, metrics, and relentless execution across <em>18+ platforms</em> in <em>4 countries</em>. Now ready to bring that same data-driven approach to <em>basketball analytics</em>.</p>
+      <p class="profile-bio">I build <em>$1B+ digital commerce engines</em> — talent, metrics, and relentless execution across <em>18+ platforms</em> in <em>4 countries</em>.</p>
 
-      <div class="profile-head-card">
-        <div class="profile-avatar">WC</div>
-        <div class="profile-head-info">
-          <div class="profile-head-name">Walter Colindres</div>
-          <div class="profile-head-role">Sr. Director PM · 10+ years · Seattle, WA</div>
-          <div class="profile-head-meta">
-            <span class="profile-head-tag">$1B+ Sales</span>
-            <span class="profile-head-tag">18+ Platforms</span>
-            <span class="profile-head-tag">130% YoY</span>
-            <span class="profile-head-tag">4 Countries</span>
+      <div class="flip-card" id="flipCard">
+        <div class="flip-card-inner" id="flipCardInner">
+          <div class="flip-card-face flip-card-front">
+            <img src="/card-front.jpg" alt="Walter Colindres trading card — front">
+          </div>
+          <div class="flip-card-face flip-card-back">
+            <img src="/card-back.jpg" alt="Walter Colindres trading card — back">
           </div>
         </div>
+        <div class="flip-card-hint" id="flipCardHint">Click to pause</div>
       </div>
 
     </div>
@@ -954,7 +1006,7 @@ body::after{
     <h2 class="contact-title">Bring <span>Walter</span> Onto Your Roster</h2>
     <p class="contact-sub">Open to the right team. Let's talk product, growth, and championship culture.</p>
     <div class="contact-links">
-      <a href="/Walter_Colindres_Resume_GeniusSports.docx" download class="contact-link" style="border-color:rgba(255,45,85,0.4);background:rgba(255,45,85,0.08);">
+      <a href="/Walter_Colindres_Resume_GeniusSports.docx" download class="contact-link" style="border-color:rgba(212,175,55,0.4);background:rgba(212,175,55,0.08);">
         <span class="contact-link-icon">CV</span><span>Download Résumé (DOCX · ATS-Optimized)</span>
       </a>
       <a href="https://linkedin.com/in/waltercolindres" target="_blank" rel="noopener" class="contact-link">
@@ -1339,7 +1391,7 @@ body::after{
   // Group data — values 0-100
   var spiderGroups = [
     {
-      name:'Strategic Leadership', color:'#FF2D55', short:'Leadership',
+      name:'Strategic Leadership', color:'#D4AF37', short:'Leadership',
       skills:[
         {name:'Product Strategy', val:99},
         {name:'Roadmap & OKRs', val:98},
@@ -1412,7 +1464,7 @@ body::after{
       var y = cy + Math.sin(a)*rr;
       polyPts.push(x.toFixed(1)+','+y.toFixed(1));
     }
-    var fill = data[0].color || '#FF2D55';
+    var fill = data[0].color || '#D4AF37';
     parts.push('<polygon class="spider-fill spider-polygon" points="'+polyPts.join(' ')+'" fill="'+fill+'" stroke="'+fill+'" stroke-width="1.5" stroke-opacity="0.9" />');
 
     // Vertex dots
@@ -1671,7 +1723,7 @@ body::after{
   // Key/paint extends UP from the baseline
   var courtLines = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   courtLines.setAttribute('pointer-events', 'none');
-  var cc = 'rgba(255,45,85,0.5)';  // red-tinted court line color
+  var cc = 'rgba(212,175,55,0.5)';  // red-tinted court line color
   var sw = 2;           // stroke width
 
   // Half-court boundary: sidelines + half-court line at top + baseline at bottom
@@ -1869,7 +1921,7 @@ body::after{
       var svg = document.createElementNS(ns, 'svg');
       svg.setAttribute('class', 'bar-svg');
       svg.setAttribute('viewBox', '0 0 120 60');
-      var barColor = color || '#FF2D55';
+      var barColor = color || '#D4AF37';
       var mx = Math.max(max || 1, start || 0, end || 0);
       if(mx <= 0) mx = 1;
       var trackW = 100, trackX = 10, trackY = 18, trackH = 16;
@@ -1971,11 +2023,11 @@ body::after{
     /* --- Line chart (sparkline) with animated draw --- */
     var COLOR_MAP = {
       gold:'#FFB800', cyan:'#00D9FF', green:'#00E676',
-      orange:'#FF6B35', purple:'#B388FF', red:'#FF2D55'
+      orange:'#FF6B35', purple:'#B388FF', red:'#D4AF37'
     };
     function resolveColor(panel){
       var c = panel.getAttribute('data-stat-color');
-      return COLOR_MAP[c] || '#FF2D55';
+      return COLOR_MAP[c] || '#D4AF37';
     }
     function makeLine(points, color, endLabel){
       var W = 120, H = 50, padX = 6, padY = 8;
@@ -2242,7 +2294,7 @@ body::after{
     var canvas = document.getElementById('athleteCanvas');
     if(!canvas || typeof THREE === 'undefined' || !THREE.GLTFLoader) return;
 
-    var RED = 0xFF2D55;
+    var RED = 0xD4AF37;
     var loadingEl = document.getElementById('athleteLoading');
     var errorEl   = document.getElementById('athleteError');
 
@@ -2654,6 +2706,23 @@ body::after{
     // re-resize on tab switch
     document.querySelectorAll('.tab-btn').forEach(function(btn){
       btn.addEventListener('click', function(){ setTimeout(resize, 200); });
+    });
+  })();
+
+
+  /* ===== FLIPPING CARD (auto-flip + click to pause/play) ===== */
+  (function(){
+    var flipCard = document.getElementById('flipCard');
+    var flipInner = document.getElementById('flipCardInner');
+    var flipHint = document.getElementById('flipCardHint');
+    if(!flipCard || !flipInner) return;
+    var paused = false;
+    setInterval(function(){
+      if(!paused) flipInner.classList.toggle('flipped');
+    }, 4000);
+    flipCard.addEventListener('click', function(){
+      paused = !paused;
+      if(flipHint) flipHint.textContent = paused ? 'Click to play' : 'Click to pause';
     });
   })();
 
