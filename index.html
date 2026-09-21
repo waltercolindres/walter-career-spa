@@ -26,8 +26,11 @@
   --red:#FF2D55;
   --deep-red:#C41E3A;
   --red-glow:rgba(255,45,85,0.5);
-  --green:#00ff9d;
-  --gold:#ffeb3b;
+  --green:#00E676;
+  --gold:#FFB800;
+  --cyan:#00D9FF;
+  --orange:#FF6B35;
+  --purple:#B388FF;
   --radius:12px;
   --header-font:'Space Grotesk','Inter',-apple-system,sans-serif;
   --body-font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
@@ -447,19 +450,37 @@ body::after{
 .gauge-fill{fill:none;stroke:var(--red);stroke-width:8;stroke-linecap:round;
   transition:stroke-dashoffset 1.4s cubic-bezier(.25,.8,.25,1);
   filter:drop-shadow(0 0 6px rgba(255,45,85,0.5));}
+.stat-panel[data-stat-color="cyan"] .gauge-fill{stroke:var(--cyan);filter:drop-shadow(0 0 6px rgba(0,217,255,0.5));}
+.stat-panel[data-stat-color="orange"] .gauge-fill{stroke:var(--orange);filter:drop-shadow(0 0 6px rgba(255,107,53,0.5));}
+.stat-panel[data-stat-color="green"] .gauge-fill{stroke:var(--green);filter:drop-shadow(0 0 6px rgba(0,230,118,0.5));}
+.stat-panel[data-stat-color="gold"] .gauge-fill{stroke:var(--gold);filter:drop-shadow(0 0 6px rgba(255,184,0,0.5));}
+.stat-panel[data-stat-color="purple"] .gauge-fill{stroke:var(--purple);filter:drop-shadow(0 0 6px rgba(179,136,255,0.5));}
+.stat-panel[data-stat-color="red"] .gauge-fill{stroke:var(--red);filter:drop-shadow(0 0 6px rgba(255,45,85,0.5));}
 .gauge-value{
   font-family:var(--header-font);font-size:1.15rem;font-weight:700;
   fill:var(--text);text-anchor:middle;dominant-baseline:central;
 }
 
-/* Bar meter */
+/* BarMeter */
 .bar-svg{width:100%;height:60px;display:block;}
 .bar-track{fill:rgba(255,255,255,0.05);rx:4;}
 .bar-fill{fill:var(--red);rx:4;
   transition:width 1.2s cubic-bezier(.25,.8,.25,1);
   filter:drop-shadow(0 0 4px rgba(255,45,85,0.4));}
+.stat-panel[data-stat-color="green"] .bar-fill{fill:var(--green);filter:drop-shadow(0 0 4px rgba(0,230,118,0.4));}
+.stat-panel[data-stat-color="gold"] .bar-fill{fill:var(--gold);filter:drop-shadow(0 0 4px rgba(255,184,0,0.4));}
+.stat-panel[data-stat-color="red"] .bar-fill{fill:var(--red);filter:drop-shadow(0 0 4px rgba(255,45,85,0.4));}
+.stat-panel[data-stat-color="orange"] .bar-fill{fill:var(--orange);filter:drop-shadow(0 0 4px rgba(255,107,53,0.4));}
+.stat-panel[data-stat-color="cyan"] .bar-fill{fill:var(--cyan);filter:drop-shadow(0 0 4px rgba(0,217,255,0.4));}
+.stat-panel[data-stat-color="purple"] .bar-fill{fill:var(--purple);filter:drop-shadow(0 0 4px rgba(179,136,255,0.4));}
 .bar-start{fill:rgba(255,255,255,0.25);}
 .bar-end{fill:var(--red);}
+.stat-panel[data-stat-color="green"] .bar-end{fill:var(--green);}
+.stat-panel[data-stat-color="gold"] .bar-end{fill:var(--gold);}
+.stat-panel[data-stat-color="red"] .bar-end{fill:var(--red);}
+.stat-panel[data-stat-color="orange"] .bar-end{fill:var(--orange);}
+.stat-panel[data-stat-color="cyan"] .bar-end{fill:var(--cyan);}
+.stat-panel[data-stat-color="purple"] .bar-end{fill:var(--purple);}
 .bar-start-label,.bar-end-label{
   font-family:var(--header-font);font-size:8px;font-weight:700;
   fill:var(--text-mid);text-anchor:middle;
@@ -496,6 +517,35 @@ body::after{
   font-family:var(--body-font);font-size:0.6rem;font-weight:700;
   color:var(--text-mid);margin-top:-2px;
 }
+
+/* Line chart (sparkline) */
+.line-svg{width:100%;height:50px;display:block;}
+.line-grid{stroke:rgba(255,255,255,0.04);stroke-width:0.5;}
+.line-area{opacity:0.18;}
+.line-path{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:var(--line-dash, 400);
+  stroke-dashoffset:var(--line-dash, 400);
+  transition:stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1);}
+.line-svg.line-animated .line-path{stroke-dashoffset:0;}
+.line-end-dot{filter:drop-shadow(0 0 4px currentColor);}
+.line-value-label{
+  font-family:var(--header-font);font-size:9px;font-weight:800;
+  text-anchor:end;
+}
+
+/* Color helpers for stat panels */
+.stat-panel[data-stat-color="gold"] .stat-bignum,.stat-panel[data-stat-color="gold"] .stat-trend{color:var(--gold);filter:drop-shadow(0 0 6px rgba(255,184,0,0.3));}
+.stat-panel[data-stat-color="cyan"] .stat-bignum,.stat-panel[data-stat-color="cyan"] .stat-trend{color:var(--cyan);filter:drop-shadow(0 0 6px rgba(0,217,255,0.3));}
+.stat-panel[data-stat-color="green"] .stat-bignum,.stat-panel[data-stat-color="green"] .stat-trend{color:var(--green);filter:drop-shadow(0 0 6px rgba(0,230,118,0.3));}
+.stat-panel[data-stat-color="orange"] .stat-bignum,.stat-panel[data-stat-color="orange"] .stat-trend{color:var(--orange);filter:drop-shadow(0 0 6px rgba(255,107,53,0.3));}
+.stat-panel[data-stat-color="purple"] .stat-bignum,.stat-panel[data-stat-color="purple"] .stat-trend{color:var(--purple);filter:drop-shadow(0 0 6px rgba(179,136,255,0.3));}
+.stat-panel[data-stat-color="red"] .stat-bignum,.stat-panel[data-stat-color="red"] .stat-trend{color:var(--red);filter:drop-shadow(0 0 6px rgba(255,45,85,0.3));}
+
+.stat-panel[data-stat-color="gold"]:hover{border-color:var(--gold);}
+.stat-panel[data-stat-color="cyan"]:hover{border-color:var(--cyan);}
+.stat-panel[data-stat-color="green"]:hover{border-color:var(--green);}
+.stat-panel[data-stat-color="orange"]:hover{border-color:var(--orange);}
+.stat-panel[data-stat-color="purple"]:hover{border-color:var(--purple);}
 
 /* ===== CAREER NOTES (Disney, VistaPrint — text, not charts) ===== */
 .career-notes{
@@ -542,6 +592,66 @@ body::after{
   background:linear-gradient(90deg,var(--red) 0%,var(--deep-red) 100%);
   width:0;transition:width 1.2s cubic-bezier(.25,.8,.25,1);
 }
+
+/* ===== SPIDER / RADAR CHARTS ===== */
+.spider-section{max-width:1100px;margin:0 auto;padding:8px 0 0;}
+.spider-section .section-header{text-align:center;margin-bottom:22px;}
+.spider-overview{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:22px 16px 14px;
+  display:flex;flex-direction:column;align-items:center;margin-bottom:26px;
+}
+.spider-overview-title{
+  font-family:var(--header-font);font-size:0.72rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.18em;color:var(--red);
+  margin-bottom:6px;
+}
+.spider-overview-sub{color:var(--text-dim);font-size:0.72rem;margin-bottom:14px;}
+.spider-overview-svg{width:100%;max-width:400px;height:auto;display:block;}
+.spider-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;
+}
+@media(min-width:860px){.spider-grid{grid-template-columns:repeat(4,1fr);}}
+.spider-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px 10px 12px;
+  display:flex;flex-direction:column;align-items:center;
+  transition:border-color 0.25s ease, transform 0.25s ease;
+}
+.spider-card:hover{transform:translateY(-3px);}
+.spider-card-title{
+  font-family:var(--header-font);font-size:0.7rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.14em;margin-bottom:4px;
+  text-align:center;
+}
+.spider-card-avg{
+  font-family:var(--header-font);font-size:1.1rem;font-weight:700;
+  line-height:1;margin-bottom:8px;
+}
+.spider-svg{width:100%;max-width:200px;height:auto;display:block;}
+.spider-grid-ring{fill:none;stroke:rgba(255,255,255,0.07);stroke-width:1;}
+.spider-grid-ring.outer{stroke:rgba(255,255,255,0.12);}
+.spider-axis{stroke:rgba(255,255,255,0.10);stroke-width:1;}
+.spider-fill{
+  fill-opacity:0;
+  transition:fill-opacity 1.2s cubic-bezier(.25,.8,.25,1), transform 1.2s cubic-bezier(.25,.8,.25,1);
+  transform-origin:center;transform-box:fill-box;
+}
+.spider-polygon{transform:scale(0);transform-origin:center;transform-box:fill-box;transition:transform 1.4s cubic-bezier(.25,.8,.25,1);}
+.spider-card.reveal-in .spider-polygon{transform:scale(1);}
+.spider-card.reveal-in .spider-fill{fill-opacity:0.22;animation:spiderPulse 3.2s ease-in-out infinite 1.4s;}
+.spider-overview.reveal-in .spider-polygon{transform:scale(1);}
+.spider-overview.reveal-in .spider-fill{fill-opacity:0.22;animation:spiderPulse 3.2s ease-in-out infinite 1.4s;}
+@keyframes spiderPulse{0%,100%{fill-opacity:0.22;}50%{fill-opacity:0.38;}}
+.spider-vertex{transition:opacity 0.4s ease, r 0.4s ease;opacity:0;}
+.spider-card.reveal-in .spider-vertex,.spider-overview.reveal-in .spider-vertex{opacity:1;}
+.spider-label{
+  font-family:var(--body-font);font-size:9px;font-weight:600;
+  fill:var(--text);text-anchor:middle;
+}
+.spider-label-val{font-size:8px;font-weight:700;fill:var(--text-dim);}
+.spider-label-sm{font-size:7.5px;}
+.spider-dot{stroke:rgba(0,0,0,0.4);stroke-width:1;}
 
 /* ===== CONTACT ===== */
 .contact{
@@ -764,8 +874,8 @@ body::after{
 <!-- ===== TABS ===== -->
 <div class="tabs">
   <button class="tab-btn active" data-tab="profile">Profile</button>
+  <button class="tab-btn" data-tab="analytics">Career Stats</button>
   <button class="tab-btn" data-tab="traits">Traits</button>
-  <button class="tab-btn" data-tab="analytics">Analytics</button>
 </div>
 
 <!-- ===== TAB: PLAYER PROFILE ===== -->
@@ -864,37 +974,7 @@ body::after{
 
 </div><!-- /tab-profile -->
 
-<!-- ===== TAB: TRAITS ===== -->
-<div class="tab-pane" id="tab-traits">
-
-  <!-- 3D Athlete Model (centerpiece) -->
-  <div class="athlete-3d-section">
-    <div class="section-header" style="margin-bottom:18px;">
-      <div class="section-eyebrow">Digital Twin · Interactive Career Model</div>
-      <h2 class="section-title">Traits &amp; <span>Intangibles</span></h2>
-      <p class="section-sub">A live holographic readout of how Walter is built. Drag to rotate · scroll to zoom · hover a body region for the skill breakdown.</p>
-    </div>
-    <div class="athlete-3d-wrap">
-      <canvas id="athleteCanvas"></canvas>
-      <div id="athleteLoading">LOADING...</div>
-      <div id="athleteError" style="display:none;"><div class="aerr-title">Model Load Failed</div>The 3D athlete model could not be loaded. Please refresh the page.</div>
-      </div>
-    <div class="athlete-3d-label">ATHLETE MODEL · CAREER ANALYTICS</div>
-  </div>
-
-  <!-- Skills / Toolkit -->
-  <div class="section reveal">
-    <div class="section-header">
-      <div class="section-eyebrow">Player Attributes</div>
-      <h2 class="section-title">The <span>Toolkit</span></h2>
-      <p class="section-sub">Every skill Walter brings to the floor — rated like NBA 2K attribute bars.</p>
-    </div>
-    <div class="skills-grid" id="skillsGrid"></div>
-  </div>
-
-</div><!-- /tab-traits -->
-
-<!-- ===== TAB: ANALYTICS ===== -->
+<!-- ===== TAB: CAREER STATS (Analytics) ===== -->
 <div class="tab-pane" id="tab-analytics">
 
   <!-- Shot Chart -->
@@ -948,35 +1028,35 @@ body::after{
           <div class="player-card-years">2024<br>Present</div>
         </div>
         <div class="stat-dashboard">
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="110" data-stat-suffix="%">
+          <div class="stat-panel" data-stat-type="line" data-stat-color="gold" data-stat-points="[20,35,50,68,88,110]" data-stat-endlabel="110%">
             <div class="stat-panel-label"><strong>Digital Sales Growth</strong></div>
-            <div class="stat-panel-sub">Year over year</div>
+            <div class="stat-panel-sub">110% YoY · trend line</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="$200" data-stat-suffix="M+">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-color="gold" data-stat-value="$200" data-stat-suffix="M+">
             <div class="stat-panel-label"><strong>Apple/Google Pay Volume</strong></div>
             <div class="stat-panel-sub">Annual transaction volume</div>
           </div>
-          <div class="stat-panel" data-stat-type="gauge" data-stat-value="99.9">
+          <div class="stat-panel" data-stat-type="gauge" data-stat-color="cyan" data-stat-value="99.9">
             <div class="stat-panel-label"><strong>Platform Uptime</strong></div>
             <div class="stat-panel-sub">SLA maintained</div>
           </div>
-          <div class="stat-panel" data-stat-type="gauge" data-stat-value="82">
+          <div class="stat-panel" data-stat-type="gauge" data-stat-color="orange" data-stat-value="82">
             <div class="stat-panel-label"><strong>Checkout Conversion</strong></div>
             <div class="stat-panel-sub">Post-relaunch flow</div>
           </div>
-          <div class="stat-panel" data-stat-type="bar" data-stat-start="10" data-stat-end="4" data-stat-max="10" data-stat-suffix="min">
+          <div class="stat-panel" data-stat-type="bar" data-stat-color="green" data-stat-start="10" data-stat-end="4" data-stat-max="10" data-stat-suffix="min">
             <div class="stat-panel-label"><strong>Time to Purchase</strong></div>
             <div class="stat-panel-sub">10min → 4min · −60%</div>
           </div>
-          <div class="stat-panel" data-stat-type="trend" data-stat-value="+200%" data-stat-dir="up">
+          <div class="stat-panel" data-stat-type="line" data-stat-color="green" data-stat-points="[30,45,60,80,100,200]" data-stat-endlabel="+200%">
             <div class="stat-panel-label"><strong>Offer Redemption</strong></div>
-            <div class="stat-panel-sub">Loyalty offers</div>
+            <div class="stat-panel-sub">+200% loyalty lift</div>
           </div>
-          <div class="stat-panel" data-stat-type="bar" data-stat-start="2.8" data-stat-end="4.8" data-stat-max="5.0">
+          <div class="stat-panel" data-stat-type="bar" data-stat-color="red" data-stat-start="2.8" data-stat-end="4.8" data-stat-max="5.0">
             <div class="stat-panel-label"><strong>App Rating · Android</strong></div>
             <div class="stat-panel-sub">2.8 → 4.8 · +71%</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="4">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-color="purple" data-stat-value="4">
             <div class="stat-panel-label"><strong>PMs Led</strong></div>
             <div class="stat-panel-sub">Direct reports</div>
           </div>
@@ -1036,33 +1116,33 @@ body::after{
           <div class="player-card-years">2019<br>2021</div>
         </div>
         <div class="stat-dashboard">
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="$2" data-stat-suffix="B+">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-color="gold" data-stat-value="$2" data-stat-suffix="B+">
             <div class="stat-panel-label"><strong>Digital Sales Unlocked</strong></div>
             <div class="stat-panel-sub">Across 3 brands</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="15">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-color="purple" data-stat-value="15">
             <div class="stat-panel-label"><strong>Platforms Launched</strong></div>
             <div class="stat-panel-sub">In 6 months</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="52">
-            <div class="stat-panel-label"><strong>Features Shipped</strong></div>
-            <div class="stat-panel-sub">In 2020</div>
-          </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="18" data-stat-suffix="x">
+          <div class="stat-panel" data-stat-type="line" data-stat-color="red" data-stat-points="[2,4,7,11,15,18]" data-stat-endlabel="18x">
             <div class="stat-panel-label"><strong>Funnel Improvement</strong></div>
-            <div class="stat-panel-sub">In 3 weeks</div>
+            <div class="stat-panel-sub">18x lift in 3 weeks</div>
           </div>
-          <div class="stat-panel" data-stat-type="trend" data-stat-value="+300%" data-stat-dir="up">
+          <div class="stat-panel" data-stat-type="line" data-stat-color="orange" data-stat-points="[20,40,70,110,170,300]" data-stat-endlabel="+300%">
             <div class="stat-panel-label"><strong>Delivery Conversion</strong></div>
             <div class="stat-panel-sub">Post-launch lift</div>
           </div>
-          <div class="stat-panel" data-stat-type="bar" data-stat-start="3.36" data-stat-end="9.82" data-stat-max="10.0">
+          <div class="stat-panel" data-stat-type="line" data-stat-color="orange" data-stat-points="[3.36,4.5,5.8,7.0,8.6,9.82]" data-stat-endlabel="9.8%">
             <div class="stat-panel-label"><strong>Popeyes Conversion</strong></div>
-            <div class="stat-panel-sub">+193%</div>
+            <div class="stat-panel-sub">3.36% → 9.82% · +193%</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="#1">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-color="gold" data-stat-value="#1">
             <div class="stat-panel-label"><strong>Tim Hortons App</strong></div>
-            <div class="stat-panel-sub">In Canada</div>
+            <div class="stat-panel-sub">#1 in Canada</div>
+          </div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-color="cyan" data-stat-value="52">
+            <div class="stat-panel-label"><strong>Features Shipped</strong></div>
+            <div class="stat-panel-sub">In 2020</div>
           </div>
         </div>
       </div>
@@ -1079,27 +1159,31 @@ body::after{
           <div class="player-card-years">2014<br>2018</div>
         </div>
         <div class="stat-dashboard">
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="3,600" data-stat-suffix="+">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-color="cyan" data-stat-value="3,600" data-stat-suffix="+">
             <div class="stat-panel-label"><strong>DMMT Deployed</strong></div>
             <div class="stat-panel-sub">Locations nationwide</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="100" data-stat-suffix="K+">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-color="gold" data-stat-value="100" data-stat-suffix="K+">
             <div class="stat-panel-label"><strong>Daily Transactions</strong></div>
             <div class="stat-panel-sub">Per day</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="43" data-stat-suffix="M+">
-            <div class="stat-panel-label"><strong>Users</strong></div>
-            <div class="stat-panel-sub">MySonic Connect SSO</div>
+          <div class="stat-panel" data-stat-type="line" data-stat-color="gold" data-stat-points="[10,25,45,68,88,100]" data-stat-endlabel="100K">
+            <div class="stat-panel-label"><strong>Transactions Growth</strong></div>
+            <div class="stat-panel-sub">Daily volume trend</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="380" data-stat-suffix="M+">
-            <div class="stat-panel-label"><strong>Total Views</strong></div>
-            <div class="stat-panel-sub">Across properties</div>
+          <div class="stat-panel" data-stat-type="gauge" data-stat-color="cyan" data-stat-value="99.9">
+            <div class="stat-panel-label"><strong>Platform Uptime</strong></div>
+            <div class="stat-panel-sub">SLA maintained</div>
           </div>
-          <div class="stat-panel" data-stat-type="gauge" data-stat-value="15">
+          <div class="stat-panel" data-stat-type="line" data-stat-color="purple" data-stat-points="[3,6,9,12,15,18]" data-stat-endlabel="18">
+            <div class="stat-panel-label"><strong>Team Led</strong></div>
+            <div class="stat-panel-sub">18 developers</div>
+          </div>
+          <div class="stat-panel" data-stat-type="gauge" data-stat-color="orange" data-stat-value="15">
             <div class="stat-panel-label"><strong>Digital Sales Share</strong></div>
             <div class="stat-panel-sub">Of total sales</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="0→1">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-color="gold" data-stat-value="0→1">
             <div class="stat-panel-label"><strong>First Digital Ordering</strong></div>
             <div class="stat-panel-sub">Built from zero</div>
           </div>
@@ -1110,6 +1194,53 @@ body::after{
   </div>
 
 </div><!-- /tab-analytics -->
+
+<!-- ===== TAB: TRAITS ===== -->
+<div class="tab-pane" id="tab-traits">
+
+  <!-- 3D Athlete Model (centerpiece) -->
+  <div class="athlete-3d-section">
+    <div class="section-header" style="margin-bottom:18px;">
+      <div class="section-eyebrow">Digital Twin · Interactive Career Model</div>
+      <h2 class="section-title">Traits &amp; <span>Intangibles</span></h2>
+      <p class="section-sub">A live holographic readout of how Walter is built. Drag to rotate · scroll to zoom · hover a body region for the skill breakdown.</p>
+    </div>
+    <div class="athlete-3d-wrap">
+      <canvas id="athleteCanvas"></canvas>
+      <div id="athleteLoading">LOADING...</div>
+      <div id="athleteError" style="display:none;"><div class="aerr-title">Model Load Failed</div>The 3D athlete model could not be loaded. Please refresh the page.</div>
+      </div>
+    <div class="athlete-3d-label">ATHLETE MODEL · CAREER ANALYTICS</div>
+  </div>
+
+  <!-- Skills / Toolkit -->
+  <div class="section reveal">
+    <div class="section-header">
+      <div class="section-eyebrow">Player Attributes</div>
+      <h2 class="section-title">The <span>Toolkit</span></h2>
+      <p class="section-sub">Every skill Walter brings to the floor — rated like NBA 2K attribute bars.</p>
+    </div>
+    <div class="skills-grid" id="skillsGrid"></div>
+  </div>
+
+  <!-- Spider / Radar Charts -->
+  <div class="section reveal">
+    <div class="section-header">
+      <div class="section-eyebrow">Skill Profile</div>
+      <h2 class="section-title">The Full <span>Radar</span></h2>
+      <p class="section-sub">Four skill groups mapped as radar polygons — the overview averages all groups; each card drills into its sub-skills.</p>
+    </div>
+    <div class="spider-section">
+      <div class="spider-overview" id="spiderOverview">
+        <div class="spider-overview-title">Overview · All Skill Groups</div>
+        <div class="spider-overview-sub">Group averages across 12 rated skills</div>
+        <svg class="spider-overview-svg" id="spiderOverviewSvg" viewBox="0 0 400 400" aria-label="Overview radar chart of all skill groups"></svg>
+      </div>
+      <div class="spider-grid" id="spiderGrid"></div>
+    </div>
+  </div>
+
+</div><!-- /tab-traits -->
 
 <div class="footer">
   Walter Colindres · Career Analytics <span>·</span> Built for <span>Genius Sports</span> · #23
@@ -1264,6 +1395,191 @@ body::after{
       animateSkills();
     }
   }
+
+  /* ===== SPIDER / RADAR CHARTS ===== */
+  // Group data — values 0-100
+  var spiderGroups = [
+    {
+      name:'Strategic Leadership', color:'#FF2D55', short:'Leadership',
+      skills:[
+        {name:'Product Strategy', val:99},
+        {name:'Roadmap & OKRs', val:98},
+        {name:'Executive Comms', val:95}
+      ]
+    },
+    {
+      name:'Execution', color:'#FF6B35', short:'Execution',
+      skills:[
+        {name:'A/B Testing', val:95},
+        {name:'Conversion Opt.', val:99},
+        {name:'Agile Delivery', val:92}
+      ]
+    },
+    {
+      name:'Foundation', color:'#00D9FF', short:'Foundation',
+      skills:[
+        {name:'E-commerce', val:99},
+        {name:'Mobile Apps', val:99},
+        {name:'QSR Tech', val:95}
+      ]
+    },
+    {
+      name:'Agility', color:'#00E676', short:'Agility',
+      skills:[
+        {name:'Rapid Prototyping', val:97},
+        {name:'Lean Startup', val:94},
+        {name:'Iterative Delivery', val:96}
+      ]
+    }
+  ];
+
+  // Build a radar/spider chart SVG string.
+  // data: array of {name, val(0-100), color?} ; size: viewBox px ; opts for label formatting
+  function buildSpiderSVG(data, size, opts){
+    opts = opts || {};
+    var cx = size/2, cy = size/2;
+    var R = size/2 - (opts.pad !== undefined ? opts.pad : 42); // radius for full scale
+    var n = data.length;
+    var rings = [0.25, 0.5, 0.75, 1.0];
+    var parts = [];
+
+    // Concentric grid rings (regular polygons)
+    rings.forEach(function(ratio, ri){
+      var pts = [];
+      for(var i=0;i<n;i++){
+        var a = (-Math.PI/2) + (i/n)*2*Math.PI;
+        var rr = Math.max(0.001, R*ratio);
+        var x = cx + Math.cos(a)*rr;
+        var y = cy + Math.sin(a)*rr;
+        pts.push(x.toFixed(1)+','+y.toFixed(1));
+      }
+      parts.push('<polygon class="spider-grid-ring'+(ri===rings.length-1?' outer':'')+'" points="'+pts.join(' ')+'" />');
+    });
+
+    // Axis lines from center to each vertex (full scale)
+    for(var i=0;i<n;i++){
+      var a = (-Math.PI/2) + (i/n)*2*Math.PI;
+      var x = cx + Math.cos(a)*R;
+      var y = cy + Math.sin(a)*R;
+      parts.push('<line class="spider-axis" x1="'+cx.toFixed(1)+'" y1="'+cy.toFixed(1)+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" />');
+    }
+
+    // Data polygon
+    var polyPts = [];
+    for(var i=0;i<n;i++){
+      var a = (-Math.PI/2) + (i/n)*2*Math.PI;
+      var rr = Math.max(0.001, R*(data[i].val/100));
+      var x = cx + Math.cos(a)*rr;
+      var y = cy + Math.sin(a)*rr;
+      polyPts.push(x.toFixed(1)+','+y.toFixed(1));
+    }
+    var fill = data[0].color || '#FF2D55';
+    parts.push('<polygon class="spider-fill spider-polygon" points="'+polyPts.join(' ')+'" fill="'+fill+'" stroke="'+fill+'" stroke-width="1.5" stroke-opacity="0.9" />');
+
+    // Vertex dots
+    for(var i=0;i<n;i++){
+      var a = (-Math.PI/2) + (i/n)*2*Math.PI;
+      var rr = Math.max(0.001, R*(data[i].val/100));
+      var x = cx + Math.cos(a)*rr;
+      var y = cy + Math.sin(a)*rr;
+      parts.push('<circle class="spider-vertex spider-dot" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+(data[i].color||fill)+'" />');
+    }
+
+    // Vertex labels (name + value)
+    var labelR = R + (opts.labelGap !== undefined ? opts.labelGap : 16);
+    for(var i=0;i<n;i++){
+      var a = (-Math.PI/2) + (i/n)*2*Math.PI;
+      var lx = cx + Math.cos(a)*labelR;
+      var ly = cy + Math.sin(a)*labelR;
+      var name = data[i].name;
+      var val = data[i].val;
+      var cls = 'spider-label'+(opts.sm?' spider-label-sm':'');
+      // Anchor based on x position
+      var anchor = 'middle';
+      if(Math.cos(a) > 0.3) anchor='start';
+      else if(Math.cos(a) < -0.3) anchor='end';
+      parts.push('<text class="'+cls+'" x="'+lx.toFixed(1)+'" y="'+(ly-2).toFixed(1)+'" text-anchor="'+anchor+'">'+name+'</text>');
+      parts.push('<text class="spider-label spider-label-val" x="'+lx.toFixed(1)+'" y="'+(ly+10).toFixed(1)+'" text-anchor="'+anchor+'">'+val+'</text>');
+    }
+
+    return parts.join('\n');
+  }
+
+  function avg(arr){return arr.reduce(function(s,x){return s+x;},0)/arr.length;}
+
+  // Overview chart: 4 vertices = group averages
+  var overviewData = spiderGroups.map(function(g){
+    var a = avg(g.skills.map(function(s){return s.val;}));
+    return {name:g.short, val:Math.round(a*10)/10, color:g.color};
+  });
+  var overviewSvg = document.getElementById('spiderOverviewSvg');
+  if(overviewSvg){
+    overviewSvg.innerHTML = buildSpiderSVG(overviewData, 400, {pad:54, labelGap:22});
+  }
+
+  // 4 smaller cards
+  var grid = document.getElementById('spiderGrid');
+  if(grid){
+    var html = '';
+    spiderGroups.forEach(function(g){
+      var a = avg(g.skills.map(function(s){return s.val;}));
+      var aStr = (Math.round(a*10)/10).toFixed(1);
+      var data = g.skills.map(function(s){return {name:s.name, val:s.val, color:g.color};});
+      var svgInner = buildSpiderSVG(data, 200, {pad:34, labelGap:12, sm:true});
+      html += '<div class="spider-card" data-spider>'+
+        '<div class="spider-card-title" style="color:'+g.color+'">'+g.name+'</div>'+
+        '<div class="spider-card-avg" style="color:'+g.color+'">'+aStr+'</div>'+
+        '<svg class="spider-svg" viewBox="0 0 200 200" aria-label="'+g.name+' radar chart">'+svgInner+'</svg>'+
+        '</div>';
+    });
+    grid.innerHTML = html;
+  }
+
+  // IntersectionObserver: add 'reveal-in' when scrolled into view
+  function setupSpiderReveal(){
+    var targets = [];
+    var ov = document.getElementById('spiderOverview');
+    if(ov) targets.push(ov);
+    document.querySelectorAll('[data-spider]').forEach(function(el){targets.push(el);});
+    if(!('IntersectionObserver' in window) || !targets.length){
+      targets.forEach(function(t){t.classList.add('reveal-in');});
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          // staggered reveal
+          var idx = targets.indexOf(e.target);
+          setTimeout(function(){ e.target.classList.add('reveal-in'); }, idx>=0?idx*120:0);
+          io.unobserve(e.target);
+        }
+      });
+    }, {threshold:0.3});
+    targets.forEach(function(t){io.observe(t);});
+  }
+  setupSpiderReveal();
+
+  // Re-trigger reveal when switching to the Traits tab
+  (function(){
+    var btns = document.querySelectorAll('.tab-btn');
+    btns.forEach(function(b){
+      b.addEventListener('click', function(){
+        // reset and re-observe after the tab switch
+        setTimeout(function(){
+          var ov = document.getElementById('spiderOverview');
+          if(ov) ov.classList.remove('reveal-in');
+          document.querySelectorAll('[data-spider]').forEach(function(el){el.classList.remove('reveal-in');});
+          // small delay then re-add to replay animation
+          setTimeout(function(){
+            if(ov) ov.classList.add('reveal-in');
+            document.querySelectorAll('[data-spider]').forEach(function(el, i){
+              setTimeout(function(){el.classList.add('reveal-in');}, i*120);
+            });
+          }, 60);
+        }, 80);
+      });
+    });
+  })();
 
   /* ===== SHOT CHART (Goldsberry hex heatmap — full court fill) ===== */
   // Career KPIs — each gets a hex with a value (0-1) for color
@@ -1610,10 +1926,11 @@ body::after{
     }
 
     /* --- Bar meter with animated fill --- */
-    function makeBar(start, end, max, suffix){
+    function makeBar(start, end, max, suffix, color){
       var svg = document.createElementNS(ns, 'svg');
       svg.setAttribute('class', 'bar-svg');
       svg.setAttribute('viewBox', '0 0 120 60');
+      var barColor = color || '#FF2D55';
       var mx = Math.max(max || 1, start || 0, end || 0);
       if(mx <= 0) mx = 1;
       var trackW = 100, trackX = 10, trackY = 18, trackH = 16;
@@ -1665,7 +1982,7 @@ body::after{
       var arrY = trackY + trackH / 2 + 1;
       var arr = document.createElementNS(ns, 'text');
       arr.setAttribute('x', 110); arr.setAttribute('y', arrY + 3);
-      arr.setAttribute('font-size', 12); arr.setAttribute('fill', '#FF2D55');
+      arr.setAttribute('font-size', 12); arr.setAttribute('fill', barColor);
       arr.setAttribute('text-anchor', 'middle'); arr.setAttribute('font-weight', 700);
       arr.textContent = end > start ? '▲' : '▼';
       svg.appendChild(arr);
@@ -1718,10 +2035,106 @@ body::after{
       return wrap;
     }
 
+    /* --- Line chart (sparkline) with animated draw --- */
+    var COLOR_MAP = {
+      gold:'#FFB800', cyan:'#00D9FF', green:'#00E676',
+      orange:'#FF6B35', purple:'#B388FF', red:'#FF2D55'
+    };
+    function resolveColor(panel){
+      var c = panel.getAttribute('data-stat-color');
+      return COLOR_MAP[c] || '#FF2D55';
+    }
+    function makeLine(points, color, endLabel){
+      var W = 120, H = 50, padX = 6, padY = 8;
+      var svg = document.createElementNS(ns, 'svg');
+      svg.setAttribute('class', 'line-svg');
+      svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+      svg.style.color = color;
+
+      // Faint horizontal grid lines
+      for(var g = 1; g < 4; g++){
+        var gy = padY + (H - 2 * padY) * (g / 4);
+        var grid = document.createElementNS(ns, 'line');
+        grid.setAttribute('class', 'line-grid');
+        grid.setAttribute('x1', padX); grid.setAttribute('x2', W - padX);
+        grid.setAttribute('y1', gy); grid.setAttribute('y2', gy);
+        svg.appendChild(grid);
+      }
+
+      var minV = Math.min.apply(null, points);
+      var maxV = Math.max.apply(null, points);
+      if(maxV === minV) maxV = minV + 1;
+      var n = points.length;
+      var xStep = (W - 2 * padX) / (n - 1);
+      var pts = points.map(function(v, i){
+        var x = padX + i * xStep;
+        var y = padY + (H - 2 * padY) * (1 - (v - minV) / (maxV - minV));
+        return [x, y];
+      });
+
+      // Build path "d"
+      var d = 'M ' + pts[0][0] + ' ' + pts[0][1];
+      for(var i = 1; i < pts.length; i++){
+        // Smooth-ish curve using simple line segments for sparkline clarity
+        d += ' L ' + pts[i][0] + ' ' + pts[i][1];
+      }
+
+      // Area fill path
+      var areaD = d + ' L ' + pts[pts.length - 1][0] + ' ' + (H - padY) +
+                 ' L ' + pts[0][0] + ' ' + (H - padY) + ' Z';
+      var area = document.createElementNS(ns, 'path');
+      area.setAttribute('class', 'line-area');
+      area.setAttribute('d', areaD);
+      area.setAttribute('fill', color);
+      area.setAttribute('opacity', '0');
+      svg.appendChild(area);
+
+      // Main line path
+      var path = document.createElementNS(ns, 'path');
+      path.setAttribute('class', 'line-path');
+      path.setAttribute('d', d);
+      path.setAttribute('stroke', color);
+      // Compute path length via temporary element trick: set dasharray/offset after append
+      svg.appendChild(path);
+
+      // End dot
+      var endPt = pts[pts.length - 1];
+      var dot = document.createElementNS(ns, 'circle');
+      dot.setAttribute('class', 'line-end-dot');
+      dot.setAttribute('cx', endPt[0]); dot.setAttribute('cy', endPt[1]);
+      dot.setAttribute('r', 3); dot.setAttribute('fill', color);
+      dot.setAttribute('opacity', '0');
+      svg.appendChild(dot);
+
+      // End value label
+      if(endLabel){
+        var lbl = document.createElementNS(ns, 'text');
+        lbl.setAttribute('class', 'line-value-label');
+        lbl.setAttribute('x', W - padX);
+        lbl.setAttribute('y', endPt[1] - 6);
+        lbl.setAttribute('fill', color);
+        lbl.textContent = endLabel;
+        lbl.setAttribute('opacity', '0');
+        svg.appendChild(lbl);
+      }
+
+      // After append, measure path length and set dash for draw animation
+      var totalLen = path.getTotalLength ? path.getTotalLength() : 400;
+      path.style.strokeDasharray = totalLen;
+      path.style.strokeDashoffset = totalLen;
+      svg._linePath = path;
+      svg._lineArea = area;
+      svg._lineDot = dot;
+      svg._lineLabel = lbl || null;
+      svg._lineTotalLen = totalLen;
+      return svg;
+    }
+
     /* --- Build all panels --- */
     document.querySelectorAll('.stat-panel').forEach(function(panel){
       var type = panel.getAttribute('data-stat-type');
       var labelEl = panel.querySelector('.stat-panel-label');
+      var color = resolveColor(panel);
       var chart;
       if(type === 'gauge'){
         chart = makeGauge(parseFloat(panel.getAttribute('data-stat-value')));
@@ -1730,13 +2143,20 @@ body::after{
         var e = parseFloat(panel.getAttribute('data-stat-end'));
         var mx = parseFloat(panel.getAttribute('data-stat-max'));
         var sfx = panel.getAttribute('data-stat-suffix') || '';
-        chart = makeBar(s, e, mx, sfx);
+        chart = makeBar(s, e, mx, sfx, color);
       } else if(type === 'bignum'){
         var val = panel.getAttribute('data-stat-value');
         var sfx2 = panel.getAttribute('data-stat-suffix') || '';
         chart = makeBigNum(val, sfx2);
       } else if(type === 'trend'){
         chart = makeTrend(panel.getAttribute('data-stat-value'), panel.getAttribute('data-stat-dir') || 'up');
+      } else if(type === 'line'){
+        var ptsAttr = panel.getAttribute('data-stat-points');
+        var endLabel = panel.getAttribute('data-stat-endlabel') || '';
+        var points;
+        try { points = JSON.parse(ptsAttr); }
+        catch(err){ points = [10, 30, 50, 75, 100]; }
+        chart = makeLine(points, color, endLabel);
       }
       if(chart){
         panel.insertBefore(chart, labelEl);
@@ -1781,6 +2201,29 @@ body::after{
         setTimeout(function(){
           svg._barFill.setAttribute('width', svg._barTargetW);
         }, 80);
+      }
+
+      if(svg && svg._linePath !== undefined){
+        // Animate line chart draw + fade in area/dot/label
+        var linePath = svg._linePath;
+        var totalLen = svg._lineTotalLen;
+        linePath.style.strokeDashoffset = totalLen;
+        // Use rAF for reliable draw across browsers
+        var lineDuration = 1400, lineStart = null;
+        function lineFrame(ts){
+          if(!lineStart) lineStart = ts;
+          var p = Math.min((ts - lineStart) / lineDuration, 1);
+          var eased = 1 - Math.pow(1 - p, 3);
+          linePath.style.strokeDashoffset = totalLen * (1 - eased);
+          if(p < 1) requestAnimationFrame(lineFrame);
+          else {
+            if(svg._lineArea) svg._lineArea.setAttribute('opacity', '0.18');
+            if(svg._lineDot) svg._lineDot.setAttribute('opacity', '1');
+            if(svg._lineLabel) svg._lineLabel.setAttribute('opacity', '1');
+          }
+        }
+        // Slight delay so the transition is visible
+        setTimeout(function(){ requestAnimationFrame(lineFrame); }, 80);
       }
 
       if(bignum && bignum._bnTargetNum !== undefined){
@@ -1834,6 +2277,13 @@ body::after{
         }
         if(svg && svg._barFill){
           svg._barFill.setAttribute('width', 0);
+        }
+        // Reset line chart
+        if(svg && svg._linePath){
+          svg._linePath.style.strokeDashoffset = svg._lineTotalLen;
+          if(svg._lineArea) svg._lineArea.setAttribute('opacity', '0');
+          if(svg._lineDot) svg._lineDot.setAttribute('opacity', '0');
+          if(svg._lineLabel) svg._lineLabel.setAttribute('opacity', '0');
         }
         // Reset bignum
         var bn = panel.querySelector('.stat-bignum');
