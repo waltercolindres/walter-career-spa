@@ -377,8 +377,19 @@ body::after{
 
 /* ===== SHOT CHART (Goldsberry hex heatmap) ===== */
 .shot-chart-section{padding:30px 16px;}
+.shot-chart-layout{
+  max-width:1100px;margin:0 auto;position:relative;
+  display:flex;flex-direction:column;gap:24px;
+}
+@media(min-width:900px){
+  .shot-chart-layout{flex-direction:row;align-items:flex-start;}
+}
 .shot-chart-wrap{
   max-width:500px;margin:0 auto;position:relative;
+  flex-shrink:0;width:100%;
+}
+@media(min-width:900px){
+  .shot-chart-wrap{max-width:480px;}
 }
 .shot-chart-container{
   background:radial-gradient(ellipse at center, rgba(10,10,14,0.9) 0%, rgba(10,10,14,0.95) 100%);
@@ -391,10 +402,60 @@ body::after{
 }
 .shot-chart-svg{width:100%;height:auto;display:block;}
 .shot-chart-hex{
-  transition:opacity .2s;
+  transition:opacity .25s ease, transform .25s ease;
   cursor:pointer;
 }
-.shot-chart-hex:hover{opacity:0.7;}
+.shot-chart-hex.shot-chart-dimmed{opacity:0.15 !important;}
+.shot-chart-hex.shot-chart-active{opacity:1 !important;}
+.shot-chart-achievements{
+  flex:1;min-width:0;
+}
+.shot-chart-achievements-title{
+  font-family:var(--header-font);
+  font-size:0.75rem;
+  text-transform:uppercase;
+  letter-spacing:0.2em;
+  color:var(--text-dim);
+  margin-bottom:14px;
+  font-weight:600;
+}
+.shot-chart-ach-list{
+  list-style:none;margin:0;padding:0;
+  display:flex;flex-direction:column;gap:4px;
+  max-height:520px;overflow-y:auto;
+  scrollbar-width:thin;
+  -webkit-overflow-scrolling:touch;
+}
+.shot-chart-ach-list::-webkit-scrollbar{width:4px;}
+.shot-chart-ach-list::-webkit-scrollbar-thumb{background:var(--border-bright);border-radius:2px;}
+.shot-chart-ach-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 12px;
+  border-radius:8px;
+  border:1px solid transparent;
+  transition:all .2s ease;
+  cursor:pointer;
+  font-size:0.75rem;
+  color:var(--text);
+  line-height:1.3;
+}
+.shot-chart-ach-item:hover{
+  border-color:var(--border-bright);
+  background:rgba(212,175,55,0.06);
+}
+.shot-chart-ach-item.shot-chart-ach-active{
+  border-color:var(--red);
+  background:rgba(212,175,55,0.1);
+}
+.shot-chart-ach-item.shot-chart-ach-dimmed{
+  opacity:0.3;
+}
+.shot-chart-ach-dot{
+  width:10px;height:10px;border-radius:50%;flex-shrink:0;
+  box-shadow:0 0 6px currentColor;
+}
+.shot-chart-ach-label{font-weight:600;}
+.shot-chart-ach-meta{font-size:0.65rem;color:var(--text-dim);font-weight:400;}
 .shot-chart-tooltip{
   position:fixed;
   background:rgba(10,10,14,0.95);
@@ -1066,26 +1127,32 @@ body::after{
     <div class="section-header">
       <div class="section-eyebrow">Shot Chart · Career Heat Map</div>
       <h2 class="section-title">Career <span>Shot Chart</span></h2>
-      <p class="section-sub">Every KPI mapped to a zone on the court. Gold = elite performance. Tap any hex for the full stat.</p>
+      <p class="section-sub">Every KPI mapped to a zone on the court. Gold = elite performance. Hover any hex or list item to spotlight it.</p>
     </div>
 
-    <div class="shot-chart-wrap">
-      <div class="shot-chart-container">
-        <svg class="shot-chart-svg" id="shotChartSvg" viewBox="0 0 400 370" preserveAspectRatio="xMidYMid meet">
-          <!-- Hexes injected by JS first, then court lines on top -->
-        </svg>
-      </div>
-      <div class="shot-chart-legend">
-        <span class="shot-chart-legend-label">30%</span>
-        <div class="shot-chart-legend-bar">
-          <div style="flex:1;background:#1a1a2e;"></div>
-          <div style="flex:1;background:#3a1a3e;"></div>
-          <div style="flex:1;background:#7b2cf5;"></div>
-          <div style="flex:1;background:#FF2D55;"></div>
-          <div style="flex:1;background:#ffeb3b;"></div>
-          <div style="flex:1;background:#fff5cc;"></div>
+    <div class="shot-chart-layout">
+      <div class="shot-chart-wrap">
+        <div class="shot-chart-container">
+          <svg class="shot-chart-svg" id="shotChartSvg" viewBox="0 0 400 370" preserveAspectRatio="xMidYMid meet">
+            <!-- Hexes injected by JS first, then court lines on top -->
+          </svg>
         </div>
-        <span class="shot-chart-legend-label">100%+</span>
+        <div class="shot-chart-legend">
+          <span class="shot-chart-legend-label">30%</span>
+          <div class="shot-chart-legend-bar">
+            <div style="flex:1;background:#1a1a2e;"></div>
+            <div style="flex:1;background:#3a1a3e;"></div>
+            <div style="flex:1;background:#7b2cf5;"></div>
+            <div style="flex:1;background:#FF2D55;"></div>
+            <div style="flex:1;background:#ffeb3b;"></div>
+            <div style="flex:1;background:#fff5cc;"></div>
+          </div>
+          <span class="shot-chart-legend-label">100%+</span>
+        </div>
+      </div>
+      <div class="shot-chart-achievements">
+        <div class="shot-chart-achievements-title">Career Achievements</div>
+        <ul class="shot-chart-ach-list" id="shotChartAchList"></ul>
       </div>
     </div>
     <div class="shot-chart-tooltip" id="shotChartTooltip"></div>
@@ -1704,6 +1771,8 @@ body::after{
   var hexGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 
   // Assign metrics to closest hexes, fill remaining with background hexes
+  // Track which hexes have metrics + their index for the achievements list
+  var metricHexes = []; // {poly, metric, index}
   gridPositions.forEach(function(pos, i){
     var poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
     poly.setAttribute('points', hexPath(pos.x, pos.y, hexSize));
@@ -1715,10 +1784,15 @@ body::after{
     if(i < sortedMetrics.length){
       // This hex has a metric
       var m = sortedMetrics[i];
-      poly.setAttribute('fill', heatColor(m.val));
+      var hexColor = heatColor(m.val);
+      poly.setAttribute('fill', hexColor);
       poly.setAttribute('opacity', '0.85');
+      poly.style.color = hexColor;
+      var entry = {poly: poly, metric: m, index: i, color: hexColor};
+      metricHexes.push(entry);
+
       poly.addEventListener('mouseenter', function(e){
-        poly.setAttribute('opacity', '1');
+        highlightAchievement(i);
         tooltip.classList.add('show');
         tooltip.innerHTML = '<div class="shot-chart-tooltip-title">' + m.label + '</div>' +
           '<div class="shot-chart-tooltip-meta">' + m.meta + '</div>';
@@ -1728,17 +1802,18 @@ body::after{
         tooltip.style.top = (e.clientY + 14) + 'px';
       });
       poly.addEventListener('mouseleave', function(){
-        poly.setAttribute('opacity', '0.85');
+        clearHighlight();
         tooltip.classList.remove('show');
       });
       poly.addEventListener('touchstart', function(e){
         e.preventDefault();
+        highlightAchievement(i);
         tooltip.classList.add('show');
         tooltip.innerHTML = '<div class="shot-chart-tooltip-title">' + m.label + '</div>' +
           '<div class="shot-chart-tooltip-meta">' + m.meta + '</div>';
         tooltip.style.left = (e.touches[0].clientX + 14) + 'px';
         tooltip.style.top = (e.touches[0].clientY + 14) + 'px';
-        setTimeout(function(){ tooltip.classList.remove('show'); }, 3000);
+        setTimeout(function(){ tooltip.classList.remove('show'); clearHighlight(); }, 3000);
       });
     } else {
       // Background fill hex — dim, no interaction
@@ -1749,6 +1824,77 @@ body::after{
     hexGroup.appendChild(poly);
   });
   svg.appendChild(hexGroup);
+
+  /* ---- Achievements list + mutual highlight/dim ---- */
+  var achList = document.getElementById('shotChartAchList');
+  var achItems = [];
+
+  // Build the list sorted by value descending (same order as hexes)
+  sortedMetrics.forEach(function(m, i){
+    var color = heatColor(m.val);
+    var li = document.createElement('li');
+    li.className = 'shot-chart-ach-item';
+    li.setAttribute('data-ach-index', i);
+    li.innerHTML = '<span class="shot-chart-ach-dot" style="background:' + color + ';color:' + color + ';"></span>' +
+      '<span><span class="shot-chart-ach-label">' + m.label + '</span><br><span class="shot-chart-ach-meta">' + m.meta + '</span></span>';
+    li.addEventListener('mouseenter', function(){
+      highlightAchievement(i);
+      // Show tooltip near the hex
+      var poly = metricHexes[i] && metricHexes[i].poly;
+      if(poly){
+        tooltip.classList.add('show');
+        tooltip.innerHTML = '<div class="shot-chart-tooltip-title">' + m.label + '</div>' +
+          '<div class="shot-chart-tooltip-meta">' + m.meta + '</div>';
+        var polyRect = poly.getBoundingClientRect();
+        tooltip.style.left = (polyRect.left + polyRect.width + 10) + 'px';
+        tooltip.style.top = (polyRect.top) + 'px';
+      }
+    });
+    li.addEventListener('mouseleave', function(){
+      clearHighlight();
+      tooltip.classList.remove('show');
+    });
+    li.addEventListener('touchstart', function(e){
+      e.preventDefault();
+      highlightAchievement(i);
+    });
+    li.addEventListener('touchend', function(){
+      setTimeout(clearHighlight, 3000);
+    });
+    if(achList) achList.appendChild(li);
+    achItems.push(li);
+  });
+
+  // Highlight one achievement: dim all other hexes + list items
+  function highlightAchievement(idx){
+    metricHexes.forEach(function(entry){
+      if(entry.index === idx){
+        entry.poly.classList.add('shot-chart-active');
+        entry.poly.classList.remove('shot-chart-dimmed');
+      } else {
+        entry.poly.classList.remove('shot-chart-active');
+        entry.poly.classList.add('shot-chart-dimmed');
+      }
+    });
+    achItems.forEach(function(item, i){
+      if(i === idx){
+        item.classList.add('shot-chart-ach-active');
+        item.classList.remove('shot-chart-ach-dimmed');
+      } else {
+        item.classList.remove('shot-chart-ach-active');
+        item.classList.add('shot-chart-ach-dimmed');
+      }
+    });
+  }
+
+  function clearHighlight(){
+    metricHexes.forEach(function(entry){
+      entry.poly.classList.remove('shot-chart-active', 'shot-chart-dimmed');
+    });
+    achItems.forEach(function(item){
+      item.classList.remove('shot-chart-ach-active', 'shot-chart-ach-dimmed');
+    });
+  }
 
   // Draw accurate half-court lines ON TOP of hexes
   // Orientation: basket at BOTTOM (y~350), half-court line at TOP (y~20)
