@@ -153,7 +153,29 @@ body::after{
   pointer-events:none;
 }
 .court-bg-svg{position:absolute;inset:0;width:100%;height:100%;opacity:0.08;z-index:0;pointer-events:none;}
-.profile-content{position:relative;z-index:1;max-width:900px;margin:0 auto;width:100%;}
+.profile-content{position:relative;z-index:1;max-width:1100px;margin:0 auto;width:100%;}
+.hero-layout{
+  display:flex;
+  flex-direction:column-reverse;
+  gap:32px;
+  align-items:center;
+}
+@media(min-width:768px){
+  .hero-layout{
+    flex-direction:row;
+    align-items:center;
+    gap:48px;
+  }
+}
+.hero-card-side{
+  flex-shrink:0;
+  width:320px;
+  max-width:80vw;
+}
+.hero-text-side{
+  flex:1;
+  min-width:0;
+}
 .profile-jersey{
   font-family:var(--header-font);
   display:inline-flex;align-items:center;gap:8px;
@@ -199,9 +221,10 @@ body::after{
 
 /* Flipping basketball trading card */
 .flip-card{
-  width:300px;max-width:100%;
-  margin:0 auto 28px;
-  perspective:1200px;
+  width:100%;
+  max-width:320px;
+  margin:0 auto;
+  perspective:1400px;
   cursor:pointer;
   position:relative;z-index:1;
 }
@@ -220,25 +243,30 @@ body::after{
   position:absolute;inset:0;
   backface-visibility:hidden;
   -webkit-backface-visibility:hidden;
-  border-radius:14px;
+  border-radius:16px;
   overflow:hidden;
-  box-shadow:0 0 30px rgba(212,175,55,0.25), 0 8px 30px rgba(0,0,0,0.5);
-  border:1px solid rgba(212,175,55,0.3);
+  box-shadow:0 0 40px rgba(212,175,55,0.15), 0 12px 40px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.05);
+  border:1px solid rgba(212,175,55,0.15);
+  background:rgba(255,255,255,0.02);
+  backdrop-filter:blur(2px);
+  -webkit-backdrop-filter:blur(2px);
 }
 .flip-card-face img{
   width:100%;height:100%;object-fit:cover;display:block;
+  border-radius:14px;
 }
 .flip-card-back{
   transform:rotateY(180deg);
 }
 .flip-card-hint{
   text-align:center;
-  font-size:0.7rem;
+  font-size:0.65rem;
   color:var(--text-dim);
-  margin-top:14px;
-  letter-spacing:0.08em;
+  margin-top:12px;
+  letter-spacing:0.12em;
   text-transform:uppercase;
   font-weight:600;
+  opacity:0.6;
 }
 
 /* Profile header card (legacy — replaced by flip card) */
@@ -947,26 +975,30 @@ body::after{
       <path d="M 320 50 L 280 100 L 320 150" fill="none" stroke="rgba(212,175,55,0.5)" stroke-width="1"/>
     </svg>
     <div class="profile-content">
-      <div class="profile-jersey">#23 · SR. DIRECTOR</div>
-      <h1 class="profile-name">
-        <span class="first">Walter</span>
-        <span class="last">Colindres</span>
-      </h1>
-      <p class="profile-title">Sr. Director of Product Management · <span>Consumer Digital Commerce</span></p>
-      <p class="profile-bio">I build <em>$1B+ digital commerce engines</em> — talent, metrics, and relentless execution across <em>18+ platforms</em> in <em>4 countries</em>.</p>
-
-      <div class="flip-card" id="flipCard">
-        <div class="flip-card-inner" id="flipCardInner">
-          <div class="flip-card-face flip-card-front">
-            <img src="/card-front.jpg" alt="Walter Colindres trading card — front">
-          </div>
-          <div class="flip-card-face flip-card-back">
-            <img src="/card-back.jpg" alt="Walter Colindres trading card — back">
+      <div class="hero-layout">
+        <div class="hero-card-side">
+          <div class="flip-card" id="flipCard">
+            <div class="flip-card-inner" id="flipCardInner">
+              <div class="flip-card-face flip-card-front">
+                <img src="/card-front.jpg" alt="Walter Colindres trading card — front">
+              </div>
+              <div class="flip-card-face flip-card-back">
+                <img src="/card-back.jpg" alt="Walter Colindres trading card — back">
+              </div>
+            </div>
+            <div class="flip-card-hint" id="flipCardHint">Click to pause</div>
           </div>
         </div>
-        <div class="flip-card-hint" id="flipCardHint">Click to pause</div>
+        <div class="hero-text-side">
+          <div class="profile-jersey">#23 · SR. DIRECTOR</div>
+          <h1 class="profile-name">
+            <span class="first">Walter</span>
+            <span class="last">Colindres</span>
+          </h1>
+          <p class="profile-title">Sr. Director of Product Management · <span>Consumer Digital Commerce</span></p>
+          <p class="profile-bio">I build <em>$1B+ digital commerce engines</em> — talent, metrics, and relentless execution across <em>18+ platforms</em> in <em>4 countries</em>.</p>
+        </div>
       </div>
-
     </div>
   </div>
 
@@ -1007,7 +1039,7 @@ body::after{
     <p class="contact-sub">Open to the right team. Let's talk product, growth, and championship culture.</p>
     <div class="contact-links">
       <a href="/Walter_Colindres_Resume_GeniusSports.docx" download class="contact-link" style="border-color:rgba(212,175,55,0.4);background:rgba(212,175,55,0.08);">
-        <span class="contact-link-icon">CV</span><span>Download Résumé (DOCX · ATS-Optimized)</span>
+        <span class="contact-link-icon">CV</span><span>Download Résumé (DOCX)</span>
       </a>
       <a href="https://linkedin.com/in/waltercolindres" target="_blank" rel="noopener" class="contact-link">
         <span class="contact-link-icon">in</span><span>LinkedIn / waltercolindres</span>
@@ -1157,7 +1189,7 @@ body::after{
         <div class="player-card-head">
           <div class="player-card-head-left">
             <div class="player-card-team">Team 4</div>
-            <div class="player-card-name">Burger King · Popeyes · Tim Hortons</div>
+            <div class="player-card-name">RBI</div>
             <div class="player-card-role">Sr. Product Manager</div>
           </div>
           <img src="/logos/rbi.svg" alt="RBI" class="company-logo">
@@ -2030,7 +2062,7 @@ body::after{
       return COLOR_MAP[c] || '#D4AF37';
     }
     function makeLine(points, color, endLabel){
-      var W = 120, H = 50, padX = 6, padY = 8;
+      var W = 130, H = 55, padX = 10, padY = 10;
       var svg = document.createElementNS(ns, 'svg');
       svg.setAttribute('class', 'line-svg');
       svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
