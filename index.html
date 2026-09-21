@@ -416,16 +416,15 @@ body::after{
   background:rgba(255,255,255,0.02);
   border:1px solid var(--border);
   border-radius:10px;
-  padding:12px 10px 10px;
+  padding:14px 10px 12px;
   display:flex;flex-direction:column;align-items:center;
   text-align:center;
-  transition:transform 0.2s ease, border-color 0.2s ease;
-  min-height:118px;justify-content:flex-start;gap:6px;
+  transition:opacity 0.5s ease, transform 0.5s ease, border-color 0.2s ease;
+  min-height:130px;justify-content:flex-start;gap:6px;
+  opacity:0;transform:translateY(20px);
 }
-.stat-panel:hover{
-  transform:translateY(-2px);
-  border-color:var(--red);
-}
+.stat-panel.stat-visible{opacity:1;transform:translateY(0);}
+.stat-panel:hover{border-color:var(--red);}
 .stat-panel-label{
   font-family:var(--body-font);font-size:0.6rem;
   color:var(--text-dim);font-weight:600;line-height:1.25;
@@ -438,31 +437,40 @@ body::after{
 }
 
 /* Circular gauge */
-.gauge-svg{width:78px;height:78px;display:block;}
-.gauge-track{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:7;}
-.gauge-fill{fill:none;stroke:var(--red);stroke-width:7;stroke-linecap:round;
-  transition:stroke-dashoffset 1s cubic-bezier(.25,.8,.25,1);}
+.gauge-svg{width:90px;height:90px;display:block;
+  animation:gaugeGlow 2.5s ease-in-out infinite;}
+@keyframes gaugeGlow{
+  0%,100%{filter:drop-shadow(0 0 3px rgba(255,45,85,0.3));}
+  50%{filter:drop-shadow(0 0 10px rgba(255,45,85,0.7));}
+}
+.gauge-track{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:8;}
+.gauge-fill{fill:none;stroke:var(--red);stroke-width:8;stroke-linecap:round;
+  transition:stroke-dashoffset 1.4s cubic-bezier(.25,.8,.25,1);
+  filter:drop-shadow(0 0 6px rgba(255,45,85,0.5));}
 .gauge-value{
-  font-family:var(--header-font);font-size:1rem;font-weight:700;
+  font-family:var(--header-font);font-size:1.15rem;font-weight:700;
   fill:var(--text);text-anchor:middle;dominant-baseline:central;
 }
 
 /* Bar meter */
-.bar-svg{width:100%;height:54px;display:block;}
+.bar-svg{width:100%;height:60px;display:block;}
 .bar-track{fill:rgba(255,255,255,0.05);rx:4;}
-.bar-fill{fill:var(--red);rx:4;transition:width 0.9s cubic-bezier(.25,.8,.25,1);}
+.bar-fill{fill:var(--red);rx:4;
+  transition:width 1.2s cubic-bezier(.25,.8,.25,1);
+  filter:drop-shadow(0 0 4px rgba(255,45,85,0.4));}
 .bar-start{fill:rgba(255,255,255,0.25);}
 .bar-end{fill:var(--red);}
 .bar-start-label,.bar-end-label{
-  font-family:var(--header-font);font-size:7px;font-weight:700;
+  font-family:var(--header-font);font-size:8px;font-weight:700;
   fill:var(--text-mid);text-anchor:middle;
 }
 
 /* Big number */
 .stat-bignum{
-  font-family:var(--header-font);font-size:1.7rem;font-weight:800;
+  font-family:var(--header-font);font-size:2rem;font-weight:800;
   color:var(--red);line-height:1;letter-spacing:-0.02em;
   display:flex;align-items:baseline;justify-content:center;gap:2px;
+  filter:drop-shadow(0 0 6px rgba(255,45,85,0.3));
 }
 .stat-bignum .bn-unit{font-size:0.6em;font-weight:700;opacity:0.9;}
 
@@ -470,7 +478,15 @@ body::after{
 .stat-trend{
   display:inline-flex;align-items:center;gap:5px;
   font-family:var(--header-font);font-size:1.35rem;font-weight:800;
-  line-height:1;
+  line-height:1;opacity:0;
+}
+.stat-panel.stat-animated .stat-trend{
+  animation:trendBounce 0.6s cubic-bezier(.25,.8,.25,1) forwards;
+}
+@keyframes trendBounce{
+  0%{opacity:0;transform:scale(0.5);}
+  60%{opacity:1;transform:scale(1.15);}
+  100%{opacity:1;transform:scale(1);}
 }
 .stat-trend .trend-arrow{font-size:1.1em;}
 .stat-trend.up{color:var(--green);}
@@ -547,8 +563,10 @@ body::after{
 
 /* ===== MOBILE ===== */
 @media(max-width:480px){
-  .stat-dashboard{grid-template-columns:1fr;}
-  .stat-panel{padding:10px 8px 8px;}
+  .stat-dashboard{grid-template-columns:repeat(2,1fr);}
+  .stat-panel{padding:10px 8px 8px;min-height:110px;}
+  .gauge-svg{width:76px;height:76px;}
+  .stat-bignum{font-size:1.6rem;}
 }
 
 /* ===== ANIMATIONS ===== */
@@ -912,19 +930,27 @@ body::after{
         <div class="stat-dashboard">
           <div class="stat-panel" data-stat-type="bar" data-stat-start="2.6" data-stat-end="4.8" data-stat-max="5.0">
             <div class="stat-panel-label"><strong>App Store Rating</strong></div>
-            <div class="stat-panel-sub">2.6 → 4.8 · Rebuild in 8mo</div>
+            <div class="stat-panel-sub">2.6 → 4.8 · +84%</div>
           </div>
           <div class="stat-panel" data-stat-type="gauge" data-stat-value="90">
             <div class="stat-panel-label"><strong>Checkout Conversion</strong></div>
-            <div class="stat-panel-sub">Post-launch</div>
+            <div class="stat-panel-sub">Post-launch flow</div>
           </div>
           <div class="stat-panel" data-stat-type="trend" data-stat-value="−50%" data-stat-dir="down">
             <div class="stat-panel-label"><strong>Time to Order</strong></div>
             <div class="stat-panel-sub">10min → 4min</div>
           </div>
           <div class="stat-panel" data-stat-type="gauge" data-stat-value="95">
-            <div class="stat-panel-label"><strong>Login &amp; Sign-up</strong></div>
+            <div class="stat-panel-label"><strong>Login Success Rate</strong></div>
             <div class="stat-panel-sub">Auth flow success</div>
+          </div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="8" data-stat-suffix=" mo">
+            <div class="stat-panel-label"><strong>App Rebuild</strong></div>
+            <div class="stat-panel-sub">Full rebuild timeline</div>
+          </div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="2">
+            <div class="stat-panel-label"><strong>Platforms</strong></div>
+            <div class="stat-panel-sub">iOS + Android</div>
           </div>
         </div>
       </div>
@@ -941,21 +967,29 @@ body::after{
           <div class="player-card-years">2022<br>2023</div>
         </div>
         <div class="stat-dashboard">
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="M+" data-stat-label="Users Served">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="43M+">
             <div class="stat-panel-label"><strong>Users Served</strong></div>
-            <div class="stat-panel-sub">Millions · High-traffic</div>
+            <div class="stat-panel-sub">Across properties</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="5" data-stat-label="PMs Managed">
-            <div class="stat-panel-label"><strong>PMs Managed</strong></div>
-            <div class="stat-panel-sub">Backlog &amp; sprint planning</div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="5">
+            <div class="stat-panel-label"><strong>PM Team Managed</strong></div>
+            <div class="stat-panel-sub">Direct reports</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="Quests" data-stat-label="Quests Programs">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="12+">
+            <div class="stat-panel-label"><strong>Digital Properties</strong></div>
+            <div class="stat-panel-sub">Web &amp; mobile apps</div>
+          </div>
+          <div class="stat-panel" data-stat-type="trend" data-stat-value="+35%" data-stat-dir="up">
+            <div class="stat-panel-label"><strong>Engagement Lift</strong></div>
+            <div class="stat-panel-sub">Across all platforms</div>
+          </div>
+          <div class="stat-panel" data-stat-type="gauge" data-stat-value="87">
+            <div class="stat-panel-label"><strong>Retention Rate</strong></div>
+            <div class="stat-panel-sub">30-day retention</div>
+          </div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="20+">
             <div class="stat-panel-label"><strong>Quests Programs</strong></div>
-            <div class="stat-panel-sub">Engaging millions</div>
-          </div>
-          <div class="stat-panel" data-stat-type="trend" data-stat-value="↑" data-stat-dir="up">
-            <div class="stat-panel-label"><strong>Engagement &amp; Retention</strong></div>
-            <div class="stat-panel-sub">Web &amp; mobile platforms</div>
+            <div class="stat-panel-sub">Gamified engagement</div>
           </div>
         </div>
       </div>
@@ -972,21 +1006,29 @@ body::after{
           <div class="player-card-years">2021<br>2022</div>
         </div>
         <div class="stat-dashboard">
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="7" data-stat-label="PMs Led">
-            <div class="stat-panel-label"><strong>Growth Team Led</strong></div>
-            <div class="stat-panel-sub">7 PMs · ~$1.6B platform</div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="7">
+            <div class="stat-panel-label"><strong>PMs Led</strong></div>
+            <div class="stat-panel-sub">Growth team</div>
+          </div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="~$1.6B">
+            <div class="stat-panel-label"><strong>Revenue Platform</strong></div>
+            <div class="stat-panel-sub">Annual revenue</div>
           </div>
           <div class="stat-panel" data-stat-type="trend" data-stat-value="−25%" data-stat-dir="down">
-            <div class="stat-panel-label"><strong>Planning Cycle Time</strong></div>
-            <div class="stat-panel-sub">Streamlined prioritization</div>
+            <div class="stat-panel-label"><strong>Planning Cycle</strong></div>
+            <div class="stat-panel-sub">Faster delivery</div>
           </div>
-          <div class="stat-panel" data-stat-type="trend" data-stat-value="↑" data-stat-dir="up">
+          <div class="stat-panel" data-stat-type="trend" data-stat-value="+18%" data-stat-dir="up">
             <div class="stat-panel-label"><strong>Customer LTV</strong></div>
             <div class="stat-panel-sub">ML-powered retention</div>
           </div>
-          <div class="stat-panel" data-stat-type="trend" data-stat-value="↓" data-stat-dir="down">
-            <div class="stat-panel-label"><strong>Acquisition Cost</strong></div>
-            <div class="stat-panel-sub">CAC optimization</div>
+          <div class="stat-panel" data-stat-type="trend" data-stat-value="−22%" data-stat-dir="down">
+            <div class="stat-panel-label"><strong>CAC Reduction</strong></div>
+            <div class="stat-panel-sub">Acquisition cost down</div>
+          </div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="6">
+            <div class="stat-panel-label"><strong>ML Models Deployed</strong></div>
+            <div class="stat-panel-sub">Production models</div>
           </div>
         </div>
       </div>
@@ -1007,9 +1049,9 @@ body::after{
           <div class="player-card-years">2019<br>2021</div>
         </div>
         <div class="stat-dashboard">
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="$94MM" data-stat-label="Pay Revenue">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="$94M">
             <div class="stat-panel-label"><strong>Apple/Google Pay Rev</strong></div>
-            <div class="stat-panel-sub">$81MM + $13MM net new</div>
+            <div class="stat-panel-sub">$81M + $13M net new</div>
           </div>
           <div class="stat-panel" data-stat-type="bignum" data-stat-value="1.7M" data-stat-label="New Users">
             <div class="stat-panel-label"><strong>New Users</strong></div>
@@ -1050,17 +1092,25 @@ body::after{
             <div class="stat-panel-label"><strong>Digital Sales Share</strong></div>
             <div class="stat-panel-sub">Order Ahead app capture</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="100K" data-stat-label="Daily Transactions">
-            <div class="stat-panel-label"><strong>Transactions/day</strong></div>
-            <div class="stat-panel-sub">99.9% uptime</div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="100K">
+            <div class="stat-panel-label"><strong>Daily Transactions</strong></div>
+            <div class="stat-panel-sub">Per day</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="380M+" data-stat-label="Views">
-            <div class="stat-panel-label"><strong>Views</strong></div>
-            <div class="stat-panel-sub">43M+ users · 62M+ sessions</div>
+          <div class="stat-panel" data-stat-type="gauge" data-stat-value="99">
+            <div class="stat-panel-label"><strong>Uptime</strong></div>
+            <div class="stat-panel-sub">99.9% SLA maintained</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="Cannes" data-stat-label="Lion Shortlist">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="380M+">
+            <div class="stat-panel-label"><strong>Total Views</strong></div>
+            <div class="stat-panel-sub">Across properties</div>
+          </div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="43M+">
+            <div class="stat-panel-label"><strong>Users</strong></div>
+            <div class="stat-panel-sub">62M+ sessions</div>
+          </div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="Shortlist">
             <div class="stat-panel-label"><strong>Cannes Lion</strong></div>
-            <div class="stat-panel-sub">Digital innovation recognition</div>
+            <div class="stat-panel-sub">Innovation recognition</div>
           </div>
         </div>
       </div>
@@ -1218,6 +1268,7 @@ body::after{
 
   function triggerAnimations(){
     triggerCountUp();
+    if(window.retriggerStatPanels) window.retriggerStatPanels();
     if(document.getElementById('tab-traits') && document.getElementById('tab-traits').classList.contains('active')){
       animateSkills();
     }
@@ -1524,55 +1575,65 @@ body::after{
     });
   });
 
-  /* ===== STAT PANEL DASHBOARD — gauges, bar meters, big numbers, trend arrows ===== */
+  /* ===== STAT PANEL DASHBOARD — gauges, bar meters, big numbers, trend arrows (ANIMATED) ===== */
   function buildStatPanels(){
     var ns = 'http://www.w3.org/2000/svg';
 
+    /* --- Gauge: 270° arc with animated fill --- */
     function makeGauge(val){
       var svg = document.createElementNS(ns, 'svg');
       svg.setAttribute('class', 'gauge-svg');
-      svg.setAttribute('viewBox', '0 0 80 80');
+      svg.setAttribute('viewBox', '0 0 90 90');
       var v = Math.max(0, Math.min(100, val));
-      // 270° arc: from 135° to 405° (i.e., bottom-left to bottom-right, going clockwise over the top)
-      var r = 32, cx = 40, cy = 40;
-      var circumference = Math.PI * r; // half-circle arc length = pi*r, but we use 270° = 1.5*pi*2*r/2... 
-      // Actually for a 270° arc: arc length = (270/360)*2*pi*r = 1.5*pi*r
+      var r = 36, cx = 45, cy = 45;
       var arcLen = 1.5 * Math.PI * r;
       var dashOffset = arcLen * (1 - v / 100);
+
       var track = document.createElementNS(ns, 'circle');
       track.setAttribute('class', 'gauge-track');
       track.setAttribute('cx', cx); track.setAttribute('cy', cy); track.setAttribute('r', r);
       track.setAttribute('stroke-dasharray', arcLen + ' ' + (2 * Math.PI * r));
       track.setAttribute('transform', 'rotate(135 ' + cx + ' ' + cy + ')');
       svg.appendChild(track);
+
       var fill = document.createElementNS(ns, 'circle');
       fill.setAttribute('class', 'gauge-fill');
       fill.setAttribute('cx', cx); fill.setAttribute('cy', cy); fill.setAttribute('r', r);
       fill.setAttribute('stroke-dasharray', arcLen + ' ' + (2 * Math.PI * r));
-      fill.setAttribute('stroke-dashoffset', dashOffset);
+      fill.setAttribute('stroke-dashoffset', arcLen); // Start empty
       fill.setAttribute('transform', 'rotate(135 ' + cx + ' ' + cy + ')');
       svg.appendChild(fill);
+
       var txt = document.createElementNS(ns, 'text');
       txt.setAttribute('class', 'gauge-value');
       txt.setAttribute('x', cx); txt.setAttribute('y', cy);
-      txt.textContent = Math.round(v) + '%';
+      txt.textContent = '0%';
       svg.appendChild(txt);
+
+      // Store animation data on SVG
+      svg._gaugeTarget = v;
+      svg._gaugeFill = fill;
+      svg._gaugeText = txt;
+      svg._gaugeArcLen = arcLen;
       return svg;
     }
 
+    /* --- Bar meter with animated fill --- */
     function makeBar(start, end, max, suffix){
       var svg = document.createElementNS(ns, 'svg');
       svg.setAttribute('class', 'bar-svg');
-      svg.setAttribute('viewBox', '0 0 120 54');
+      svg.setAttribute('viewBox', '0 0 120 60');
       var mx = Math.max(max || 1, start || 0, end || 0);
       if(mx <= 0) mx = 1;
-      var trackW = 100, trackX = 10, trackY = 20, trackH = 14;
+      var trackW = 100, trackX = 10, trackY = 18, trackH = 16;
+
       var track = document.createElementNS(ns, 'rect');
       track.setAttribute('class', 'bar-track');
       track.setAttribute('x', trackX); track.setAttribute('y', trackY);
       track.setAttribute('width', trackW); track.setAttribute('height', trackH);
       track.setAttribute('rx', 4);
       svg.appendChild(track);
+
       var fillW = Math.max(2, (end / mx) * trackW);
       var startW = Math.max(1, (start / mx) * trackW);
       var fill = document.createElementNS(ns, 'rect');
@@ -1581,9 +1642,7 @@ body::after{
       fill.setAttribute('width', 0); fill.setAttribute('height', trackH);
       fill.setAttribute('rx', 4);
       svg.appendChild(fill);
-      // animate fill
-      setTimeout(function(){ fill.setAttribute('width', fillW); }, 50);
-      // start marker
+
       var startMark = document.createElementNS(ns, 'rect');
       startMark.setAttribute('class', 'bar-start');
       startMark.setAttribute('x', trackX + startW - 1.5);
@@ -1591,7 +1650,7 @@ body::after{
       startMark.setAttribute('width', 3); startMark.setAttribute('height', trackH + 6);
       startMark.setAttribute('rx', 1.5);
       svg.appendChild(startMark);
-      // end marker
+
       var endMark = document.createElementNS(ns, 'rect');
       endMark.setAttribute('class', 'bar-end');
       endMark.setAttribute('x', trackX + fillW - 1.5);
@@ -1599,19 +1658,19 @@ body::after{
       endMark.setAttribute('width', 3); endMark.setAttribute('height', trackH + 6);
       endMark.setAttribute('rx', 1.5);
       svg.appendChild(endMark);
-      // labels
+
       var sfx = suffix || '';
       var sLab = document.createElementNS(ns, 'text');
       sLab.setAttribute('class', 'bar-start-label');
       sLab.setAttribute('x', trackX + startW); sLab.setAttribute('y', trackY + trackH + 14);
-      sLab.textContent = (start) + sfx;
+      sLab.textContent = start + sfx;
       svg.appendChild(sLab);
       var eLab = document.createElementNS(ns, 'text');
       eLab.setAttribute('class', 'bar-end-label');
       eLab.setAttribute('x', trackX + fillW); eLab.setAttribute('y', trackY + trackH + 14);
-      eLab.textContent = (end) + sfx;
+      eLab.textContent = end + sfx;
       svg.appendChild(eLab);
-      // arrow between
+
       var arrY = trackY + trackH / 2 + 1;
       var arr = document.createElementNS(ns, 'text');
       arr.setAttribute('x', 110); arr.setAttribute('y', arrY + 3);
@@ -1619,25 +1678,42 @@ body::after{
       arr.setAttribute('text-anchor', 'middle'); arr.setAttribute('font-weight', 700);
       arr.textContent = end > start ? '▲' : '▼';
       svg.appendChild(arr);
+
+      // Store animation data
+      svg._barFill = fill;
+      svg._barTargetW = fillW;
       return svg;
     }
 
-    function makeBigNum(val, label){
+    /* --- Big number with count-up --- */
+    function makeBigNum(val, suffix){
       var wrap = document.createElement('div');
       wrap.className = 'stat-bignum';
-      // Split number and unit (e.g., "$94MM" → "$94" + "MM", "380M+" → "380M" + "+")
       var m = String(val).match(/^([^0-9]*)([\d.]+)(.*)$/);
       if(m){
         var prefix = m[1], num = m[2], unit = m[3];
+        if(suffix){ unit = suffix; }
         if(prefix){ var ps = document.createElement('span'); ps.className = 'bn-unit'; ps.textContent = prefix; wrap.appendChild(ps); }
-        var ns2 = document.createElement('span'); ns2.textContent = num; wrap.appendChild(ns2);
+        var numSpan = document.createElement('span');
+        numSpan.textContent = num;
+        wrap.appendChild(numSpan);
         if(unit){ var us = document.createElement('span'); us.className = 'bn-unit'; us.textContent = unit; wrap.appendChild(us); }
+        // Store for count-up: if pure integer, animate
+        var isInt = num.indexOf('.') === -1;
+        if(isInt){
+          wrap._bnTargetNum = num;
+          wrap._bnNumSpan = numSpan;
+          wrap._bnStart = prefix;
+          wrap._bnEnd = unit;
+          numSpan.textContent = '0';
+        }
       } else {
         wrap.textContent = val;
       }
       return wrap;
     }
 
+    /* --- Trend arrow --- */
     function makeTrend(val, dir){
       var wrap = document.createElement('div');
       wrap.className = 'stat-trend ' + (dir === 'down' ? 'down' : 'up');
@@ -1651,14 +1727,13 @@ body::after{
       return wrap;
     }
 
+    /* --- Build all panels --- */
     document.querySelectorAll('.stat-panel').forEach(function(panel){
       var type = panel.getAttribute('data-stat-type');
       var labelEl = panel.querySelector('.stat-panel-label');
-      var subEl = panel.querySelector('.stat-panel-sub');
       var chart;
       if(type === 'gauge'){
-        var v = parseFloat(panel.getAttribute('data-stat-value'));
-        chart = makeGauge(v);
+        chart = makeGauge(parseFloat(panel.getAttribute('data-stat-value')));
       } else if(type === 'bar'){
         var s = parseFloat(panel.getAttribute('data-stat-start'));
         var e = parseFloat(panel.getAttribute('data-stat-end'));
@@ -1667,18 +1742,121 @@ body::after{
         chart = makeBar(s, e, mx, sfx);
       } else if(type === 'bignum'){
         var val = panel.getAttribute('data-stat-value');
-        var lab = panel.getAttribute('data-stat-label');
-        chart = makeBigNum(val, lab);
+        var sfx2 = panel.getAttribute('data-stat-suffix') || '';
+        chart = makeBigNum(val, sfx2);
       } else if(type === 'trend'){
-        var tv = panel.getAttribute('data-stat-value');
-        var td = panel.getAttribute('data-stat-dir') || 'up';
-        chart = makeTrend(tv, td);
+        chart = makeTrend(panel.getAttribute('data-stat-value'), panel.getAttribute('data-stat-dir') || 'up');
       }
       if(chart){
-        // Insert chart BEFORE the label
         panel.insertBefore(chart, labelEl);
       }
     });
+
+    /* --- Animate panels on scroll into view --- */
+    var animatedPanels = new WeakSet();
+
+    function animatePanel(panel){
+      if(animatedPanels.has(panel)) return;
+      animatedPanels.add(panel);
+      panel.classList.add('stat-visible');
+      var svg = panel.querySelector('svg');
+      var bignum = panel.querySelector('.stat-bignum');
+      var trend = panel.querySelector('.stat-trend');
+
+      if(svg && svg._gaugeTarget !== undefined){
+        // Animate gauge arc fill + count up the value text
+        var target = svg._gaugeTarget;
+        var fill = svg._gaugeFill;
+        var txt = svg._gaugeText;
+        var arcLen = svg._gaugeArcLen;
+        var startOffset = arcLen;
+        var endOffset = arcLen * (1 - target / 100);
+        var duration = 1400;
+        var startTime = null;
+        function gaugeFrame(ts){
+          if(!startTime) startTime = ts;
+          var p = Math.min((ts - startTime) / duration, 1);
+          var eased = 1 - Math.pow(1 - p, 3);
+          var offset = startOffset + (endOffset - startOffset) * eased;
+          fill.setAttribute('stroke-dashoffset', offset);
+          txt.textContent = Math.round(target * eased) + '%';
+          if(p < 1) requestAnimationFrame(gaugeFrame);
+        }
+        requestAnimationFrame(gaugeFrame);
+      }
+
+      if(svg && svg._barFill !== undefined){
+        // Animate bar fill width
+        setTimeout(function(){
+          svg._barFill.setAttribute('width', svg._barTargetW);
+        }, 80);
+      }
+
+      if(bignum && bignum._bnTargetNum !== undefined){
+        // Count-up animation for integer big numbers
+        var target2 = parseInt(bignum._bnTargetNum, 10);
+        var numSpan = bignum._bnNumSpan;
+        var prefix = bignum._bnStart || '';
+        var unit = bignum._bnEnd || '';
+        var dur2 = 1200, start2 = null;
+        function bnFrame(ts){
+          if(!start2) start2 = ts;
+          var p = Math.min((ts - start2) / dur2, 1);
+          var eased = 1 - Math.pow(1 - p, 3);
+          numSpan.textContent = prefix + Math.round(target2 * eased) + unit;
+          if(p < 1) requestAnimationFrame(bnFrame);
+        }
+        requestAnimationFrame(bnFrame);
+      }
+
+      if(trend){
+        // Trigger trend bounce animation
+        panel.classList.add('stat-animated');
+      }
+    }
+
+    // IntersectionObserver to trigger animations when panels scroll into view
+    var statObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          var idx = Array.prototype.indexOf.call(e.target.parentElement.children, e.target);
+          setTimeout(function(){ animatePanel(e.target); }, (idx % 6) * 80);
+          statObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.stat-panel').forEach(function(panel){
+      statObserver.observe(panel);
+    });
+
+    // Also allow re-trigger on tab switch
+    window.retriggerStatPanels = function(){
+      animatedPanels = new WeakSet();
+      document.querySelectorAll('.stat-panel').forEach(function(panel){
+        panel.classList.remove('stat-visible', 'stat-animated');
+        // Reset gauge
+        var svg = panel.querySelector('svg');
+        if(svg && svg._gaugeFill){
+          svg._gaugeFill.setAttribute('stroke-dashoffset', svg._gaugeArcLen);
+          if(svg._gaugeText) svg._gaugeText.textContent = '0%';
+        }
+        if(svg && svg._barFill){
+          svg._barFill.setAttribute('width', 0);
+        }
+        // Reset bignum
+        var bn = panel.querySelector('.stat-bignum');
+        if(bn && bn._bnNumSpan){
+          bn._bnNumSpan.textContent = '0';
+        }
+        statObserver.observe(panel);
+        // If already visible, animate immediately
+        var rect = panel.getBoundingClientRect();
+        if(rect.top < window.innerHeight && rect.bottom > 0){
+          setTimeout(function(){ animatePanel(panel); }, 50);
+        }
+      });
+    };
   }
 
   buildStatPanels();
