@@ -611,7 +611,7 @@ body::after{
 .spider-grid{
   display:grid;grid-template-columns:1fr 1fr;gap:14px;
 }
-@media(min-width:860px){.spider-grid{grid-template-columns:repeat(4,1fr);}}
+@media(min-width:860px){.spider-grid{grid-template-columns:repeat(2,1fr);gap:24px;}}
 .spider-card{
   background:var(--bg-card);border:1px solid var(--border);
   border-radius:var(--radius);padding:16px 10px 12px;
@@ -628,7 +628,7 @@ body::after{
   font-family:var(--header-font);font-size:1.1rem;font-weight:700;
   line-height:1;margin-bottom:8px;
 }
-.spider-svg{width:100%;max-width:200px;height:auto;display:block;}
+.spider-svg{width:100%;max-width:280px;height:auto;display:block;}
 .spider-grid-ring{fill:none;stroke:rgba(255,255,255,0.07);stroke-width:1;}
 .spider-grid-ring.outer{stroke:rgba(255,255,255,0.12);}
 .spider-axis{stroke:rgba(255,255,255,0.10);stroke-width:1;}
@@ -1209,17 +1209,7 @@ body::after{
     <div class="athlete-3d-label">ATHLETE MODEL · CAREER ANALYTICS</div>
   </div>
 
-  <!-- Skills / Toolkit -->
-  <div class="section reveal">
-    <div class="section-header">
-      <div class="section-eyebrow">Player Attributes</div>
-      <h2 class="section-title">The <span>Toolkit</span></h2>
-      <p class="section-sub">Every skill Walter brings to the floor — rated like NBA 2K attribute bars.</p>
-    </div>
-    <div class="skills-grid" id="skillsGrid"></div>
-  </div>
-
-  <!-- Spider / Radar Charts -->
+<!-- Spider / Radar Charts -->
   <div class="section reveal">
     <div class="section-header">
       <div class="section-eyebrow">Skill Profile</div>
@@ -1338,58 +1328,11 @@ body::after{
     });
   }
 
-  /* ===== SKILLS ===== */
-  var skills = [
-    {name:'Product Strategy', attr:99},
-    {name:'Roadmap & OKRs', attr:98},
-    {name:'A/B Testing', attr:95},
-    {name:'Conversion Optimization', attr:99},
-    {name:'Loyalty & Retention', attr:97},
-    {name:'Mobile Apps', attr:99},
-    {name:'E-commerce', attr:99},
-    {name:'Omnichannel', attr:96},
-    {name:'QSR / Restaurant Tech', attr:99},
-    {name:'Kiosk & Payments', attr:95},
-    {name:'AI Prototyping', attr:93},
-    {name:'LLM Integration', attr:92},
-    {name:'Autonomous Agents', attr:90},
-    {name:'Data Analytics', attr:96},
-    {name:'Agile Delivery', attr:97},
-    {name:'Cross-functional Leadership', attr:98},
-    {name:'Stakeholder Management', attr:97},
-    {name:'Executive Communication', attr:96},
-    {name:'Go-to-Market', attr:95},
-    {name:'Product Discovery', attr:94},
-    {name:'User Research', attr:93}
-  ];
-  var grid = document.getElementById('skillsGrid');
-  var skillsHTML = '';
-  skills.forEach(function(s){
-    skillsHTML += '<div class="skill-bar">' +
-      '<div class="skill-info"><div class="skill-name">' + s.name + '</div>' +
-      '<div class="skill-track"><div class="skill-fill" data-width="' + s.attr + '"></div></div></div>' +
-      '<div class="skill-attr">' + s.attr + '</div></div>';
-  });
-  grid.innerHTML = skillsHTML;
-
-  var skillsAnimated = false;
-  function animateSkills(){
-    if(skillsAnimated) return;
-    skillsAnimated = true;
-    var fills = grid.querySelectorAll('.skill-fill');
-    fills.forEach(function(f, i){
-      setTimeout(function(){
-        f.style.width = f.getAttribute('data-width') + '%';
-      }, i * 40);
-    });
-  }
+  var skillsAnimated = false; // skills bars removed — kept as no-op for safety
 
   function triggerAnimations(){
     triggerCountUp();
     if(window.retriggerStatPanels) window.retriggerStatPanels();
-    if(document.getElementById('tab-traits') && document.getElementById('tab-traits').classList.contains('active')){
-      animateSkills();
-    }
   }
 
   /* ===== SPIDER / RADAR CHARTS ===== */
@@ -1975,13 +1918,7 @@ body::after{
       eLab.textContent = end + sfx;
       svg.appendChild(eLab);
 
-      var arrY = trackY + trackH / 2 + 1;
-      var arr = document.createElementNS(ns, 'text');
-      arr.setAttribute('x', 110); arr.setAttribute('y', arrY + 3);
-      arr.setAttribute('font-size', 12); arr.setAttribute('fill', barColor);
-      arr.setAttribute('text-anchor', 'middle'); arr.setAttribute('font-weight', 700);
-      arr.textContent = end > start ? '▲' : '▼';
-      svg.appendChild(arr);
+      // Bar meter: no arrow needed — sub-text already shows direction
 
       // Store animation data
       svg._barFill = fill;
@@ -2233,7 +2170,7 @@ body::after{
           if(!start2) start2 = ts;
           var p = Math.min((ts - start2) / dur2, 1);
           var eased = 1 - Math.pow(1 - p, 3);
-          numSpan.textContent = prefix + Math.round(target2 * eased) + unit;
+          numSpan.textContent = Math.round(target2 * eased);
           if(p < 1) requestAnimationFrame(bnFrame);
         }
         requestAnimationFrame(bnFrame);
