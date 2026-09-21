@@ -2218,7 +2218,7 @@ body::after{
           if(svg._lineDot) svg._lineDot.setAttribute('opacity', '0');
           if(svg._lineLabel) svg._lineLabel.setAttribute('opacity', '0');
         }
-        // Reset bignum
+        // Reset bignum — set to 0, then animate count-up on next frame
         var bn = panel.querySelector('.stat-bignum');
         if(bn && bn._bnNumSpan){
           bn._bnNumSpan.textContent = '0';
@@ -2226,7 +2226,9 @@ body::after{
         statObserver.observe(panel);
         // If already visible, animate immediately
         var rect = panel.getBoundingClientRect();
-        if(rect.top < window.innerHeight && rect.bottom > 0){
+        if(rect.top < window.innerHeight && rect.bottom > 0 && rect.width > 0){
+          // Reset the animated set so animatePanel runs
+          animatedPanels = new WeakSet();
           setTimeout(function(){ animatePanel(panel); }, 50);
         }
       });
