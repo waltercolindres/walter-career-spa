@@ -497,6 +497,26 @@ body::after{
   color:var(--text-mid);margin-top:-2px;
 }
 
+/* ===== CAREER NOTES (Disney, VistaPrint — text, not charts) ===== */
+.career-notes{
+  padding:16px 20px 20px;
+  list-style:none;margin:0;
+}
+.career-note-item{
+  display:flex;gap:10px;align-items:flex-start;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  font-family:var(--body-font);font-size:0.7rem;line-height:1.5;
+  color:var(--text);
+}
+.career-note-item:last-child{border-bottom:none;}
+.career-note-item::before{
+  content:'';flex-shrink:0;
+  width:7px;height:7px;margin-top:5px;
+  border-radius:50%;background:var(--red);
+  box-shadow:0 0 8px rgba(255,45,85,0.6);
+}
+
 /* ===== SKILLS ===== */
 .skills-grid{display:grid;grid-template-columns:1fr;gap:10px;max-width:900px;margin:0 auto;}
 @media(min-width:600px){.skills-grid{grid-template-columns:1fr 1fr;}}
@@ -928,29 +948,37 @@ body::after{
           <div class="player-card-years">2024<br>Present</div>
         </div>
         <div class="stat-dashboard">
-          <div class="stat-panel" data-stat-type="bar" data-stat-start="2.6" data-stat-end="4.8" data-stat-max="5.0">
-            <div class="stat-panel-label"><strong>App Store Rating</strong></div>
-            <div class="stat-panel-sub">2.6 → 4.8 · +84%</div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="110" data-stat-suffix="%">
+            <div class="stat-panel-label"><strong>Digital Sales Growth</strong></div>
+            <div class="stat-panel-sub">Year over year</div>
           </div>
-          <div class="stat-panel" data-stat-type="gauge" data-stat-value="90">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="$200" data-stat-suffix="M+">
+            <div class="stat-panel-label"><strong>Apple/Google Pay Volume</strong></div>
+            <div class="stat-panel-sub">Annual transaction volume</div>
+          </div>
+          <div class="stat-panel" data-stat-type="gauge" data-stat-value="99.9">
+            <div class="stat-panel-label"><strong>Platform Uptime</strong></div>
+            <div class="stat-panel-sub">SLA maintained</div>
+          </div>
+          <div class="stat-panel" data-stat-type="gauge" data-stat-value="82">
             <div class="stat-panel-label"><strong>Checkout Conversion</strong></div>
-            <div class="stat-panel-sub">Post-launch flow</div>
+            <div class="stat-panel-sub">Post-relaunch flow</div>
           </div>
-          <div class="stat-panel" data-stat-type="trend" data-stat-value="−50%" data-stat-dir="down">
-            <div class="stat-panel-label"><strong>Time to Order</strong></div>
-            <div class="stat-panel-sub">10min → 4min</div>
+          <div class="stat-panel" data-stat-type="bar" data-stat-start="10" data-stat-end="4" data-stat-max="10" data-stat-suffix="min">
+            <div class="stat-panel-label"><strong>Time to Purchase</strong></div>
+            <div class="stat-panel-sub">10min → 4min · −60%</div>
           </div>
-          <div class="stat-panel" data-stat-type="gauge" data-stat-value="95">
-            <div class="stat-panel-label"><strong>Login Success Rate</strong></div>
-            <div class="stat-panel-sub">Auth flow success</div>
+          <div class="stat-panel" data-stat-type="trend" data-stat-value="+200%" data-stat-dir="up">
+            <div class="stat-panel-label"><strong>Offer Redemption</strong></div>
+            <div class="stat-panel-sub">Loyalty offers</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="8" data-stat-suffix=" mo">
-            <div class="stat-panel-label"><strong>App Rebuild</strong></div>
-            <div class="stat-panel-sub">Full rebuild timeline</div>
+          <div class="stat-panel" data-stat-type="bar" data-stat-start="2.8" data-stat-end="4.8" data-stat-max="5.0">
+            <div class="stat-panel-label"><strong>App Rating · Android</strong></div>
+            <div class="stat-panel-sub">2.8 → 4.8 · +71%</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="2">
-            <div class="stat-panel-label"><strong>Platforms</strong></div>
-            <div class="stat-panel-sub">iOS + Android</div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="4">
+            <div class="stat-panel-label"><strong>PMs Led</strong></div>
+            <div class="stat-panel-sub">Direct reports</div>
           </div>
         </div>
       </div>
@@ -966,32 +994,11 @@ body::after{
           <img src="/logos/disney.svg" alt="Disney" class="company-logo">
           <div class="player-card-years">2022<br>2023</div>
         </div>
-        <div class="stat-dashboard">
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="43M+">
-            <div class="stat-panel-label"><strong>Users Served</strong></div>
-            <div class="stat-panel-sub">Across properties</div>
-          </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="5">
-            <div class="stat-panel-label"><strong>PM Team Managed</strong></div>
-            <div class="stat-panel-sub">Direct reports</div>
-          </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="12+">
-            <div class="stat-panel-label"><strong>Digital Properties</strong></div>
-            <div class="stat-panel-sub">Web &amp; mobile apps</div>
-          </div>
-          <div class="stat-panel" data-stat-type="trend" data-stat-value="+35%" data-stat-dir="up">
-            <div class="stat-panel-label"><strong>Engagement Lift</strong></div>
-            <div class="stat-panel-sub">Across all platforms</div>
-          </div>
-          <div class="stat-panel" data-stat-type="gauge" data-stat-value="87">
-            <div class="stat-panel-label"><strong>Retention Rate</strong></div>
-            <div class="stat-panel-sub">30-day retention</div>
-          </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="20+">
-            <div class="stat-panel-label"><strong>Quests Programs</strong></div>
-            <div class="stat-panel-sub">Gamified engagement</div>
-          </div>
-        </div>
+        <ul class="career-notes">
+          <li class="career-note-item">Led the unified guest profile system aggregating purchase, park, streaming, and physical signals into one customer layer, powering personalized rewards, quests, and engagement across the Disney portfolio.</li>
+          <li class="career-note-item">Owned Rewards, Profile, My Stuff, and Sign-up/Onboarding from discovery to launch, partnering with engineering and data science on recommendation architecture and Now/Next/Later roadmaps across business units.</li>
+          <li class="career-note-item">Strategic RIF.</li>
+        </ul>
       </div>
 
       <!-- TEAM 3: VISTAPRINT -->
@@ -1005,32 +1012,12 @@ body::after{
           <img src="/logos/vistaprint.svg" alt="Vistaprint" class="company-logo">
           <div class="player-card-years">2021<br>2022</div>
         </div>
-        <div class="stat-dashboard">
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="7">
-            <div class="stat-panel-label"><strong>PMs Led</strong></div>
-            <div class="stat-panel-sub">Growth team</div>
-          </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="~$1.6B">
-            <div class="stat-panel-label"><strong>Revenue Platform</strong></div>
-            <div class="stat-panel-sub">Annual revenue</div>
-          </div>
-          <div class="stat-panel" data-stat-type="trend" data-stat-value="−25%" data-stat-dir="down">
-            <div class="stat-panel-label"><strong>Planning Cycle</strong></div>
-            <div class="stat-panel-sub">Faster delivery</div>
-          </div>
-          <div class="stat-panel" data-stat-type="trend" data-stat-value="+18%" data-stat-dir="up">
-            <div class="stat-panel-label"><strong>Customer LTV</strong></div>
-            <div class="stat-panel-sub">ML-powered retention</div>
-          </div>
-          <div class="stat-panel" data-stat-type="trend" data-stat-value="−22%" data-stat-dir="down">
-            <div class="stat-panel-label"><strong>CAC Reduction</strong></div>
-            <div class="stat-panel-sub">Acquisition cost down</div>
-          </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="6">
-            <div class="stat-panel-label"><strong>ML Models Deployed</strong></div>
-            <div class="stat-panel-sub">Production models</div>
-          </div>
-        </div>
+        <ul class="career-notes">
+          <li class="career-note-item">Led SMB customer onboarding and growth into VistaPrint's digital platform (websites, design tools, and marketing products) for millions of small business owners.</li>
+          <li class="career-note-item">Improved activation and repeat purchase by launching a Customer Onboarding Test that fed ML recommendations and an Order History Dashboard that lifted CTR to orders 3% and content engagement 2% through iterative A/B experimentation.</li>
+          <li class="career-note-item">Built and led an ML-powered recommendation engine and trigger-based lifecycle programs across email, web, and in-product surfaces, grounded in behavioral segmentation and cohort analysis with engineering and data science.</li>
+          <li class="career-note-item">Set a multi-product suite vision (campaign management, community, e-learning) as retention and reorder growth loops; hired and developed a cross-functional growth team. Strategic RIF.</li>
+        </ul>
       </div>
 
       <!-- TEAM 4: RBI -->
@@ -1049,29 +1036,33 @@ body::after{
           <div class="player-card-years">2019<br>2021</div>
         </div>
         <div class="stat-dashboard">
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="$94M">
-            <div class="stat-panel-label"><strong>Apple/Google Pay Rev</strong></div>
-            <div class="stat-panel-sub">$81M + $13M net new</div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="$2" data-stat-suffix="B+">
+            <div class="stat-panel-label"><strong>Digital Sales Unlocked</strong></div>
+            <div class="stat-panel-sub">Across 3 brands</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="1.7M" data-stat-label="New Users">
-            <div class="stat-panel-label"><strong>New Users</strong></div>
-            <div class="stat-panel-sub">170% of 1M target</div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="15">
+            <div class="stat-panel-label"><strong>Platforms Launched</strong></div>
+            <div class="stat-panel-sub">In 6 months</div>
           </div>
-          <div class="stat-panel" data-stat-type="gauge" data-stat-value="41">
-            <div class="stat-panel-label"><strong>Digital Sales Share</strong></div>
-            <div class="stat-panel-sub">Goal: 30-35%</div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="52">
+            <div class="stat-panel-label"><strong>Features Shipped</strong></div>
+            <div class="stat-panel-sub">In 2020</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="2M+" data-stat-label="App Downloads">
-            <div class="stat-panel-label"><strong>App Downloads</strong></div>
-            <div class="stat-panel-sub">#1 in Canada · 7-week build</div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="18" data-stat-suffix="x">
+            <div class="stat-panel-label"><strong>Funnel Improvement</strong></div>
+            <div class="stat-panel-sub">In 3 weeks</div>
+          </div>
+          <div class="stat-panel" data-stat-type="trend" data-stat-value="+300%" data-stat-dir="up">
+            <div class="stat-panel-label"><strong>Delivery Conversion</strong></div>
+            <div class="stat-panel-sub">Post-launch lift</div>
           </div>
           <div class="stat-panel" data-stat-type="bar" data-stat-start="3.36" data-stat-end="9.82" data-stat-max="10.0">
             <div class="stat-panel-label"><strong>Popeyes Conversion</strong></div>
-            <div class="stat-panel-sub">+193% increase</div>
+            <div class="stat-panel-sub">+193%</div>
           </div>
-          <div class="stat-panel" data-stat-type="bar" data-stat-start="42" data-stat-end="139" data-stat-max="150" data-stat-suffix="K">
-            <div class="stat-panel-label"><strong>Offers Redeemed</strong></div>
-            <div class="stat-panel-sub">+231% increase</div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="#1">
+            <div class="stat-panel-label"><strong>Tim Hortons App</strong></div>
+            <div class="stat-panel-sub">In Canada</div>
           </div>
         </div>
       </div>
@@ -1088,29 +1079,29 @@ body::after{
           <div class="player-card-years">2014<br>2018</div>
         </div>
         <div class="stat-dashboard">
-          <div class="stat-panel" data-stat-type="gauge" data-stat-value="15">
-            <div class="stat-panel-label"><strong>Digital Sales Share</strong></div>
-            <div class="stat-panel-sub">Order Ahead app capture</div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="3,600" data-stat-suffix="+">
+            <div class="stat-panel-label"><strong>DMMT Deployed</strong></div>
+            <div class="stat-panel-sub">Locations nationwide</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="100K">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="100" data-stat-suffix="K+">
             <div class="stat-panel-label"><strong>Daily Transactions</strong></div>
             <div class="stat-panel-sub">Per day</div>
           </div>
-          <div class="stat-panel" data-stat-type="gauge" data-stat-value="99">
-            <div class="stat-panel-label"><strong>Uptime</strong></div>
-            <div class="stat-panel-sub">99.9% SLA maintained</div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="43" data-stat-suffix="M+">
+            <div class="stat-panel-label"><strong>Users</strong></div>
+            <div class="stat-panel-sub">MySonic Connect SSO</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="380M+">
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="380" data-stat-suffix="M+">
             <div class="stat-panel-label"><strong>Total Views</strong></div>
             <div class="stat-panel-sub">Across properties</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="43M+">
-            <div class="stat-panel-label"><strong>Users</strong></div>
-            <div class="stat-panel-sub">62M+ sessions</div>
+          <div class="stat-panel" data-stat-type="gauge" data-stat-value="15">
+            <div class="stat-panel-label"><strong>Digital Sales Share</strong></div>
+            <div class="stat-panel-sub">Of total sales</div>
           </div>
-          <div class="stat-panel" data-stat-type="bignum" data-stat-value="Shortlist">
-            <div class="stat-panel-label"><strong>Cannes Lion</strong></div>
-            <div class="stat-panel-sub">Innovation recognition</div>
+          <div class="stat-panel" data-stat-type="bignum" data-stat-value="0→1">
+            <div class="stat-panel-label"><strong>First Digital Ordering</strong></div>
+            <div class="stat-panel-sub">Built from zero</div>
           </div>
         </div>
       </div>
